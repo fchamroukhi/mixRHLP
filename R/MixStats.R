@@ -33,7 +33,7 @@ MixStats <- setRefClass(
       "
       N <- nrow(h_ig)
       K <- ncol(h_ig)
-      ikmax <- which.max(h_ig) # todo: verify if it is on columns
+      ikmax <- max.col(h_ig)
       ikmax <- matrix(ikmax, ncol = 1)
       Z = ikmax%*%ones(1,K) == ones(N,1)%*%(1:K)
       klas = ones(N,1)

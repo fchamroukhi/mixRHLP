@@ -74,3 +74,14 @@ testEnum <- function(){
 }
 testEnum()
 
+
+test_MAP <- function(){
+  stmix <- MixStats$new()
+  h_ig <- read.csv("data/tests/h_ig.csv", header = FALSE)
+  stmix$h_ig <- as.matrix(h_ig)
+  m <- stmix$MAP()
+  klas <- m[1]
+  Z <- m[2]
+}
+test_MAP()
+
