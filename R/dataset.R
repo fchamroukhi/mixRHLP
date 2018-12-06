@@ -7,8 +7,8 @@ MyData <- setRefClass(
 
   # Define the fields
   fields = list(
-    X="matrix",
-    XR="matrix",
+    X="matrix",  # the data set
+    XR="matrix", # reshaped data
     n="numeric",
     m="numeric",
     t="matrix"),
