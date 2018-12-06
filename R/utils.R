@@ -1,11 +1,19 @@
 ones <- function(n,d,g=1){
-  #return(matrix(1,n,d))
-  return(array(1,dim=c(n,d,g)))
+  if (g==1){
+    return(matrix(1,n,d))
+  }
+  else{
+    return(array(1,dim=c(n,d,g)))
+  }
 }
 
-rand <- function(n,d,g){
-  #return(matrix(runif(n*d), n,d))
-  return(array(runif(n*d),dim=c(n,d,g)))
+rand <- function(n,d,g=1){
+  if (g==1){
+    return(matrix(runif(n*d), n,d))
+  }
+  else{
+    return(array(runif(n*d),dim=c(n,d,g)))
+  }
 }
 
 repmat <- function(M, n, d){
