@@ -1,6 +1,5 @@
 source("R/enums.R")
-
-
+source("R/utils.R")
 
 MixParam <- setRefClass(
   "MixParam",
@@ -12,24 +11,26 @@ MixParam <- setRefClass(
     alpha_g = "matrix"
   ),
   methods = list(
-    init_hlp <- function(mixModel,phiW,try_algo){
-      nm <- mixModel$m*mixModel$n
-      if  (try_algo == 1){
-        for (g in (1:mixModel$G)){
-          pi_jgk[,,g] <<- modele_logit(Wg[,,g],phiW);
-        }
-      }
-      else{
-        for (g in (1:mixModel$G)){
-          Wg[,,g] <<- rand(mixModel$q+1, mixModel$K-1);#initialisation aléatoire du vercteur param�tre du IRLS
-          pi_jgk[,,g] <<- modele_logit(Wg[,,g],phiW);
-        }
-      }
-    },
+    # init_hlp <- function(mixModel,phiW,try_algo){
+    #   nm <- mixModel$m * mixModel$n
+    #   if  (try_algo == 1){
+    #     for (g in (1:mixModel$G)){
+    #       problik <- modele_logit(Wg[,,g],phiW)
+    #       pi_jgk[,,g] <<- problik[[1]]
+    #     }
+    #   }
+    #   else{
+    #     for (g in (1:mixModel$G)){
+    #       Wg[,,g] <<- rand(mixModel$q+1, mixModel$K-1);#initialisation aléatoire du vercteur param�tre du IRLS
+    #       problik <- modele_logit(Wg[,,g], phiW)
+    #       pi_jgk[,,g] <<- problik[[1]]
+    #     }
+    #   }
+    # },
 
-    initParam = function(mixModel){
+    initParam = function(mixModel, phiW, try_algo){
       alpha_g <<- 1/(mixModel$G*ones(mixModel$G,1))
-
+      #init_hlp(mixModel, phiW, try_algo) # setting Wg and pi_jgk
     }
   )
 )

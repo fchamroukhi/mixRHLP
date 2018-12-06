@@ -7,6 +7,15 @@ ones <- function(n,d,g=1){
   }
 }
 
+zeros <- function(n,d,g=1){
+  if (g==1){
+    return(matrix(0,n,d))
+  }
+  else{
+    return(array(0,dim=c(n,d,g)))
+  }
+}
+
 rand <- function(n,d,g=1){
   if (g==1){
     return(matrix(runif(n*d), n,d))
@@ -64,31 +73,39 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
   if (!is.null(Y)){
     if (ncol(Wg) == (K-1)){ # pas de vecteur nul dans W donc l'ajouter
       wK <- zeros(q,1)
-      W <- cbind(W, wK)
-      q <- nrow(W)
-      K <- ncol(W)
+      Wg <- cbind(Wg, wK)
+    }
+    else{
+      stop("Wg and Y must have the same number of lines")
     }
   }
+  else{
+    wK <- zeros(q,1)
+    Wg <- cbind(Wg, wK)
+    q <- nrow(Wg)
+    K <- ncol(Wg)
+  }
 
-  MW <- M %*% W
+
+  MW <- phiW %*% Wg
   maxm <- max.col(MW)
   MW <- MW - maxm %*% ones(1,K)
 
   expMW <- exp(MW)
 
-  probas <- expMW / (apply(expMW,2,sum) %*% ones(1,K))
+  probas <- expMW / (apply(expMW[,1:K],1,sum) %*% ones(1,K))
 
   if (!is.null(Y)){
     if (is.null(Gamma)) {
-      loglik <- sum(apply((Y*MW) - (Y*log(apply(expMW,2,sum)%*%ones(1,K))),2,sum))
+      loglik <- sum(apply((Y*MW) - (Y*log(apply(expMW,1,sum)%*%ones(1,K))),1,sum))
     }
     else {
-      loglik <- sum(apply((Gamma*(Y*MW)) - ((Gamma*Y)*log(apply(expMW,2,sum)%*%ones(1,K))),2,sum))
+      loglik <- sum(apply((Gamma*(Y*MW)) - ((Gamma*Y)*log(apply(expMW,1,sum)%*%ones(1,K))),1,sum))
     }
 
     # todo: verify R computation of loglik gives nan
     if (is.nan(loglik)){
-      MW <- M %*% W
+      MW <- phiW %*% Wg
       minm <- -745.1
       MW <- max(MW, minm)
       maxm <- 709.78
@@ -98,10 +115,10 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
       eps <- 2^(-52)
 
       if (is.null(Gamma)) {
-        loglik <- sum(apply((Y*MW) - (Y*log(apply(expMW,2,sum)%*%ones(1,K)+eps)),2,sum))
+        loglik <- sum(apply((Y*MW) - (Y*log(apply(expMW,1,sum)%*%ones(1,K)+eps)),1,sum))
       }
       else {
-        loglik <- sum(apply((Gamma*(Y*MW)) - ((Gamma*Y)*log(apply(expMW,2,sum)%*%ones(1,K)+eps)),2,sum))
+        loglik <- sum(apply((Gamma*(Y*MW)) - ((Gamma*Y)*log(apply(expMW,1,sum)%*%ones(1,K)+eps)),1,sum))
       }
     }
     if (is.nan(loglik)){

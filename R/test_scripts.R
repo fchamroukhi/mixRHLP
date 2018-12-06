@@ -6,6 +6,7 @@ source("R/MixParam.R")
 source("R/MixStats.R")
 source("R/ModelLearner.R")
 source("R/enums.R")
+source("R/utils.R")
 
 
 testData <- function(){
@@ -84,4 +85,31 @@ test_MAP <- function(){
   Z <- m[2]
 }
 test_MAP()
+
+test_modellogit <- function(){
+  Wg <- array(0,dim=c(2, 2, 3))
+  Wg[,,1] <- rand(2, 2)
+  Wg[,,2] <- rand(2, 2)
+  Wg[,,3] <- rand(2, 2)
+
+
+  mixData <- MyData$new()
+  mixData$setData("data/generated_data_1.txt")
+  G <- 3; # nombre de clusters
+  K <- 3; #nombre de regimes
+  p <- 1; #dimension de beta (ordre de reg polynomiale)
+  q <- 1; #dimension de w (ordre de reg logistique)
+  mix <- MixModel(mixData,G,K,p,q)
+
+  m <- MyData$new()
+  m$setData("data/generated_data_1.txt")
+
+  phi <- Phi$new()
+  phi$setPhiN(m$t,mix$p,mix$q, mix$n)
+
+  problik <- modele_logit(Wg[,,1], phi$phiW)
+  print(dim(problik[[1]]))
+}
+
+test_modellogit()
 
