@@ -86,7 +86,6 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
     K <- ncol(Wg)
   }
 
-
   MW <- phiW %*% Wg
   maxm <- max.col(MW)
   MW <- MW - maxm %*% ones(1,K)

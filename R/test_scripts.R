@@ -33,7 +33,8 @@ phiTest <- function(){
 phi <- phiTest()
 
 testModelCreation <- function(){
-  mixData <- testData()
+  mixData <- MyData$new()
+  mixData$setData("data/generated_data_1.txt")
   G <- 3; # nombre de clusters
   K <- 3; #nombre de regimes
   p <- 1; #dimension de beta (ordre de reg polynomiale)
@@ -46,11 +47,13 @@ testModelCreation <- function(){
   verbose <- TRUE
   verbose_IRLS <- TRUE
   init_kmeans <- TRUE
-  options <- ModelOptions(n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans, variance_types$common)
+  mixOptions <- ModelOptions(n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans, variance_types$common)
 
+  phi <- Phi$new()
+  phi$setPhiN(mixData$t,mix$p,mix$q, mix$n)
 
-  param <- MixParam(mix, options)
-  param$initParam(mix)
+  param <- MixParam(mix, mixOptions)
+  param$initParam(mix, phi, mixOptions, try_algo = 1)
 
   return(param)
 }
@@ -112,4 +115,14 @@ test_modellogit <- function(){
 }
 
 test_modellogit()
+
+
+
+
+testKmeans <- function(){
+  mixData <- MyData$new()
+  mixData$setData("data/generated_data_1.txt")
+  kmeans(mixData$X, iter.max = 400, nstart = 20, trace=FALSE)
+}
+
 
