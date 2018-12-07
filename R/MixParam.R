@@ -21,7 +21,7 @@ MixParam <- setRefClass(
       }
       else{
         for (g in (1:mixModel$G)){
-          Wg[,,g] <<- rand(mixModel$q+1, mixModel$K-1);#initialisation aléatoire du vercteur param�tre du IRLS
+          Wg[,,g] <<- rand(mixModel$q+1, mixModel$K-1);#initialisation aléatoire du vercteur paramètre du IRLS
           problik <- modele_logit(Wg[,,g], phiW)
           pi_jgk[,,g] <<- problik[[1]]
         }

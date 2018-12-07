@@ -3,7 +3,7 @@ MixStats <- setRefClass(
   fields = list(
     h_ig="matrix", #post probabilities
     c_ig="matrix",
-    pi_jgk = "matrix",
+    # pi_jgk = "matrix",
     Ex_g = "matrix",
     log_lik="numeric",
     com_loglik="numeric",
@@ -11,8 +11,8 @@ MixStats <- setRefClass(
     ICL="numeric",
     AIC="numeric",
     log_alphag_fg_xij="matrix",
-    polynomials="matrix",
-    weighted_polynomials="matrix"
+    polynomials="array",
+    weighted_polynomials="array"
   ),
   methods=list(
     MAP = function(){
@@ -44,3 +44,20 @@ MixStats <- setRefClass(
     }
   )
 )
+
+
+MixStats<-function(mixModel, options){
+  h_ig <- matrix(NA,mixModel$n, mixModel$G)
+  c_ig <- matrix(NA,mixModel$n, mixModel$G)
+  Ex_g <- matrix(NA,mixModel$n, mixModel$G)
+  log_lik <- -Inf
+  com_loglik <- -Inf
+  BIC <- -Inf
+  ICL <- -Inf
+  AIC <- -Inf
+  log_alphag_fg_xij <- matrix(NA, mixModel$n, mixModel$G)
+  polynomials <- array(NA, dim = c(mixModel$m, mixModel$K, mixModel$G))
+  weighted_polynomials <- array(NA, dim = c(mixModel$m, mixModel$K, mixModel$G))
+
+  new("MixStats", h_ig=h_ig, c_ig=c_ig, Ex_g=Ex_g, log_lik=log_lik, com_loglik=com_loglik, BIC=BIC, ICL=ICL, AIC=AIC, log_alphag_fg_xij=log_alphag_fg_xij, polynomials=polynomials, weighted_polynomials=weighted_polynomials)
+}
