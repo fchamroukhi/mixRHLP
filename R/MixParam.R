@@ -126,7 +126,7 @@ MixParam <- setRefClass(
         tauijk <- mixStats$tau_ijgk[,,g] #[(nxm) x K]
 
         if (mixOptions$variance_type == variance_types$common){
-          s <<- 0
+          s <- 0
         }
         else{
           sigma_gk <- zeros(mixModel$K, 1)

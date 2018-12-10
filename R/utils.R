@@ -178,7 +178,7 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
     n1 <- nrow(Y)
     K <- ncol(Y)
     if (!is.null(Gamma)) {
-      Gamma <- Gamma * ones(1,K)
+      Gamma <- Gamma %*% ones(1,K)
     }
     n2 <- nrow(phiW)
     q <- ncol(phiW)
