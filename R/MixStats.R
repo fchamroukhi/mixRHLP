@@ -3,6 +3,7 @@ MixStats <- setRefClass(
   fields = list(
     h_ig="matrix", #post probabilities
     c_ig="matrix",
+    klas="matrix",
     # pi_jgk = "matrix",
     Ex_g = "matrix",
     log_lik="numeric",
@@ -40,12 +41,11 @@ MixStats <- setRefClass(
       K <- ncol(h_ig)
       ikmax <- max.col(h_ig)
       ikmax <- matrix(ikmax, ncol = 1)
-      Z = ikmax%*%ones(1,K) == ones(N,1)%*%(1:K)
-      klas = ones(N,1)
+      c_ig <<- ikmax%*%ones(1,K) == ones(N,1)%*%(1:K)
+      klas <<- ones(N,1)
       for (k in 1:K){
-        klas[Z[,k]==1]=k
+        klas[c_ig[,k]==1] <<- k
       }
-      return(list(klas, Z))
     }
   )
 )
@@ -54,6 +54,7 @@ MixStats <- setRefClass(
 MixStats<-function(mixModel, options){
   h_ig <- matrix(NA,mixModel$n, mixModel$G)
   c_ig <- matrix(NA,mixModel$n, mixModel$G)
+  klas <- matrix(NA, mixModel$n,1)
   Ex_g <- matrix(NA,mixModel$n, mixModel$G)
   log_lik <- -Inf
   com_loglik <- -Inf
@@ -69,6 +70,6 @@ MixStats<-function(mixModel, options){
   tau_ijgk <- array(0, dim = c(mixModel$n*mixModel$m, mixModel$K, mixModel$G))
   log_tau_ijgk <- array(0, dim = c(mixModel$n*mixModel$m, mixModel$K, mixModel$G))
 
-  new("MixStats", h_ig=h_ig, c_ig=c_ig, Ex_g=Ex_g, log_lik=log_lik, com_loglik=com_loglik, stored_loglik=stored_loglik, stored_com_loglik=stored_com_loglik, BIC=BIC, ICL=ICL, AIC=AIC, log_fg_xij=log_fg_xij,
+  new("MixStats", h_ig=h_ig, c_ig=c_ig, klas=klas, Ex_g=Ex_g, log_lik=log_lik, com_loglik=com_loglik, stored_loglik=stored_loglik, stored_com_loglik=stored_com_loglik, BIC=BIC, ICL=ICL, AIC=AIC, log_fg_xij=log_fg_xij,
       log_alphag_fg_xij=log_alphag_fg_xij, polynomials=polynomials, weighted_polynomials=weighted_polynomials, tau_ijgk=tau_ijgk, log_tau_ijgk=log_tau_ijgk)
 }

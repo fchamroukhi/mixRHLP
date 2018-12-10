@@ -9,7 +9,6 @@ source("R/ModelLearner.R")
 source("R/enums.R")
 source("R/utils.R")
 
-
 testData <- function(){
   m <- MyData$new()
   m$setData("data/generated_data_1.txt")
@@ -100,9 +99,8 @@ test_MAP <- function(){
   stmix <- MixStats(mixModel, mixOptions)
   h_ig <- read.csv("data/tests/h_ig.csv", header = FALSE)
   stmix$h_ig <- as.matrix(h_ig)
-  m <- stmix$MAP()
-  klas <- m[1]
-  Z <- m[2]
+  stmix$MAP()
+  #print(stmix$klas)
 }
 test_MAP()
 
