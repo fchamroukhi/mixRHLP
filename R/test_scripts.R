@@ -133,11 +133,47 @@ test_modellogit()
 
 
 
+testlognormalize <- function(){
+  log_alphag_fg_xij <- read.csv("data/tests/log_alphag_fg_xij.csv", header = FALSE)
+  log_alphag_fg_xij <- as.matrix(log_alphag_fg_xij)
+  h_ig <- exp(lognormalize(log_alphag_fg_xij));
+  print(h_ig)
+}
+testlognormalize()
+
+
+testEStep <- function(){
+  mixData <- MyData$new()
+  mixData$setData("data/generated_data_1.txt")
+  G <- 3; # nombre de clusters
+  K <- 3; #nombre de regimes
+  p <- 1; #dimension de beta (ordre de reg polynomiale)
+  q <- 1; #dimension de w (ordre de reg logistique)
+  mixModel <- MixModel(mixData,G,K,p,q)
+
+  n_tries=1
+  max_iter=1000
+  threshold <- 1e-5
+  verbose <- TRUE
+  verbose_IRLS <- TRUE
+  init_kmeans <- TRUE
+  modelOptions <- ModelOptions(n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans, variance_types$common)
+
+  phi <- Phi$new()
+  phi$setPhiN(mixModel$t,mixModel$p,mixModel$q, mixModel$n)
+
+  mixParam <- MixParam(mixModel, modelOptions)
+  mixParam$initParam(mixModel, phi, modelOptions, try_algo = 1)
+
+  mixStats <- MixStats(mixModel, modelOptions)
+  mixStats$EStep(mixModel, mixParam, modelOptions$variance_type)
+}
+testEStep()
 
 testKmeans <- function(){
   mixData <- MyData$new()
   mixData$setData("data/generated_data_1.txt")
   kmeans(mixData$X, iter.max = 400, nstart = 20, trace=FALSE)
 }
-
+#testKmeans()
 
