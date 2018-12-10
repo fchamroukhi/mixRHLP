@@ -115,6 +115,54 @@ MixParam <- setRefClass(
            }
          }
        }
+    },
+
+
+    MStep = function(mixModel, mixStats, phi, mixOptions){
+      alpha_g <<- t(colSums(mixStats$h_ig))/mixModel$n
+      for (g in 1:mixModel$G){
+        temp <- repmat(mixStats$h_ig, 1, mixModel$m) # [m x n]
+        cluster_weights <- matrix(t(temp), mixModel$m*mixModel$n, 1) # cluster_weights(:)% [mn x 1]
+        tauijk <- mixStats$tau_ijgk[,,g] #[(nxm) x K]
+
+        if (mixOptions$variance_type == variance_types$common){
+          s <<- 0
+        }
+        else{
+          sigma_gk <- zeros(mixModel$K, 1)
+        }
+
+        for (k in 1:mixModel$K){
+          segments_weights <- tauijk[,k] # poids du kieme segment   pour le cluster g
+          # poids pour avoir K segments floues du gieme cluster flou
+          phigk <- (sqrt(cluster_weights * segments_weights) %*% ones(1,mixModel$p+1))*phi$phiBeta #[(n*m)*(p+1)]
+          Xgk <- sqrt(cluster_weights * segments_weights) * mixModel$XR
+
+          # maximization w.r.t beta_gk: Weighted least squares
+          betag[,k,g] <<- solve(t(phigk)%*%phigk + .Machine$double.eps*diag(p+1))*t(phigk)%*%Xgk # Maximization w.r.t betagk
+
+          #    the same as
+          #                 W_gk = diag(cluster_weights.*segment_weights);
+          #                 beta_gk(:,k) = inv(phiBeta'*W_gk*phiBeta)*phiBeta'*W_gk*X;
+          #   Maximization w.r.t au sigma_gk :
+          if (mixOptions$variance_type == variance_types$common){
+            sk <- sum((Xgk - phigk %*% betag[,k,g])^2)
+            sk <- s+sk
+            sigma_gk <- s/sum((cluster_weights%*%ones(1,mixModel$K))*tauijk)
+          }
+          else{
+            sigma_gk[k] <- sum((Xgk-phigk*betag[,k,g])^2)/(sum(cluster_weights*segment_weights));
+          }
+        }
+        sigmag[,g] <<- sigma_gk;
+
+
+        # Maximization w.r.t W
+        #  IRLS : Regression logistique multinomiale pondérée par cluster
+        # setting of Wg[,,g] and pi_jgk
+        Wg_init <- Wg[,,g]
+        IRLS_MixFRHLP(cluster_weights, tauijk, phi$phiW, Wg_init, mixOptions$verbose_IRLS)
+      }
     }
   )
 )
