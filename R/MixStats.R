@@ -7,9 +7,14 @@ MixStats <- setRefClass(
     Ex_g = "matrix",
     log_lik="numeric",
     com_loglik="numeric",
+    stored_loglik = "list",
+    stored_com_loglik = "list",
+    tau_ijgk = "array", # segments post probabilities
+    log_tau_ijgk = "array",
     BIC="numeric",
     ICL="numeric",
     AIC="numeric",
+    log_fg_xij="matrix",
     log_alphag_fg_xij="matrix",
     polynomials="array",
     weighted_polynomials="array"
@@ -52,12 +57,18 @@ MixStats<-function(mixModel, options){
   Ex_g <- matrix(NA,mixModel$n, mixModel$G)
   log_lik <- -Inf
   com_loglik <- -Inf
+  stored_loglik <- list()
+  stored_com_loglik <- list()
   BIC <- -Inf
   ICL <- -Inf
   AIC <- -Inf
-  log_alphag_fg_xij <- matrix(NA, mixModel$n, mixModel$G)
+  log_fg_xij <- matrix(0, mixModel$n, mixModel$G)
+  log_alphag_fg_xij <- matrix(0, mixModel$n, mixModel$G)
   polynomials <- array(NA, dim = c(mixModel$m, mixModel$K, mixModel$G))
   weighted_polynomials <- array(NA, dim = c(mixModel$m, mixModel$K, mixModel$G))
+  tau_ijgk <- array(0, dim = c(mixModel$n*mixModel$m, mixModel$K, mixModel$G))
+  log_tau_ijgk <- array(0, dim = c(mixModel$n*mixModel$m, mixModel$K, mixModel$G))
 
-  new("MixStats", h_ig=h_ig, c_ig=c_ig, Ex_g=Ex_g, log_lik=log_lik, com_loglik=com_loglik, BIC=BIC, ICL=ICL, AIC=AIC, log_alphag_fg_xij=log_alphag_fg_xij, polynomials=polynomials, weighted_polynomials=weighted_polynomials)
+  new("MixStats", h_ig=h_ig, c_ig=c_ig, Ex_g=Ex_g, log_lik=log_lik, com_loglik=com_loglik, stored_loglik=stored_loglik, stored_com_loglik=stored_com_loglik, BIC=BIC, ICL=ICL, AIC=AIC, log_fg_xij=log_fg_xij,
+      log_alphag_fg_xij=log_alphag_fg_xij, polynomials=polynomials, weighted_polynomials=weighted_polynomials, tau_ijgk=tau_ijgk, log_tau_ijgk=log_tau_ijgk)
 }
