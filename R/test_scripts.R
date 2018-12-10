@@ -1,4 +1,5 @@
 rm(list = ls())
+source("R/Phi.R")
 source("R/dataset.R")
 source("R/MixModel.R")
 source("R/ModelOptions.R")
