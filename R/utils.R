@@ -41,7 +41,8 @@ drnorm <- function(n, d, mean, sd){
 lognormalize <- function(M){
   n <- nrow(M)
   d <- ncol(M)
-  #to do: continue develop
+  a <- max.col(M)
+  return(M-repmat(a + log(rowSums(exp(M - repmat(a,1,d)))), 1, d))
 }
 
 
