@@ -161,9 +161,15 @@ MixParam <- setRefClass(
         #  IRLS : Regression logistique multinomiale pondérée par cluster
         # setting of Wg[,,g] and pi_jgk
         Wg_init <- Wg[,,g]
-        IRLS_MixFRHLP(cluster_weights, tauijk, phi$phiW, Wg_init, mixOptions$verbose_IRLS)
+        res_irls <- IRLS_MixFRHLP(cluster_weights, tauijk, phi$phiW, Wg_init, mixOptions$verbose_IRLS)
+        Wg[,,g] <<- res_irls[[1]]
+        piik <- res_irls[[2]]
+        pi_jgk[,,g] <<- matrix(piik[1:mixModel$m,], mixModel$n, 1)
       }
+
     }
+
+
   )
 )
 

@@ -37,7 +37,7 @@ ModelLearner <- setRefClass(
 
           mixStats$EStep(mixModel, mixParam, modelOptions$variance_type)
 
-          mixStats$MStep()
+          mixParam$MStep(mixModel, mixStats, phi, mixOptions)
           # FIN EM
 
           iter <- iter + 1
