@@ -126,7 +126,7 @@ test_modellogit <- function(){
   phi$setPhiN(m$t,mix$p,mix$q, mix$n)
 
   problik <- modele_logit(Wg[,,1], phi$phiW)
-  print(dim(problik[[1]]))
+  #print(dim(problik[[1]]))
 }
 
 test_modellogit()
@@ -137,7 +137,7 @@ testlognormalize <- function(){
   log_alphag_fg_xij <- read.csv("data/tests/log_alphag_fg_xij.csv", header = FALSE)
   log_alphag_fg_xij <- as.matrix(log_alphag_fg_xij)
   h_ig <- exp(lognormalize(log_alphag_fg_xij));
-  print(h_ig)
+  #print(h_ig)
 }
 testlognormalize()
 
@@ -167,6 +167,9 @@ testEStep <- function(){
 
   mixStats <- MixStats(mixModel, modelOptions)
   mixStats$EStep(mixModel, mixParam, modelOptions$variance_type)
+
+  print(dim(mixStats$h_ig))
+  print(mixStats$log_lik)
 }
 testEStep()
 

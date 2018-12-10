@@ -71,23 +71,23 @@ MixStats <- setRefClass(
           log_pijgk_fgk_xij[,k] <- log(pi_jgk[,k]) - 0.5 * (log(2*pi) + log(sgk)) - 0.5 * z # pdf cond à c_i = g et z_i = k de xij
         }
 
-        log_pijgk_fgk_xij <- min(log_pijgk_fgk_xij, log(.Machine$double.xmax))
-        log_pijgk_fgk_xij <- max(log_pijgk_fgk_xij, log(.Machine$double.xmin))
+        log_pijgk_fgk_xij <- pmin(log_pijgk_fgk_xij, log(.Machine$double.xmax))
+        log_pijgk_fgk_xij <- pmax(log_pijgk_fgk_xij, log(.Machine$double.xmin))
 
         pijgk_fgk_xij <- exp(log_pijgk_fgk_xij)
         sumk_pijgk_fgk_xij <- rowSums(pijgk_fgk_xij) # sum over k
         log_sumk_pijgk_fgk_xij <- log(sumk_pijgk_fgk_xij) # [n*m, 1]
 
-        log_tau_ijgk[,,g] <<- log_pijgk_fgk_xij - log_sumk_pijgk_fgk_xij %*% ones(1,K)
-        tau_ijgk[,,g] <<- exp(log_normalize(log_tau_ijgk[,,g]))
+        log_tau_ijgk[,,g] <<- log_pijgk_fgk_xij - log_sumk_pijgk_fgk_xij %*% ones(1,mixModel$K)
+        tau_ijgk[,,g] <<- exp(lognormalize(log_tau_ijgk[,,g]))
 
         log_fg_xij[,g] <<- rowSums(t(matrix(log_sumk_pijgk_fgk_xij,mixModel$m,mixModel$n))) # [n x 1]:  sum over j=1,...,m: fg_xij = prod_j sum_k pi_{jgk} N(x_{ij},mu_{gk},s_{gk))
         log_alphag_fg_xij[,g] <<- log(alpha_g) + log_fg_xij[,g] # [nxg]
       }
-      log_alphag_fg_xij <<- min(log_alphag_fg_xij, log(.Machine$double.xmax))
-      log_alphag_fg_xij <<- max(log_alphag_fg_xij, log(.Machine$double.xmin))
+      log_alphag_fg_xij <<- pmin(log_alphag_fg_xij, log(.Machine$double.xmax))
+      log_alphag_fg_xij <<- pmax(log_alphag_fg_xij, log(.Machine$double.xmin))
 
-      h_ig <<- exp(log_normalize(log_alphag_fg_xij))
+      h_ig <<- exp(lognormalize(log_alphag_fg_xij))
 
       log_lik <<- sum(log(rowSums(exp(log_alphag_fg_xij))))
     }
