@@ -16,7 +16,7 @@ MixModel <- setRefClass(
 )
 
 MixModel<-function(mixData, G,K,p,q){
-  new("MixModel",X=mixData$X, n=mixData$n, m=mixData$m, G=G,K=K, p=p, q=q)
+  new("MixModel",X=mixData$X, XR=mixData$XR, t=mixData$t, n=mixData$n, m=mixData$m, G=G,K=K, p=p, q=q)
 }
 
 
