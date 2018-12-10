@@ -180,3 +180,15 @@ testKmeans <- function(){
 }
 #testKmeans()
 
+
+test_IRLS <- function(){
+  data<-readMat("data/tests/IRLStest.mat")
+  Wg_init = zeros(2,2)
+  cluster_weights <- data$cluster.weights
+  phiW <- data$phiW
+  tauijk <- data$tauijk
+  irls_res <- IRLS_MixFRHLP(cluster_weights, tauijk, phiW, Wg_init)
+  print(irls_res[[1]])
+  print(irls_res[[2]])
+}
+test_IRLS()
