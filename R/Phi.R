@@ -17,8 +17,8 @@ Phi <- setRefClass(
       }
 
       phi <- matrix(NA, length(x), order_max+1)
-      for (i in 1:(order_max+1)){
-        phi[,i] <- x^i # phi2w = [1 t t.^2 t.^3 t.^p;......;...]
+      for (i in 0:(order_max)){
+        phi[,i+1] <- x^i # phi2w = [1 t t.^2 t.^3 t.^p;......;...]
       }
 
       phiBeta <<- phi[,1:(p+1)]; # Matrice de regresseurs pour Beta

@@ -27,7 +27,7 @@ phiTest <- function(){
   mix <- MixModel(mixData,G,K,p,q)
 
   phi <- Phi$new()
-  phi$setPhiN(m$t,mix$p,mix$q, mix$n)
+  phi$setPhiN(mix$t,mix$p,mix$q, mix$n)
   return(phi)
 }
 phi <- phiTest()
