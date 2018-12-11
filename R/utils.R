@@ -78,7 +78,7 @@ IRLS_MixFRHLP <- function(cluster_weights, tauijk, phiW, Wg_init=NULL, verbose_I
     gw_old <- zeros(q,K-1)
 
     #Gradient
-    for (k in 1:K-1){
+    for (k in 1:(K-1)){
       gwk <- cluster_weights*(tauijk[,k] - piik_old[,k])
       for (qq in 1:q){
         vq <- phiW[,qq]
@@ -89,8 +89,8 @@ IRLS_MixFRHLP <- function(cluster_weights, tauijk, phiW, Wg_init=NULL, verbose_I
 
 
     #Hessienne
-    for (k in 1:K-1){
-      for (ell in 1:K-1){
+    for (k in 1:(K-1)){
+      for (ell in 1:(K-1)){
         delta_kl <- (k==ell)
         gwk <- cluster_weights * (piik_old[,k] * (ones(n,1)%*%delta_kl - piik_old[,ell]))
         Hkl <- zeros(q,q)
@@ -102,12 +102,12 @@ IRLS_MixFRHLP <- function(cluster_weights, tauijk, phiW, Wg_init=NULL, verbose_I
             Hkl[qqa,qqb] <- hwk
           }
         }
-        Hw_old[(k-1)*q+1 : k*q, (ell-1)*q+1 : ell*q] <- -Hkl
+        Hw_old[(((k-1)*q)+1) : (k*q), (((ell-1)*q)+1) : (ell*q)] <- -Hkl
       }
     }
 
     # si a priori gaussien sur W (lambda ~ 1e-9)
-    Hw_old <- Hw_old + lambda%*%I
+    Hw_old <- Hw_old + lambda*I
     gw_old = gw_old - lambda*as.vector(W_old)
 
     # Newton Raphson : W(c+1) = W(c) - H(W(c))^(-1)g(W(c))

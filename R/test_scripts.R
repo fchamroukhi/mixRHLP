@@ -168,8 +168,8 @@ testEStep <- function(){
   mixStats <- MixStats(mixModel, modelOptions)
   mixStats$EStep(mixModel, mixParam, modelOptions$variance_type)
 
-  print(dim(mixStats$h_ig))
-  print(mixStats$log_lik)
+  #print(dim(mixStats$h_ig))
+  #print(mixStats$log_lik)
 }
 testEStep()
 
@@ -182,13 +182,14 @@ testKmeans <- function(){
 
 
 test_IRLS <- function(){
+  #library(R.matlab)
   data<-readMat("data/tests/IRLStest.mat")
   Wg_init = zeros(2,2)
   cluster_weights <- data$cluster.weights
   phiW <- data$phiW
   tauijk <- data$tauijk
   irls_res <- IRLS_MixFRHLP(cluster_weights, tauijk, phiW, Wg_init)
-  print(irls_res[[1]])
-  print(irls_res[[2]])
+  #print(irls_res[[1]])
+  #print(irls_res[[2]])
 }
 test_IRLS()
