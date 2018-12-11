@@ -15,6 +15,7 @@ MixStats <- setRefClass(
     BIC="numeric",
     ICL="numeric",
     AIC="numeric",
+    cpu_time = "numeric",
     log_fg_xij="matrix",
     log_alphag_fg_xij="matrix",
     polynomials="array",
@@ -49,10 +50,33 @@ MixStats <- setRefClass(
     },
 
     #######
+    # compute the final solution stats
+    #######
+    computeStats = function(mixModel, mixParam, phi, cpu_time_all){
+      for (g in 1:mixModel$G){
+        polynomials[,,g] <<- phi$phiBeta[1:mixModel$m, ] %*% mixParam$betag[,,g]
+        weighted_polynomials[,,g] <<- mixParam$pi_jgk[,,g] %*% polynomials[,,g]
+        Ex_g[,g] <<- rowSums(weighted_polynomials[,,g])
+      }
+      Ex_g <<- Ex_g[1:mixModel$m,]
+      cpu_time <<- mean(cpu_time_all)
+      Psi <- c(as.vector(mixParam$alpha_g), as.vector(mixParam$Wg), as.vector(mixParam$betag), as.vector(mixParam$sigmag))
+      nu <- length(Psi)
+      BIC <<- log_lik - (nu*log(mixModel$n)/2)
+      AIC <<- log_lik - nu
+
+      cig_log_alphag_fg_xij <- (c_ig)*(log_alphag_fg_xij);
+      com_loglik <<- sum(rowSums(cig_log_alphag_fg_xij));
+
+      ICL <<- com_loglik - nu*log(mixModel$n)/2;
+
+    },
+
+    #######
     # EStep
     #######
 
-    EStep = function(mixModel, mixParam, variance_type){
+    EStep = function(mixModel, mixParam, phi, variance_type){
       for (g in 1:mixModel$G){
         alpha_g <- mixParam$alpha_g[g]
         beta_g <- mixParam$betag[,,g]
@@ -65,7 +89,7 @@ MixStats <- setRefClass(
             sgk <- mixParam$sigmag[g]
           }
           else{
-            sgk <- mixParam$sigmag[,g]
+            sgk <- mixParam$sigmag[k,g]
           }
           z <- ((mixModel$XR - phi$phiBeta %*% beta_gk)^2)/sgk
           log_pijgk_fgk_xij[,k] <- log(pi_jgk[,k]) - 0.5 * (log(2*pi) + log(sgk)) - 0.5 * z # pdf cond à c_i = g et z_i = k de xij
@@ -107,6 +131,7 @@ MixStats<-function(mixModel, options){
   BIC <- -Inf
   ICL <- -Inf
   AIC <- -Inf
+  cpu_time <- Inf
   log_fg_xij <- matrix(0, mixModel$n, mixModel$G)
   log_alphag_fg_xij <- matrix(0, mixModel$n, mixModel$G)
   polynomials <- array(NA, dim = c(mixModel$m, mixModel$K, mixModel$G))
@@ -114,6 +139,6 @@ MixStats<-function(mixModel, options){
   tau_ijgk <- array(0, dim = c(mixModel$n*mixModel$m, mixModel$K, mixModel$G))
   log_tau_ijgk <- array(0, dim = c(mixModel$n*mixModel$m, mixModel$K, mixModel$G))
 
-  new("MixStats", h_ig=h_ig, c_ig=c_ig, klas=klas, Ex_g=Ex_g, log_lik=log_lik, com_loglik=com_loglik, stored_loglik=stored_loglik, stored_com_loglik=stored_com_loglik, BIC=BIC, ICL=ICL, AIC=AIC, log_fg_xij=log_fg_xij,
-      log_alphag_fg_xij=log_alphag_fg_xij, polynomials=polynomials, weighted_polynomials=weighted_polynomials, tau_ijgk=tau_ijgk, log_tau_ijgk=log_tau_ijgk)
+  new("MixStats", h_ig=h_ig, c_ig=c_ig, klas=klas, Ex_g=Ex_g, log_lik=log_lik, com_loglik=com_loglik, stored_loglik=stored_loglik, stored_com_loglik=stored_com_loglik, BIC=BIC, ICL=ICL, AIC=AIC, cpu_time=cpu_time,
+      log_fg_xij=log_fg_xij, log_alphag_fg_xij=log_alphag_fg_xij, polynomials=polynomials, weighted_polynomials=weighted_polynomials, tau_ijgk=tau_ijgk, log_tau_ijgk=log_tau_ijgk)
 }

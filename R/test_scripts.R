@@ -166,7 +166,8 @@ testEStep <- function(){
   mixParam$initParam(mixModel, phi, modelOptions, try_algo = 1)
 
   mixStats <- MixStats(mixModel, modelOptions)
-  mixStats$EStep(mixModel, mixParam, modelOptions$variance_type)
+
+  mixStats$EStep(mixModel, mixParam, phi, modelOptions$variance_type)
 
   #print(dim(mixStats$h_ig))
   #print(mixStats$log_lik)

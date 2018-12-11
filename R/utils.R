@@ -120,22 +120,22 @@ IRLS_MixFRHLP <- function(cluster_weights, tauijk, phiW, Wg_init=NULL, verbose_I
     loglik <- problik[[2]]
     loglik <- loglik - lambda*(norm(as.vector(W_old),"2"))^2
 
-    # Verifier si Qw1(w^(c+1),w^(c))> Qw1(w^(c),w^(c))
-    #(adaptation) de Newton Raphson : W(c+1) = W(c) - pas*H(W)^(-1)*g(W)
-    pas <- 1
-    alpha <- 2
-
-    while(loglik < loglik_old){
-      pas <- pas/alpha # pas d'adaptation de l'algo Newton raphson
-      #recalcul du parametre W et de la loglik
-      #Hw_old = Hw_old + lambda*I;
-      w <- as.vector(W_old) - pas * solve(Hw_old)%*%gw_old
-      W = matrix(w,q,K-1)
-      problik <- modele_logit(W, phiW, tauijk, cluster_weights)
-      piik <- problik[[1]]
-      loglik <- problik[[2]]
-      loglik <- loglik - lambda*(norm(as.vector(W_old),"2"))^2
-    }
+    # # Verifier si Qw1(w^(c+1),w^(c))> Qw1(w^(c),w^(c))
+    # #(adaptation) de Newton Raphson : W(c+1) = W(c) - pas*H(W)^(-1)*g(W)
+    # pas <- 1
+    # alpha <- 2
+    #
+    # while(loglik < loglik_old){
+    #   pas <- pas/alpha # pas d'adaptation de l'algo Newton raphson
+    #   #recalcul du parametre W et de la loglik
+    #   #Hw_old = Hw_old + lambda*I;
+    #   w <- as.vector(W_old) - pas * solve(Hw_old)%*%gw_old
+    #   W = matrix(w,q,K-1)
+    #   problik <- modele_logit(W, phiW, tauijk, cluster_weights)
+    #   piik <- problik[[1]]
+    #   loglik <- problik[[2]]
+    #   loglik <- loglik - lambda*(norm(as.vector(W_old),"2"))^2
+    # }
 
     converge1 <- abs((loglik - loglik_old)/loglik_old) <= 1e-7
     converge2 <- abs(loglik - loglik_old) <= 1e-6
