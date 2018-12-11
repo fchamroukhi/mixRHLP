@@ -169,11 +169,17 @@ MixParam <- setRefClass(
             sigma_gk <- s/sum((cluster_weights%*%ones(1,mixModel$K))*tauijk)
           }
           else{
-            sigma_gk[k] <- sum((Xgk-phigk%*%beta_gk[,k])^2)/(sum(cluster_weights*segments_weights));
+            sigma_gk[k] <- colSums((Xgk-phigk%*%beta_gk[,k])^2)/(colSums(cluster_weights*segments_weights));
           }
         }
         betag[,,g] <<- beta_gk
-        sigmag[,g] <<- sigma_gk;
+        if (mixOptions$variance_type == variance_types$common){
+          sigmag[g] <<- sigma_gk;
+        }
+        else{
+          sigmag[,g] <<- sigma_gk;
+        }
+
 
         # Maximization w.r.t W
         #  IRLS : Regression logistique multinomiale pondérée par cluster

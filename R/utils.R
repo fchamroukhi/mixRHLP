@@ -41,7 +41,7 @@ drnorm <- function(n, d, mean, sd){
 lognormalize <- function(M){
   n <- nrow(M)
   d <- ncol(M)
-  a <- max.col(M)
+  a <- apply(M,1,max)
   return(M-repmat(a + log(rowSums(exp(M - repmat(a,1,d)))), 1, d))
 }
 
@@ -112,7 +112,7 @@ IRLS_MixFRHLP <- function(cluster_weights, tauijk, phiW, Wg_init=NULL, verbose_I
 
     # Newton Raphson : W(c+1) = W(c) - H(W(c))^(-1)g(W(c))
     w <- as.vector(W_old) - solve(Hw_old)%*%gw_old # [(q+1)x(K-1),1]
-    W <- matrix(w,q,K-1) #[(q+1)*(K-1)]
+    W <- matrix(w,q,(K-1)) #[(q+1)*(K-1)]
 
     # mise a jour des probas et de la loglik
     problik <- modele_logit(W, phiW, tauijk, cluster_weights)
@@ -190,8 +190,8 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
     }
   }
   else{
-    n <- nrow(Wg)
-    q <- nrow(Wg)
+    n <- nrow(phiW)
+    q <- ncol(phiW)
   }
 
   if (!is.null(Y)){
@@ -211,7 +211,7 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
   }
 
   MW <- phiW %*% Wg
-  maxm <- max.col(MW)
+  maxm <- apply(MW,1,max)
   MW <- MW - maxm %*% ones(1,K)
 
   expMW <- exp(MW)
@@ -223,16 +223,16 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
       loglik <- sum((Y*MW) - (Y*log(rowSums(expMW)%*%ones(1,K))))
     }
     else {
-      loglik <- sum((Gamma*(Y*MW)) - ((Gamma*Y)*log(rowSums(expMW)%*%ones(1,K))))
+      loglik <- sum(((Gamma*Y)*MW) - ((Gamma*Y)*log(rowSums(expMW)%*%ones(1,K))))
     }
 
     # todo: verify R computation of loglik gives nan
     if (is.nan(loglik)){
       MW <- phiW %*% Wg
       minm <- -745.1
-      MW <- max(MW, minm)
+      MW <- pmax(MW, minm)
       maxm <- 709.78
-      MW <- min(MW, maxm)
+      MW <- pmin(MW, maxm)
       expMW <- exp(MW)
 
       eps <- .Machine$double.eps
@@ -241,7 +241,7 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
         loglik <- sum((Y*MW) - (Y*log(rowSums(expMW)%*%ones(1,K)+eps)))
       }
       else {
-        loglik <- sum((Gamma*(Y*MW)) - ((Gamma*Y)*log(rowSums(expMW)%*%ones(1,K)+eps)))
+        loglik <- sum(((Gamma*Y)*MW) - ((Gamma*Y)*log(rowSums(expMW)%*%ones(1,K)+eps)))
       }
     }
     if (is.nan(loglik)){
