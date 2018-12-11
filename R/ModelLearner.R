@@ -77,7 +77,7 @@ EM <- function(mixModel, modelOptions){
 
 
   # FINISH computation of mixStatsSolution
-  mixStatsSolution$computeStats(mixModel, mixParam, phi, cpu_time_all)
+  #mixStatsSolution$computeStats(mixModel, mixParam, phi, cpu_time_all)
 
   return(list(mixParamSolution, mixStatsSolution))
 }

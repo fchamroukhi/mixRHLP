@@ -138,7 +138,7 @@ MixParam <- setRefClass(
     MStep = function(mixModel, mixStats, phi, mixOptions){
       alpha_g <<- t(colSums(mixStats$h_ig))/mixModel$n
       for (g in 1:mixModel$G){
-        temp <- repmat(mixStats$h_ig, 1, mixModel$m) # [m x n]
+        temp <- repmat(mixStats$h_ig[,g], 1, mixModel$m) # [m x n]
         cluster_weights <- matrix(t(temp), mixModel$m*mixModel$n, 1) # cluster_weights(:)% [mn x 1]
         tauijk <- mixStats$tau_ijgk[,,g] #[(nxm) x K]
 

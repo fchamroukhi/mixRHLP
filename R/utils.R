@@ -216,14 +216,14 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
 
   expMW <- exp(MW)
 
-  probas <- expMW / (apply(expMW[,1:K],1,sum) %*% ones(1,K))
+  probas <- expMW / (rowSums(expMW[,1:K]) %*% ones(1,K))
 
   if (!is.null(Y)){
     if (is.null(Gamma)) {
-      loglik <- sum(apply((Y*MW) - (Y*log(apply(expMW,1,sum)%*%ones(1,K))),1,sum))
+      loglik <- sum((Y*MW) - (Y*log(rowSums(expMW)%*%ones(1,K))))
     }
     else {
-      loglik <- sum(apply((Gamma*(Y*MW)) - ((Gamma*Y)*log(apply(expMW,1,sum)%*%ones(1,K))),1,sum))
+      loglik <- sum((Gamma*(Y*MW)) - ((Gamma*Y)*log(rowSums(expMW)%*%ones(1,K))))
     }
 
     # todo: verify R computation of loglik gives nan
@@ -235,13 +235,13 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
       MW <- min(MW, maxm)
       expMW <- exp(MW)
 
-      eps <- 2^(-52)
+      eps <- .Machine$double.eps
 
       if (is.null(Gamma)) {
-        loglik <- sum(apply((Y*MW) - (Y*log(apply(expMW,1,sum)%*%ones(1,K)+eps)),1,sum))
+        loglik <- sum((Y*MW) - (Y*log(rowSums(expMW)%*%ones(1,K)+eps)))
       }
       else {
-        loglik <- sum(apply((Gamma*(Y*MW)) - ((Gamma*Y)*log(apply(expMW,1,sum)%*%ones(1,K)+eps)),1,sum))
+        loglik <- sum((Gamma*(Y*MW)) - ((Gamma*Y)*log(rowSums(expMW)%*%ones(1,K)+eps)))
       }
     }
     if (is.nan(loglik)){
