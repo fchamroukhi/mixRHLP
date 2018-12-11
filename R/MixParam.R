@@ -57,7 +57,6 @@ MixParam <- setRefClass(
     initRegressionParam = function(Xg, g, K, p, phiBeta, variance_type, try_algo){
        n <- nrow(Xg)
        m <- ncol(Xg)
-        print(m)
        if (try_algo==1){
           # decoupage de l'echantillon (signal) en K segments
           zi <- round(m/K)-1
@@ -93,7 +92,7 @@ MixParam <- setRefClass(
          K_1 <- K
          for (k in 2:K) {
            K_1 <- K_1-1;
-           temp <- tk_init[k-1] + Lmin : m - K_1*Lmin;
+           temp <- (tk_init[k-1] + Lmin) : (m - (K_1*Lmin))
            ind <- sample(length(temp));
            tk_init[k] <- temp[ind[1]]
          }
