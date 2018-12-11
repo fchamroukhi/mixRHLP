@@ -163,9 +163,9 @@ MixParam <- setRefClass(
           #                 beta_gk(:,k) = inv(phiBeta'*W_gk*phiBeta)*phiBeta'*W_gk*X;
           #   Maximization w.r.t au sigma_gk :
           if (mixOptions$variance_type == variance_types$common){
-            sk <- sum((Xgk - phigk %*% beta_gk[,k])^2)
-            sk <- s+sk
-            sigma_gk <- s/sum((cluster_weights%*%ones(1,mixModel$K))*tauijk)
+            sk <- colSums((Xgk-phigk%*%beta_gk[,k])^2)
+            s <- s+sk
+            sigma_gk <- s/sum(colSums((cluster_weights%*%ones(1,mixModel$K))*tauijk))
           }
           else{
             sigma_gk[k] <- colSums((Xgk-phigk%*%beta_gk[,k])^2)/(colSums(cluster_weights*segments_weights));
@@ -173,7 +173,7 @@ MixParam <- setRefClass(
         }
         betag[,,g] <<- beta_gk
         if (mixOptions$variance_type == variance_types$common){
-          sigmag[g] <<- sigma_gk;
+          sigmag[g] <<- sigma_gk
         }
         else{
           sigmag[,g] <<- sigma_gk;
@@ -184,6 +184,7 @@ MixParam <- setRefClass(
         #  IRLS : Regression logistique multinomiale pondérée par cluster
         # setting of Wg[,,g] and pi_jgk
         Wg_init <- Wg[,,g]
+
         res_irls <- IRLS_MixFRHLP(cluster_weights, tauijk, phi$phiW, Wg_init, mixOptions$verbose_IRLS)
         Wg[,,g] <<- res_irls[[1]]
         piik <- res_irls[[2]]

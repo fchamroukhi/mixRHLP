@@ -18,7 +18,7 @@ threshold <- 1e-5
 verbose <- TRUE
 verbose_IRLS <- FALSE
 init_kmeans <- TRUE
-modelOptions <- ModelOptions(n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans, variance_types$free)
+modelOptions <- ModelOptions(n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans, variance_types$common)
 
 solution <- EM(mixModel, modelOptions)
 mixParamSolution <- solution[[1]]
