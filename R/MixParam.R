@@ -47,7 +47,7 @@ MixParam <- setRefClass(
             Xg <- mixModel$X[ind[(g-1)*round(mixModel$n/mixModel$G) +1 : g*round(mixModel$n/mixModel$G)],]
           }
           else{
-            Xg = mixModel$X[ind[(g-1)*round(n/G) +1 : length(mixModel$X)],]
+            Xg <- mixModel$X[ind[(g-1)*round(n/G) +1 : length(ind)],]
           }
           initRegressionParam(Xg, g, mixModel$K, mixModel$p, phi$phiBeta, mixOptions$variance_type, try_algo)
         }
@@ -57,7 +57,7 @@ MixParam <- setRefClass(
     initRegressionParam = function(Xg, g, K, p, phiBeta, variance_type, try_algo){
        n <- nrow(Xg)
        m <- ncol(Xg)
-
+        print(m)
        if (try_algo==1){
           # decoupage de l'echantillon (signal) en K segments
           zi <- round(m/K)-1
@@ -94,8 +94,8 @@ MixParam <- setRefClass(
          for (k in 2:K) {
            K_1 <- K_1-1;
            temp <- tk_init[k-1] + Lmin : m - K_1*Lmin;
-           ind <- randperm(length(temp));
-           tk_init[k] <- temp(ind(1))
+           ind <- sample(length(temp));
+           tk_init[k] <- temp[ind[1]]
          }
          tk_init[K+1] <- m
 

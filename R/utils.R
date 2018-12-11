@@ -226,7 +226,6 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
       loglik <- sum(((Gamma*Y)*MW) - ((Gamma*Y)*log(rowSums(expMW)%*%ones(1,K))))
     }
 
-    # todo: verify R computation of loglik gives nan
     if (is.nan(loglik)){
       MW <- phiW %*% Wg
       minm <- -745.1
@@ -249,7 +248,7 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
     }
   }
   else{
-    loglik <- list()
+    loglik <- c()
   }
 
   return(list(probas, loglik))

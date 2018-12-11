@@ -12,7 +12,7 @@ p <- 1; #dimension de beta (ordre de reg polynomiale)
 q <- 1; #dimension de w (ordre de reg logistique)
 mixModel <- MixModel(mixData,G,K,p,q)
 
-n_tries=1
+n_tries=2
 max_iter=1000
 threshold <- 1e-5
 verbose <- TRUE
@@ -21,3 +21,5 @@ init_kmeans <- TRUE
 modelOptions <- ModelOptions(n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans, variance_types$free)
 
 solution <- EM(mixModel, modelOptions)
+mixParamSolution <- solution[[1]]
+mixStatsSolution <- solution[[2]]

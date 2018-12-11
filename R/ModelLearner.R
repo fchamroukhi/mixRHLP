@@ -11,7 +11,7 @@ EM <- function(mixModel, modelOptions){
   top <- 0
   try_EM <- 0
   best_loglik <- -Inf
-  cpu_time_all <- list()
+  cpu_time_all <- c()
 
   while(try_EM < modelOptions$n_tries){
     try_EM <- try_EM+1
@@ -77,7 +77,7 @@ EM <- function(mixModel, modelOptions){
 
 
   # FINISH computation of mixStatsSolution
-  #mixStatsSolution$computeStats(mixModel, mixParam, phi, cpu_time_all)
+  mixStatsSolution$computeStats(mixModel, mixParamSolution, phi, cpu_time_all)
 
   return(list(mixParamSolution, mixStatsSolution))
 }

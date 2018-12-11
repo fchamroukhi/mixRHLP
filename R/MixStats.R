@@ -55,7 +55,7 @@ MixStats <- setRefClass(
     computeStats = function(mixModel, mixParam, phi, cpu_time_all){
       for (g in 1:mixModel$G){
         polynomials[,,g] <<- phi$phiBeta[1:mixModel$m, ] %*% mixParam$betag[,,g]
-        weighted_polynomials[,,g] <<- mixParam$pi_jgk[,,g] %*% polynomials[,,g]
+        weighted_polynomials[,,g] <<- mixParam$pi_jgk[,,g] * polynomials[,,g]
         Ex_g[,g] <<- rowSums(weighted_polynomials[,,g])
       }
       Ex_g <<- Ex_g[1:mixModel$m,]
@@ -123,7 +123,7 @@ MixStats<-function(mixModel, options){
   h_ig <- matrix(NA,mixModel$n, mixModel$G)
   c_ig <- matrix(NA,mixModel$n, mixModel$G)
   klas <- matrix(NA, mixModel$n,1)
-  Ex_g <- matrix(NA,mixModel$n, mixModel$G)
+  Ex_g <- matrix(NA,mixModel$m, mixModel$G)
   log_lik <- -Inf
   com_loglik <- -Inf
   stored_loglik <- list()
