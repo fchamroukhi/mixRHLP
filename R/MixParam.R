@@ -185,6 +185,10 @@ MixParam <- setRefClass(
         # setting of Wg[,,g] and pi_jgk
         Wg_init <- Wg[,,g]
 
+        if (!is.matrix(Wg_init)){
+          Wg_init<-matrix(Wg_init)
+        }
+
         res_irls <- IRLS_MixFRHLP(cluster_weights, tauijk, phi$phiW, Wg_init, mixOptions$verbose_IRLS)
         Wg[,,g] <<- res_irls[[1]]
         piik <- res_irls[[2]]
@@ -193,7 +197,6 @@ MixParam <- setRefClass(
       }
 
     }
-
 
   )
 )
