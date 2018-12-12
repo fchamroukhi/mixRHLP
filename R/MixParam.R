@@ -201,7 +201,7 @@ MixParam <- setRefClass(
 MixParam<-function(mixModel, options){
   #mixModel <- mixModel
   Wg <- array(0,dim=c(mixModel$q+1, mixModel$K-1, mixModel$G))
-  betag <- array(NA, dim=c(mixModel$q+1, mixModel$K, mixModel$G))
+  betag <- array(NA, dim=c(mixModel$p+1, mixModel$K, mixModel$G))
   if (options$variance_type == variance_types$common){
     sigmag <- matrix(NA, mixModel$G)
   }
