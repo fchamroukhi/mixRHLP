@@ -140,7 +140,9 @@ MixParam <- setRefClass(
         temp <- repmat(mixStats$h_ig[,g], 1, mixModel$m) # [m x n]
         cluster_weights <- matrix(t(temp), mixModel$m*mixModel$n, 1) # cluster_weights(:)% [mn x 1]
         tauijk <- mixStats$tau_ijgk[,,g] #[(nxm) x K]
-
+        if (!is.matrix(tauijk)){
+          tauijk <- matrix(tauijk)
+        }
         if (mixOptions$variance_type == variance_types$common){
           s <- 0
         }
@@ -190,6 +192,7 @@ MixParam <- setRefClass(
         }
 
         res_irls <- IRLS_MixFRHLP(cluster_weights, tauijk, phi$phiW, Wg_init, mixOptions$verbose_IRLS)
+
         Wg[,,g] <<- res_irls[[1]]
         piik <- res_irls[[2]]
         pi_jgk[,,g] <<- repmat(piik[1:mixModel$m,], mixModel$n, 1)

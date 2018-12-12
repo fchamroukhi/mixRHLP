@@ -55,10 +55,25 @@ MixStats <- setRefClass(
     computeStats = function(mixModel, mixParam, phi, cpu_time_all){
       for (g in 1:mixModel$G){
         polynomials[,,g] <<- phi$phiBeta[1:mixModel$m, ] %*% mixParam$betag[,,g]
-        weighted_polynomials[,,g] <<- mixParam$pi_jgk[,,g] * polynomials[,,g]
-        Ex_g[,g] <<- rowSums(weighted_polynomials[,,g])
+        if (K!=1 && G!=1){
+          weighted_polynomials[,,g] <<- mixParam$pi_jgk[,,g] * polynomials[,,g]
+          Ex_g[,g] <<- rowSums(weighted_polynomials[,,g])
+        }
+        else if (K==1 && G!=1){
+          weighted_polynomials[,,g] <<- mixParam$pi_jgk[,g] * polynomials[,,g]
+          Ex_g[,g] <<- weighted_polynomials[,,g]
+        }
+        else if (K!=1 && G==1){
+          weighted_polynomials[,,g] <<- mixParam$pi_jgk * polynomials[,,g]
+          Ex_g[,g] <<- matrix(rowSums(weighted_polynomials[,,g]))
+        }
+        else{ #(K==1 && G==1)
+          weighted_polynomials[,,g] <<- mixParam$pi_jgk * polynomials[,,g]
+          Ex_g[,g] <<- weighted_polynomials[,,g]
+        }
       }
-      Ex_g <<- Ex_g[1:mixModel$m,]
+
+      Ex_g <<- matrix(Ex_g, ncol = 1, nrow = mixModel$m)
       cpu_time <<- mean(cpu_time_all)
       Psi <- c(as.vector(mixParam$alpha_g), as.vector(mixParam$Wg), as.vector(mixParam$betag), as.vector(mixParam$sigmag))
       nu <- length(Psi)
@@ -82,6 +97,10 @@ MixStats <- setRefClass(
         beta_g <- mixParam$betag[,,g]
         Wg <- mixParam$Wg[,,g]
         pi_jgk <- mixParam$pi_jgk[,,g]
+        if (!is.matrix(beta_g)){
+          beta_g <- matrix(beta_g)
+          pi_jgk <- matrix(pi_jgk)
+        }
         log_pijgk_fgk_xij <- zeros(mixModel$n*mixModel$m, mixModel$K)
         for (k in 1:mixModel$K){
           beta_gk <- beta_g[,k]

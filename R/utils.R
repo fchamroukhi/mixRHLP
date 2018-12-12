@@ -39,6 +39,9 @@ drnorm <- function(n, d, mean, sd){
 
 
 lognormalize <- function(M){
+  if (!is.matrix(M)){
+    M <- matrix(M)
+  }
   n <- nrow(M)
   d <- ncol(M)
   a <- apply(M,1,max)
@@ -49,11 +52,22 @@ IRLS_MixFRHLP <- function(cluster_weights, tauijk, phiW, Wg_init=NULL, verbose_I
   K <- ncol(tauijk)
   n <- nrow(phiW)
   q <- ncol(phiW)
+
+  if (K==1){
+    W <- matrix( nrow = (q+1), ncol = 0)
+    piik <- ones(nrow(cluster_weights), 1)
+    reg_irls <- 0
+    LL <- 0
+    loglik <- 0
+    return(list(W, piik, reg_irls, LL, loglik))
+  }
+
   if (is.null(Wg_init)){
     Wg_init <- zeros(q,K-1)
   }
   lambda <- 1e-9
   I <- diag(q*(K-1))
+
 
   #Initialisation du IRLS (iter = 0)
   W_old <- Wg_init
@@ -66,7 +80,7 @@ IRLS_MixFRHLP <- function(cluster_weights, tauijk, phiW, Wg_init=NULL, verbose_I
   iter <- 0
   converge <- FALSE
   max_iter <- 300
-  LL <- list()
+  LL <- c()
   if (verbose_IRLS){
     message("IRLS : Iteration ", iter, "Log-likehood : ", loglik_old)
   }
@@ -215,8 +229,13 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
   MW <- MW - maxm %*% ones(1,K)
 
   expMW <- exp(MW)
+  if (ncol(expMW)==1){
+    probas <- expMW / (expMW[,1:K] %*% ones(1,K))
+  }
+  else{
+    probas <- expMW / (rowSums(expMW[,1:K]) %*% ones(1,K))
+  }
 
-  probas <- expMW / (rowSums(expMW[,1:K]) %*% ones(1,K))
 
   if (!is.null(Y)){
     if (is.null(Gamma)) {
@@ -253,5 +272,6 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
 
   return(list(probas, loglik))
 }
+
 
 
