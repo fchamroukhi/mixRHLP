@@ -20,6 +20,16 @@ verbose_IRLS <- FALSE
 init_kmeans <- TRUE
 modelOptions <- ModelOptions(n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans, variance_types$free)
 
+####
+# EM Algorithm
+####
 solution <- EM(mixModel, modelOptions)
+mixParamSolution <- solution[[1]]
+mixStatsSolution <- solution[[2]]
+
+####
+# CEM Algorithm
+####
+solution <- CEM(mixModel, modelOptions)
 mixParamSolution <- solution[[1]]
 mixStatsSolution <- solution[[2]]

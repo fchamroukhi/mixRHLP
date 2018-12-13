@@ -48,14 +48,14 @@ lognormalize <- function(M){
   return(M-repmat(a + log(rowSums(exp(M - repmat(a,1,d)))), 1, d))
 }
 
-IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verbose_IRLS=FALSE){
+IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verbose_IRLS=FALSE, piik_len = NULL){
   K <- ncol(tauijk)
   n <- nrow(phiW)
   q <- ncol(phiW)
 
   if (K==1){
     W <- matrix( nrow = (q+1), ncol = 0)
-    piik <- ones(nrow(cluster_weights), 1)
+    piik <- ones(piik_len, 1)
     reg_irls <- 0
     LL <- 0
     loglik <- 0

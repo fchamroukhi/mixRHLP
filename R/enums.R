@@ -5,4 +5,4 @@ enum <- function(...) {
 }
 
 variance_types <- enum(free, common)
-algorithms <- enum(em, cem)
+#algorithms <- enum(em, cem)

@@ -197,7 +197,7 @@ MixParam <- setRefClass(
 
         #todo: problem empty clusters
 
-        res_irls <- IRLS_MixFRHLP(tauijk, phi$phiW[cluster_labels==g,], Wg_init, verbose_IRLS=mixOptions$verbose_IRLS)
+        res_irls <- IRLS_MixFRHLP(tauijk, phi$phiW[cluster_labels==g,], Wg_init, verbose_IRLS=mixOptions$verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
 
         Wg[,,g] <<- res_irls[[1]]
         piik <- res_irls[[2]]
@@ -264,7 +264,7 @@ MixParam <- setRefClass(
           Wg_init<-matrix(Wg_init)
         }
 
-        res_irls <- IRLS_MixFRHLP(tauijk, phi$phiW, Wg_init, cluster_weights, mixOptions$verbose_IRLS)
+        res_irls <- IRLS_MixFRHLP(tauijk, phi$phiW, Wg_init, cluster_weights, mixOptions$verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
 
         Wg[,,g] <<- res_irls[[1]]
         piik <- res_irls[[2]]
