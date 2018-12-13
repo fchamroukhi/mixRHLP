@@ -87,6 +87,17 @@ MixStats <- setRefClass(
 
     },
 
+    CStep = function(reg_irls){
+      #CStep
+      h_ig <<- lognormalize(log_alphag_fg_xij)
+
+      MAP() # setting klas and c_ig
+
+      # Compute the optimized criterion
+      cig_log_alphag_fg_xij <- (c_ig)*log_alphag_fg_xij
+      com_loglik <<- sum(cig_log_alphag_fg_xij) +  reg_irls
+    },
+
     #######
     # EStep
     #######
