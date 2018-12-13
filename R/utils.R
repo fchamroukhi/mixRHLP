@@ -48,7 +48,7 @@ lognormalize <- function(M){
   return(M-repmat(a + log(rowSums(exp(M - repmat(a,1,d)))), 1, d))
 }
 
-IRLS_MixFRHLP <- function(cluster_weights, tauijk, phiW, Wg_init=NULL, verbose_IRLS=FALSE){
+IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verbose_IRLS=FALSE){
   K <- ncol(tauijk)
   n <- nrow(phiW)
   q <- ncol(phiW)
@@ -93,7 +93,13 @@ IRLS_MixFRHLP <- function(cluster_weights, tauijk, phiW, Wg_init=NULL, verbose_I
 
     #Gradient
     for (k in 1:(K-1)){
-      gwk <- cluster_weights*(tauijk[,k] - piik_old[,k])
+      if (is.null(cluster_weights)){
+        gwk <- tauijk[,k] - piik_old[,k]
+      }
+      else{
+        gwk <- cluster_weights*(tauijk[,k] - piik_old[,k])
+      }
+
       for (qq in 1:q){
         vq <- phiW[,qq]
         gw_old[qq,k] <- t(gwk) %*% vq
@@ -106,7 +112,13 @@ IRLS_MixFRHLP <- function(cluster_weights, tauijk, phiW, Wg_init=NULL, verbose_I
     for (k in 1:(K-1)){
       for (ell in 1:(K-1)){
         delta_kl <- (k==ell)
-        gwk <- cluster_weights * (piik_old[,k] * (ones(n,1)%*%delta_kl - piik_old[,ell]))
+        if (is.null(cluster_weights)){
+          gwk <- piik_old[,k] * (ones(n,1)%*%delta_kl - piik_old[,ell])
+        }
+        else{
+          gwk <- cluster_weights * (piik_old[,k] * (ones(n,1)%*%delta_kl - piik_old[,ell]))
+        }
+
         Hkl <- zeros(q,q)
         for (qqa in 1:q){
           vqa <- phiW[,qqa]
@@ -187,7 +199,7 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
   #W - Wg
   #M - phiW
   #Y - ?
-  #Gamma - ?
+  #Gamma - cluster_weights
   if (!is.null(Y)) {
     n1 <- nrow(Y)
     K <- ncol(Y)
