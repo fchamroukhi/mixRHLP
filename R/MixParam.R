@@ -133,6 +133,79 @@ MixParam <- setRefClass(
        }
     },
 
+    CMStep = function(mixModel, mixStats, phi, mixOptions){
+      #MStep for CEM algorithm
+      alpha_g <<- t(colSums(mixStats$c_ig))/mixModel$n
+      # Maximization w.r.t betagk et sigmagk
+      cluster_labels =  t(repmat(klas,1,m)) # [m x n]
+      cluster_labels = as.vector(cluster_labels)
+
+      for (g in 1:mixModel$G){
+        Xg = mixModel$XR[cluster_labels==g,] # cluster g (found from a hard clustering)
+        tauijk <- mixStats$tau_ijgk[cluster_labels==g,,g] #[(ng xm) x K]
+        if (!is.matrix(tauijk)){
+          tauijk <- matrix(tauijk)
+        }
+
+        if (mixOptions$variance_type == variance_types$common){
+          s <- 0
+        }
+        else{
+          sigma_gk <- zeros(mixModel$K, 1)
+        }
+
+        beta_gk <- matrix(NA, mixModel$p+1, mixModel$K)
+
+        for (k in 1:mixModel$K){
+          segments_weights <- tauijk[,k] # poids du kieme segment   pour le cluster g
+          # poids pour avoir K segments floues du gieme cluster flou
+          phigk <- (sqrt(segments_weights) %*% ones(1,mixModel$p+1))*phi$phiBeta[cluster_labels==g,] #[(ng*m)*(p+1)]
+          Xgk <- sqrt(segments_weights) * Xg
+
+          # maximization w.r.t beta_gk: Weighted least squares
+          beta_gk[,k] <- solve(t(phigk)%*%phigk + .Machine$double.eps*diag(p+1))%*%t(phigk)%*%Xgk # Maximization w.r.t betagk
+
+          #    the same as
+          #                 W_gk = diag(cluster_weights.*segment_weights);
+          #                 beta_gk(:,k) = inv(phiBeta'*W_gk*phiBeta)*phiBeta'*W_gk*X;
+          #   Maximization w.r.t au sigma_gk :
+          if (mixOptions$variance_type == variance_types$common){
+            sk <- colSums((Xgk-phigk%*%beta_gk[,k])^2)
+            s <- s+sk
+            sigma_gk <- s/sum(tauijk)
+          }
+          else{
+            sigma_gk[k] <- colSums((Xgk-phigk%*%beta_gk[,k])^2)/(sum(segments_weights));
+          }
+        }
+
+        betag[,,g] <<- beta_gk
+        if (mixOptions$variance_type == variance_types$common){
+          sigmag[g] <<- sigma_gk
+        }
+        else{
+          sigmag[,g] <<- sigma_gk;
+        }
+
+        # Maximization w.r.t W
+        #  IRLS : Regression logistique multinomiale pondérée par cluster
+        # setting of Wg[,,g] and pi_jgk
+        Wg_init <- Wg[,,g]
+        if (!is.matrix(Wg_init)){
+          Wg_init<-matrix(Wg_init)
+        }
+
+        #todo: problem empty clusters
+
+        res_irls <- IRLS_MixFRHLP(tauijk, phi$phiW[cluster_labels==g,], Wg_init, mixOptions$verbose_IRLS)
+
+        Wg[,,g] <<- res_irls[[1]]
+        piik <- res_irls[[2]]
+        pi_jgk[,,g] <<- repmat(piik[1:mixModel$m,], mixModel$n, 1)
+        reg_irls <- res_irls[[3]]
+      }
+      return(reg_irls)
+    },
 
     MStep = function(mixModel, mixStats, phi, mixOptions){
       alpha_g <<- t(colSums(mixStats$h_ig))/mixModel$n
@@ -191,7 +264,7 @@ MixParam <- setRefClass(
           Wg_init<-matrix(Wg_init)
         }
 
-        res_irls <- IRLS_MixFRHLP(cluster_weights, tauijk, phi$phiW, Wg_init, mixOptions$verbose_IRLS)
+        res_irls <- IRLS_MixFRHLP(tauijk, phi$phiW, Wg_init, cluster_weights, mixOptions$verbose_IRLS)
 
         Wg[,,g] <<- res_irls[[1]]
         piik <- res_irls[[2]]
