@@ -137,8 +137,8 @@ MixParam <- setRefClass(
       #MStep for CEM algorithm
       alpha_g <<- t(colSums(mixStats$c_ig))/mixModel$n
       # Maximization w.r.t betagk et sigmagk
-      cluster_labels =  t(repmat(klas,1,m)) # [m x n]
-      cluster_labels = as.vector(cluster_labels)
+      cluster_labels <-  t(repmat(mixStats$klas,1,mixModel$m)) # [m x n]
+      cluster_labels <- as.vector(cluster_labels)
 
       for (g in 1:mixModel$G){
         Xg = mixModel$XR[cluster_labels==g,] # cluster g (found from a hard clustering)
@@ -197,7 +197,7 @@ MixParam <- setRefClass(
 
         #todo: problem empty clusters
 
-        res_irls <- IRLS_MixFRHLP(tauijk, phi$phiW[cluster_labels==g,], Wg_init, mixOptions$verbose_IRLS)
+        res_irls <- IRLS_MixFRHLP(tauijk, phi$phiW[cluster_labels==g,], Wg_init, verbose_IRLS=mixOptions$verbose_IRLS)
 
         Wg[,,g] <<- res_irls[[1]]
         piik <- res_irls[[2]]
