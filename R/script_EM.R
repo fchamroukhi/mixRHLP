@@ -4,6 +4,8 @@ source("R/MixModel.R")
 source("R/ModelOptions.R")
 source("R/ModelLearner.R")
 
+
+
 mixData <- MyData$new()
 mixData$setData("data/generated_data_1.txt")
 G <- 3; # nombre de clusters
@@ -26,10 +28,12 @@ modelOptions <- ModelOptions(n_tries, max_iter, threshold, verbose, verbose_IRLS
 solution <- EM(mixModel, modelOptions)
 mixParamSolution <- solution[[1]]
 mixStatsSolution <- solution[[2]]
+mixStatsSolution$showDataClusterSegmentation(mixModel, mixParamSolution)
 
 ####
 # CEM Algorithm
 ####
-solution <- CEM(mixModel, modelOptions)
-mixParamSolution <- solution[[1]]
-mixStatsSolution <- solution[[2]]
+#solution <- CEM(mixModel, modelOptions)
+#mixParamSolution <- solution[[1]]
+#mixStatsSolution <- solution[[2]]
+

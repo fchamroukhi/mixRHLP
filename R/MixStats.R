@@ -22,6 +22,61 @@ MixStats <- setRefClass(
     weighted_polynomials="array"
   ),
   methods=list(
+    showDataClusterSegmentation = function(mixModel, mixParamSolution){
+
+      t <- seq(0,mixModel$m-1)
+      colors = c('red','blue','green', 'aquamarine', 'bisque3', 'cyan', 'darkorange', 'darkorchid', 'gold')
+      colors_cluster_means = c('red','blue','green', 'aquamarine', 'bisque3', 'cyan', 'darkorange', 'darkorchid', 'gold')
+
+      par(mfrow=c(1,1))
+      for (g in 1:mixModel$G){
+        cluster_g = mixModel$X[klas==g,]
+
+        if (g==1){
+          plot(t, t(cluster_g)[,1], type = 'l', col=colors[g], xlab='Time', ylab = 'y')
+        }
+        else{
+          lines(t, t(cluster_g)[,1], type = 'l', col=colors[g])
+        }
+
+        for (i in 1:nrow(cluster_g)){
+          #print(colors[i])
+          lines(t, t(cluster_g)[,i], col=colors[g])
+        }
+
+      }
+
+      for(g in 1:mixModel$G){
+        lines(t,Ex_g[,g], col=colors_cluster_means[g], lwd=5)
+      }
+
+
+      ##########################################################################"
+      ##########################################################################
+      ##########################################################################
+
+      for (g in 1:mixModel$G){
+        par(mfrow=c(2,1))
+        cluster_g = mixModel$X[klas==g,]
+        plot(t, t(cluster_g)[,1], type = 'l', col=colors[g], ylab = 'y')
+        for (k in 1:K){
+          lines(t,polynomials[,k,g], lty =2 , col="black",lwd=1)
+        }
+        lines(t,Ex_g[,g], col=colors_cluster_means[g], lwd=5)
+
+        for (k in 1:mixModel$K){
+          if (k==1){
+            plot(t,mixParamSolution$pi_jgk[1:mixModel$m,k,g], xlab='Time', ylab = 'Logistic proportions', type = "l", lwd=2, col=colors_cluster_means[k])
+          }
+          else{
+            lines(t,mixParamSolution$pi_jgk[1:mixModel$m,k,g] , lwd=2, col=colors_cluster_means[k])
+          }
+        }
+      }
+
+
+    },
+
     MAP = function(){
       "
       calcule une partition d'un echantillon par la regle du Maximum A Posteriori à partir des probabilites a posteriori
@@ -73,7 +128,7 @@ MixStats <- setRefClass(
         }
       }
 
-      Ex_g <<- matrix(Ex_g, ncol = 1, nrow = mixModel$m)
+      Ex_g <<- matrix(Ex_g, nrow = mixModel$m)
       cpu_time <<- mean(cpu_time_all)
       Psi <- c(as.vector(mixParam$alpha_g), as.vector(mixParam$Wg), as.vector(mixParam$betag), as.vector(mixParam$sigmag))
       nu <- length(Psi)
@@ -145,6 +200,7 @@ MixStats <- setRefClass(
 
       log_lik <<- sum(log(rowSums(exp(log_alphag_fg_xij))))
     }
+
   )
 )
 
