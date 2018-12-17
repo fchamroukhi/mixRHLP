@@ -181,15 +181,14 @@ testKmeans <- function(){
 }
 #testKmeans()
 
-
 test_IRLS <- function(){
-  #library(R.matlab)
+  library(R.matlab)
   data<-readMat("data/tests/IRLStest.mat")
   Wg_init = zeros(2,2)
   cluster_weights <- data$cluster.weights
   phiW <- data$phiW
   tauijk <- data$tauijk
-  irls_res <- IRLS_MixFRHLP(cluster_weights, tauijk, phiW, Wg_init)
+  irls_res <- IRLS_MixFRHLP(tauijk, phiW, Wg_init, cluster_weights)
   #print(irls_res[[1]])
   #print(irls_res[[2]])
 }
