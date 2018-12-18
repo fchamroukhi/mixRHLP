@@ -144,7 +144,7 @@ MixStats <- setRefClass(
 
     CStep = function(reg_irls){
       #CStep
-      h_ig <<- lognormalize(log_alphag_fg_xij)
+      h_ig <<- exp(lognormalize(log_alphag_fg_xij))
 
       MAP() # setting klas and c_ig
 
