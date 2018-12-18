@@ -41,8 +41,8 @@ testModelCreation <- function(){
   q <- 1; #dimension de w (ordre de reg logistique)
   mix <- MixModel(mixData,G,K,p,q)
 
-  n_tries=1
-  max_iter=1000
+  n_tries <- 1
+  max_iter <- 1000
   threshold <- 1e-5
   verbose <- TRUE
   verbose_IRLS <- TRUE

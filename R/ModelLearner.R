@@ -165,9 +165,6 @@ CEM <- function(mixModel, modelOptions){
     }
   }
 
-  # Computation of c_ig the hard partition of the curves and klas
-  mixStatsSolution$MAP()
-
   if (modelOptions$n_tries > 1){
     message("max value: ", mixStatsSolution$com_loglik)
   }
