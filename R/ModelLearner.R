@@ -121,7 +121,13 @@ CEM <- function(mixModel, modelOptions){
     while(!converge && (iter <= modelOptions$max_iter)){
       mixStats$EStep(mixModel, mixParam, phi, modelOptions$variance_type)
       mixStats$CStep(reg_irls)
-      reg_irls <- mixParam$CMStep(mixModel, mixStats, phi, modelOptions)
+      res <- mixParam$CMStep(mixModel, mixStats, phi, modelOptions)
+      reg_irls = res[[1]]
+      good_segmentation = res[[2]]
+      if (good_segmentation==FALSE){
+        try_EM <- try_EM-1
+        break # try one more time CEM
+      }
 
       # FIN EM
 

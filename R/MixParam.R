@@ -134,6 +134,7 @@ MixParam <- setRefClass(
     },
 
     CMStep = function(mixModel, mixStats, phi, mixOptions){
+      good_segmentation = TRUE
       #MStep for CEM algorithm
       alpha_g <<- t(colSums(mixStats$c_ig))/mixModel$n
       # Maximization w.r.t betagk et sigmagk
@@ -175,7 +176,11 @@ MixParam <- setRefClass(
             sigma_gk <- s/sum(tauijk)
           }
           else{
-            sigma_gk[k] <- colSums((Xgk-phigk%*%beta_gk[,k])^2)/(sum(segments_weights));
+            sigma_gk[k] <- colSums((Xgk-phigk%*%beta_gk[,k])^2)/(sum(segments_weights))
+            if((sum(segments_weights)==0)){
+              good_segmentation = FALSE
+              return(list(0,good_segmentation))
+            }
           }
         }
 
@@ -204,7 +209,7 @@ MixParam <- setRefClass(
         pi_jgk[,,g] <<- repmat(piik[1:mixModel$m,], mixModel$n, 1)
         reg_irls <- res_irls[[3]]
       }
-      return(reg_irls)
+      return(list(reg_irls, good_segmentation))
     },
 
     MStep = function(mixModel, mixStats, phi, mixOptions){

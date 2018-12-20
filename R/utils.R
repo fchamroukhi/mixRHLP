@@ -145,8 +145,8 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
     loglik <- problik[[2]]
     loglik <- loglik - lambda*(norm(as.vector(W_old),"2"))^2
 
-    # Verifier si Qw1(w^(c+1),w^(c))> Qw1(w^(c),w^(c))
-    #(adaptation) de Newton Raphson : W(c+1) = W(c) - pas*H(W)^(-1)*g(W)
+    # # Verifier si Qw1(w^(c+1),w^(c))> Qw1(w^(c),w^(c))
+    # # (adaptation) de Newton Raphson : W(c+1) = W(c) - pas*H(W)^(-1)*g(W)
     # pas <- 1
     # alpha <- 2
     #
