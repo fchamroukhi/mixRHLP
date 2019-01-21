@@ -30,14 +30,14 @@ MixParam <- setRefClass(
 
     initParam = function(mixModel, phi, mixOptions, try_algo){
       alpha_g <<- 1/(mixModel$G * ones(mixModel$G, 1))
-      init_hlp(mixModel, phi$phiW, try_algo) # setting Wg and pi_jgk
+      init_hlp(mixModel, phi$Xw, try_algo) # setting Wg and pi_jgk
       if (mixOptions$init_kmeans){
         # run k means
         kmeans_res <- kmeans(mixModel$X, iter.max = 400, centers=mixModel$G, nstart=20, trace=FALSE)
         klas <- kmeans_res$cluster
         for (g in 1:mixModel$G){
           Xg <- mixModel$X[klas==g,]
-          initRegressionParam(Xg, g, mixModel$K, mixModel$p, phi$phiBeta, mixOptions$variance_type, try_algo)
+          initRegressionParam(Xg, g, mixModel$K, mixModel$p, phi$XBeta, mixOptions$variance_type, try_algo)
         }
       }
       else{
@@ -49,7 +49,7 @@ MixParam <- setRefClass(
           else{
             Xg <- mixModel$X[ind[(g-1)*round(n/G) +1 : length(ind)],]
           }
-          initRegressionParam(Xg, g, mixModel$K, mixModel$p, phi$phiBeta, mixOptions$variance_type, try_algo)
+          initRegressionParam(Xg, g, mixModel$K, mixModel$p, phi$XBeta, mixOptions$variance_type, try_algo)
         }
       }
     },
@@ -160,7 +160,7 @@ MixParam <- setRefClass(
         for (k in 1:mixModel$K){
           segments_weights <- tauijk[,k] # poids du kieme segment   pour le cluster g
           # poids pour avoir K segments floues du gieme cluster flou
-          phigk <- (sqrt(segments_weights) %*% ones(1,mixModel$p+1))*phi$phiBeta[cluster_labels==g,] #[(ng*m)*(p+1)]
+          phigk <- (sqrt(segments_weights) %*% ones(1,mixModel$p+1))*phi$XBeta[cluster_labels==g,] #[(ng*m)*(p+1)]
           Xgk <- sqrt(segments_weights) * Xg
 
           # maximization w.r.t beta_gk: Weighted least squares
@@ -202,7 +202,7 @@ MixParam <- setRefClass(
 
         #todo: problem empty clusters
 
-        res_irls <- IRLS_MixFRHLP(tauijk, phi$phiW[cluster_labels==g,], Wg_init, verbose_IRLS=mixOptions$verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
+        res_irls <- IRLS_MixFRHLP(tauijk, phi$Xw[cluster_labels==g,], Wg_init, verbose_IRLS=mixOptions$verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
 
         Wg[,,g] <<- res_irls[[1]]
         piik <- res_irls[[2]]
@@ -232,7 +232,7 @@ MixParam <- setRefClass(
         for (k in 1:mixModel$K){
           segments_weights <- tauijk[,k] # poids du kieme segment   pour le cluster g
           # poids pour avoir K segments floues du gieme cluster flou
-          phigk <- (sqrt(cluster_weights * segments_weights) %*% ones(1,mixModel$p+1))*phi$phiBeta #[(n*m)*(p+1)]
+          phigk <- (sqrt(cluster_weights * segments_weights) %*% ones(1,mixModel$p+1))*phi$XBeta #[(n*m)*(p+1)]
           Xgk <- sqrt(cluster_weights * segments_weights) * mixModel$XR
 
           # maximization w.r.t beta_gk: Weighted least squares
@@ -269,7 +269,7 @@ MixParam <- setRefClass(
           Wg_init<-matrix(Wg_init)
         }
 
-        res_irls <- IRLS_MixFRHLP(tauijk, phi$phiW, Wg_init, cluster_weights, mixOptions$verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
+        res_irls <- IRLS_MixFRHLP(tauijk, phi$Xw, Wg_init, cluster_weights, mixOptions$verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
 
         Wg[,,g] <<- res_irls[[1]]
         piik <- res_irls[[2]]

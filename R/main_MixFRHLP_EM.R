@@ -8,10 +8,10 @@ source("R/ModelLearner.R")
 
 mixData <- MyData$new()
 mixData$setData("data/generated_data_1.txt")
-G <- 3; # nombre de clusters
-K <- 3; #nombre de regimes
-p <- 1; #dimension de beta (ordre de reg polynomiale)
-q <- 1; #dimension de w (ordre de reg logistique)
+G <- 3; # number of clusters
+K <- 3; # number of regimes (polynomial regression components)
+p <- 1; # degree of the polynomials
+q <- 1; # order of the logistic regression (by default 1 for contiguous segmentation)
 mixModel <- MixModel(mixData,G,K,p,q)
 
 n_tries=1
@@ -28,6 +28,8 @@ modelOptions <- ModelOptions(n_tries, max_iter, threshold, verbose, verbose_IRLS
 solution <- EM(mixModel, modelOptions)
 mixParamSolution <- solution[[1]]
 mixStatsSolution <- solution[[2]]
+
+# show the results
 mixStatsSolution$showDataClusterSegmentation(mixModel, mixParamSolution)
 
 ####

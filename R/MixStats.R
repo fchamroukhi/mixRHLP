@@ -109,7 +109,7 @@ MixStats <- setRefClass(
     #######
     computeStats = function(mixModel, mixParam, phi, cpu_time_all){
       for (g in 1:mixModel$G){
-        polynomials[,,g] <<- phi$phiBeta[1:mixModel$m, ] %*% mixParam$betag[,,g]
+        polynomials[,,g] <<- phi$XBeta[1:mixModel$m, ] %*% mixParam$betag[,,g]
         if (K!=1 && G!=1){
           weighted_polynomials[,,g] <<- mixParam$pi_jgk[,,g] * polynomials[,,g]
           Ex_g[,g] <<- rowSums(weighted_polynomials[,,g])
@@ -176,7 +176,7 @@ MixStats <- setRefClass(
           else{
             sgk <- mixParam$sigmag[k,g]
           }
-          z <- ((mixModel$XR - phi$phiBeta %*% beta_gk)^2)/sgk
+          z <- ((mixModel$XR - phi$XBeta %*% beta_gk)^2)/sgk
           log_pijgk_fgk_xij[,k] <- log(pi_jgk[,k]) - 0.5 * (log(2*pi) + log(sgk)) - 0.5 * z # pdf cond à c_i = g et z_i = k de xij
         }
 

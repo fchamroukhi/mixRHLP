@@ -2,10 +2,14 @@ source("R/enums.R")
 source("R/utils.R")
 source("R/MixParam.R")
 source("R/MixStats.R")
-source("R/Phi.R")
+source("R/RegressionDesigner.R")
+
+################################################
+# The EM algorithm for the MixFRHLP model
+################################################
 
 EM <- function(mixModel, modelOptions){
-  phi <- Phi$new()
+  phi <- RegressionDesigner$new()
   phi$setPhiN(mixModel$t,mixModel$p,mixModel$q, mixModel$n)
 
   top <- 0
@@ -18,7 +22,7 @@ EM <- function(mixModel, modelOptions){
     message("EM try nr ",try_EM)
     time <- Sys.time()
 
-    # Initializations
+    # Initialization
     mixParam <- MixParam(mixModel, modelOptions)
     mixParam$initParam(mixModel, phi, modelOptions, try_EM)
 
@@ -51,11 +55,10 @@ EM <- function(mixModel, modelOptions){
 
       prev_loglik <- mixStats$log_lik
       mixStats$stored_loglik[iter] <- mixStats$log_lik
-    }# FIN EM LOOP
+    }# Eend of the EM LOOP
 
     cpu_time_all[try_EM] <- Sys.time()-time
 
-    # at this point we have computed param and mixStats that contains all the information
 
     if (mixStats$log_lik > best_loglik){
       mixStatsSolution <- mixStats$copy()
@@ -83,7 +86,6 @@ EM <- function(mixModel, modelOptions){
   }
 
 
-  # FINISH computation of mixStatsSolution
   mixStatsSolution$computeStats(mixModel, mixParamSolution, phi, cpu_time_all)
 
   return(list(mixParamSolution, mixStatsSolution))
@@ -91,26 +93,26 @@ EM <- function(mixModel, modelOptions){
 
 
 ################################################
-####                  CEM
+####                  CEM algorithm
 ################################################
 
 CEM <- function(mixModel, modelOptions){
-  phi <- Phi$new()
+  phi <- RegressionDesigner$new()
   phi$setPhiN(mixModel$t,mixModel$p,mixModel$q, mixModel$n)
 
   top <- 0
-  try_EM <- 0
+  try_CEM <- 0
   best_com_loglik <- -Inf
   cpu_time_all <- c()
 
-  while(try_EM < modelOptions$n_tries){
-    try_EM <- try_EM+1
-    message("CEM try nr ",try_EM)
+  while(try_CEM < modelOptions$n_tries){
+    try_CEM <- try_CEM+1
+    message("CEM try nr ",try_CEM)
     time <- Sys.time()
 
-    # Initializations
+    # Initialization
     mixParam <- MixParam(mixModel, modelOptions)
-    mixParam$initParam(mixModel, phi, modelOptions, try_EM)
+    mixParam$initParam(mixModel, phi, modelOptions, try_CEM)
 
     iter <- 0
     converge <- FALSE
@@ -125,11 +127,11 @@ CEM <- function(mixModel, modelOptions){
       reg_irls = res[[1]]
       good_segmentation = res[[2]]
       if (good_segmentation==FALSE){
-        try_EM <- try_EM-1
+        try_CEM <- try_CEM-1
         break # try one more time CEM
       }
 
-      # FIN EM
+      #
 
       iter <- iter + 1
       if (modelOptions$verbose){
@@ -143,15 +145,14 @@ CEM <- function(mixModel, modelOptions){
 
       # TEST OF CONVERGENCE
       converge <- abs((mixStats$com_loglik - prev_com_loglik)/prev_com_loglik) <= modelOptions$threshold
-      if (is.na(converge)) {converge <- FALSE} # basicly for the first iteration when prev_com_loglik is Inf
+      if (is.na(converge)) {converge <- FALSE}
 
       prev_com_loglik <- mixStats$com_loglik
       mixStats$stored_loglik[iter] <- mixStats$com_loglik
-    }# FIN EM LOOP
+    }# End of the CEM LOOP
 
-    cpu_time_all[try_EM] <- Sys.time()-time
+    cpu_time_all[try_CEM] <- Sys.time()-time
 
-    # at this point we have computed param and mixStats that contains all the information
 
     if (mixStats$com_loglik > best_com_loglik){
       mixStatsSolution <- mixStats$copy()
@@ -176,7 +177,6 @@ CEM <- function(mixModel, modelOptions){
   }
 
 
-  # FINISH computation of mixStatsSolution
   mixStatsSolution$computeStats(mixModel, mixParamSolution, phi, cpu_time_all)
 
   return(list(mixParamSolution, mixStatsSolution))
