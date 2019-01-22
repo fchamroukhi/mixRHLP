@@ -1,5 +1,5 @@
-source("R/enums.R")
-source("R/utils.R")
+source("enums.R")
+source("utils.R")
 
 MixParam <- setRefClass(
   "MixParam",

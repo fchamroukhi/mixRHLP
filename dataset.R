@@ -1,4 +1,4 @@
-source("R/utils.R")
+source("utils.R")
 
 
 MyData <- setRefClass(

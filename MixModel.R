@@ -1,5 +1,5 @@
-source("R/dataset.R")
-source("R/utils.R")
+source("dataset.R")
+source("utils.R")
 
 MixModel <- setRefClass(
   "MixModel",

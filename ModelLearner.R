@@ -1,8 +1,8 @@
-source("R/enums.R")
-source("R/utils.R")
-source("R/MixParam.R")
-source("R/MixStats.R")
-source("R/RegressionDesigner.R")
+source("enums.R")
+source("utils.R")
+source("MixParam.R")
+source("MixStats.R")
+source("RegressionDesigner.R")
 
 ################################################
 # The EM algorithm for the MixFRHLP model
