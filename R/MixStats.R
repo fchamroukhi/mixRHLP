@@ -79,19 +79,26 @@ MixStats <- setRefClass(
 
     MAP = function(){
       "
-      calcule une partition d'un echantillon par la regle du Maximum A Posteriori à partir des probabilites a posteriori
-      Entrees : post_probas , Matrice de dimensions [n x K] des probabibiltes a posteriori (matrice de la partition floue)
-           n : taille de l'echantillon
-           K : nombres de classes
-           klas(i) = arg   max (post_probas(i,k)) , for all i=1,...,n
-                         1<=k<=K
-                   = arg   max  p(zi=k|xi;theta)
-                         1<=k<=K
-                   = arg   max  p(zi=k;theta)p(xi|zi=k;theta)/sum{l=1}^{K}p(zi=l;theta) p(xi|zi=l;theta)
-                         1<=k<=K
-      Sorties : classes : vecteur collones contenant les classe (1:K)
-           Z : Matrice de dimension [nxK] de la partition dure : ses elements sont zik, avec zik=1 si xi
-           appartient à la classe k (au sens du MAP) et zero sinon.
+        % calculate a partition by applying the Maximum A Posteriori Bayes
+        % allocation rule
+        %
+        %
+        % Inputs :
+        %   PostProbs, a matrix of dimensions [n x K] of the posterior
+        %  probabilities of a given sample of n observations arizing from K groups
+        %
+        % Outputs:
+        %   klas: a vector of n class labels (z_1, ...z_n) where z_i =k \in {1,...K}
+        %       klas(i) = arg   max (PostProbs(i,k)) , for all i=1,...,n
+        %                     1<=k<=K
+        %               = arg   max  p(zi=k|xi;theta)
+        %                     1<=k<=K
+        %               = arg   max  p(zi=k;theta)p(xi|zi=k;theta)/sum{l=1}^{K}p(zi=l;theta) p(xi|zi=l;theta)
+        %                     1<=k<=K
+        %
+        %
+        %       Z : Hard partition data matrix [nxK] with binary elements Zik such
+        %       that z_ik =1 iff z_i = k
       "
       N <- nrow(h_ig)
       K <- ncol(h_ig)

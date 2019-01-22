@@ -51,7 +51,7 @@ EM <- function(mixModel, modelOptions){
 
       # TEST OF CONVERGENCE
       converge <- abs((mixStats$log_lik - prev_loglik)/prev_loglik) <= modelOptions$threshold
-      if (is.na(converge)) {converge <- FALSE} # basicly for the first iteration when prev_loglik is Inf
+      if (is.na(converge)) {converge <- FALSE}
 
       prev_loglik <- mixStats$log_lik
       mixStats$stored_loglik[iter] <- mixStats$log_lik

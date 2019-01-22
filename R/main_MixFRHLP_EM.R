@@ -14,8 +14,8 @@ p <- 1; # degree of the polynomials
 q <- 1; # order of the logistic regression (by default 1 for contiguous segmentation)
 mixModel <- MixModel(mixData,G,K,p,q)
 
-n_tries=1
-max_iter=1000
+n_tries <- 20
+max_iter <- 1000
 threshold <- 1e-5
 verbose <- TRUE
 verbose_IRLS <- FALSE
@@ -38,4 +38,5 @@ mixStatsSolution$showDataClusterSegmentation(mixModel, mixParamSolution)
 #solution <- CEM(mixModel, modelOptions)
 #mixParamSolution <- solution[[1]]
 #mixStatsSolution <- solution[[2]]
+#mixStatsSolution$showDataClusterSegmentation(mixModel, mixParamSolution)
 

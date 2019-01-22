@@ -21,7 +21,7 @@ MixParam <- setRefClass(
       }
       else{
         for (g in (1:mixModel$G)){
-          Wg[,,g] <<- rand(mixModel$q+1, mixModel$K-1);#initialisation aléatoire du vercteur paramètre du IRLS
+          Wg[,,g] <<- rand(mixModel$q+1, mixModel$K-1);#random initialization of parameter vector for IRLS
           problik <- modele_logit(Wg[,,g], phiW)
           pi_jgk[,,g] <<- problik[[1]]
         }
@@ -86,7 +86,7 @@ MixParam <- setRefClass(
             }
           }
        }
-       else{ # initialisation aléatoire
+       else{ # random initialization
          Lmin <- round(m/(K+1)) #nbr pts min dans un segments
          tk_init <- zeros(1,K+1)
          K_1 <- K
