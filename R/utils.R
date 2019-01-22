@@ -53,49 +53,6 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
    the parameters of a multinomial logistic regression model given the
    predictors X and a partition (hard or smooth) Tau into K>=2 segments,
    and a cluster weights Gamma (hard or smooth)
-
-
-   Inputs :
-         X : desgin matrix for the logistic weights.  dim(X) = [nx(q+1)]
-                              X = [1 t1 t1^2 ... t1^q
-                                                                     1 t2 t2^2 ... t2^q
-                                                                          ..
-                                                                     1 ti ti^2 ... ti^q
-                                                                          ..
-                                                                     1 tn tn^2 ... tn^q]
-        q being the number of predictors
-        Tau : matrix of a hard or fauzzy partition of the data (here for
-        the RHLP model, Tau is the fuzzy partition represented by the
-        posterior probabilities (responsibilities) (tik) obtained at the E-Step).
-
-           Winit : initial parameter values W(0). dim(Winit) = [(q+1)x(K-1)]
-           verbose : 1 to print the loglikelihood values during the IRLS
-           iterations, 0 if not
-
-   Outputs :
-
-            res : structure containing the fields:
-            W : the estimated parameter vector. matrix of dim [(q+1)x(K-1)]
-                (the last vector being the null vector)
-                piigk : the logistic probabilities (dim [n x K])
-                loglik : the value of the maximized objective
-                LL : stored values of the maximized objective during the
-                IRLS training
-
-          Probs(i,gk) = Pro(segment k|cluster g;W)
-                      = \pi_{ik}(W)
-                             exp(wgk'vi)
-                      =  ---------------------------
-                      1+sum_{l=1}^{K-1} exp(wgl'vi)
-
-         with :
-              * Probs(i,gk) is the prob of component k at time t_i in
-              cluster g
-              i=1,...n,j=1...m,  k=1,...,K,
-              * vi = [1,ti,ti^2,...,ti^q]^T;
-         The parameter vecrots are in the matrix W=[w1,...,wK] (with wK is the null vector);
-
-
   %% References
   % Please cite the following papers for this code:
   %
@@ -282,44 +239,7 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
 
 modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
   "
-  % calculates the pobabilities according to multinomial logistic model:
-  %
-  % probs(i,k) = p(zi=k;W)= \pi_{ik}(W)
-  %                                  exp(wk'vi)
-  %                        =  ----------------------------
-  %                          1 + sum_{l=1}^{K-1} exp(wl'vi)
-  % for i=1,...,n and k=1...K
-  %
-  % Inputs :
-  %
-  %         1. W : parametre du modele logistique ,Matrice de dimensions
-  %         [(q+1)x(K-1)]des vecteurs parametre wk. W = [w1 .. wk..w(K-1)]
-  %         avec les wk sont des vecteurs colonnes de dim [(q+1)x1], le dernier
-  %         est suppose nul (sum_{k=1}^K \pi_{ik} = 1 -> \pi{iK} =
-  %         1-sum_{l=1}^{K-1} \pi{il}. vi : vecteur colonne de dimension [(q+1)x1]
-  %         qui est la variable explicative (ici le temps): vi = [1;ti;ti^2;...;ti^q];
-  %         2. M : Matrice de dimensions [nx(q+1)] des variables explicatives.
-  %            M = transpose([v1... vi ....vn])
-  %              = [1 t1 t1^2 ... t1^q
-  %                 1 t2 t2^2 ... t2^q
-  %                       ..
-  %                 1 ti ti^2 ... ti^q
-  %                       ..
-  %                 1 tn tn^2 ... tn^q]
-  %           q : ordre de regression logistique
-  %           n : nombre d'observations
-  %        3. Y Matrice de la partition floue (les probs a posteriori tik)
-  %           tik = p(zi=k|xi;theta^m); Y de dimensions [nxK] avec K le nombre de classes
-  % Sorties :
-  %
-  %        1. probs : Matrice de dim [nxK] des probabilites p(zi=k;W) de la vaiable zi
-  %          (i=1,...,n)
-  %        2. loglik : logvraisemblance du parametre W du modele logistique
-  %           loglik = Q1(W) = E(l(W;Z)|X;theta^m) = E(p(Z;W)|X;theta^m)
-  %                  = logsum_{i=1}^{n} sum_{k=1}^{K} tik log p(zi=k;W)
-  %
-  % Cette fonction peut egalement ?tre utilis?e pour calculer seulement les
-  % probs de la fa?oc suivante : probs = modele_logit(W,X)
+   calculates the pobabilities according to multinomial logistic model
   "
   if (!is.null(Y)) {
     n1 <- nrow(Y)
