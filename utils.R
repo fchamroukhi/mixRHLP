@@ -118,7 +118,7 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
   piik_old <- problik[[1]]
   loglik_old <- problik[[2]]
 
-  loglik_old <- loglik_old - lambda * norm(as.vector(W_old),"2")^2
+  loglik_old <- loglik_old - lambda * sum(W_old^2) #norm(as.vector(W_old),"2")^2
   iter <- 0
   converge <- FALSE
   max_iter <- 300
@@ -144,21 +144,21 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
 
       for (qq in 1:q){
         vq <- phiW[,qq]
-        gw_old[qq,k] <- t(gwk) %*% vq
+        gw_old[qq,k] <- as.numeric(t(gwk) %*% vq)
       }
     }
-    gw_old <- matrix(gw_old, q*(K-1), 1)
+    gw_old <- matrix(gw_old, nrow = q*(K-1), ncol=1)
 
 
     #Hessienne
     for (k in 1:(K-1)){
       for (ell in 1:(K-1)){
-        delta_kl <- (k==ell)
+        delta_kl <- as.numeric(k==ell)
         if (is.null(cluster_weights)){
-          gwk <- piik_old[,k] * (ones(n,1)%*%delta_kl - piik_old[,ell])
+          gwk <- piik_old[,k] * (ones(n,1)*delta_kl - piik_old[,ell])
         }
         else{
-          gwk <- cluster_weights * (piik_old[,k] * (ones(n,1)%*%delta_kl - piik_old[,ell]))
+          gwk <- cluster_weights * (piik_old[,k] * (ones(n,1)*delta_kl - piik_old[,ell]))
         }
 
         Hkl <- zeros(q,q)
@@ -186,24 +186,25 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
     problik <- modele_logit(W, phiW, tauijk, cluster_weights)
     piik <- problik[[1]]
     loglik <- problik[[2]]
-    loglik <- loglik - lambda*(norm(as.vector(W_old),"2"))^2
+    loglik <- loglik - lambda*sum(W^2) #(norm(as.vector(W_old),"2"))^2
 
     ##  check if Qw1(w^(t+1),w^(t))> Qw1(w^(t),w^(t))
     ##(adaptive stepsize in case of troubles with stepsize 1) Newton Raphson : W(t+1) = W(t) - stepsize*H(W)^(-1)*g(W)
-    # pas <- 1
-    # alpha <- 2
-    #
-    # while(loglik < loglik_old){
-    #   pas <- pas/alpha # pas d'adaptation de l'algo Newton raphson
-    #   #recalcul du parametre W et de la loglik
-    #   #Hw_old = Hw_old + lambda*I;
-    #   w <- as.vector(W_old) - pas * solve(Hw_old)%*%gw_old
-    #   W = matrix(w,q,K-1)
-    #   problik <- modele_logit(W, phiW, tauijk, cluster_weights)
-    #   piik <- problik[[1]]
-    #   loglik <- problik[[2]]
-    #   loglik <- loglik - lambda*(norm(as.vector(W_old),"2"))^2
-    # }
+    pas <- 1
+    alpha <- 2
+
+    while(loglik < loglik_old){
+      pas <- pas/alpha # pas d'adaptation de l'algo Newton raphson
+      #recalcul du parametre W et de la loglik
+      #Hw_old = Hw_old + lambda*I;
+      w <- as.vector(W_old) - pas * solve(Hw_old)%*%gw_old
+      W = matrix(w,q,K-1)
+      problik <- modele_logit(W, phiW, tauijk, cluster_weights)
+      piik <- problik[[1]]
+      loglik <- problik[[2]]
+      
+      loglik <- loglik - lambda**sum(W^2)#(norm(as.vector(W),"2"))^2
+    }
 
     converge1 <- abs((loglik - loglik_old)/loglik_old) <= 1e-7
     converge2 <- abs(loglik - loglik_old) <= 1e-6

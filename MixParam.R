@@ -92,12 +92,15 @@ MixParam <- setRefClass(
          K_1 <- K
          for (k in 2:K) {
            K_1 <- K_1-1;
-           temp <- (tk_init[k-1] + Lmin) : (m - (K_1*Lmin))
+           #temp <- (tk_init[k-1] + Lmin) : (m - (K_1*Lmin))
+           
+           temp <- tk_init[k-1] + Lmin : (m - (K_1*Lmin) - tk_init[k-1])
+           
            ind <- sample(length(temp));
            tk_init[k] <- temp[ind[1]]
          }
          tk_init[K+1] <- m
-
+         #print(tk_init)
          beta_k <- matrix(NA, p+1, K)
          sigma <- c()
          for (k in 1:K){
@@ -229,7 +232,9 @@ MixParam <- setRefClass(
         }
 
         beta_gk <- matrix(NA, mixModel$p+1, mixModel$K)
-        for (k in 1:mixModel$K){
+
+
+        for (k in 1:mixModel$K){ # foreach (k = 1:mixModel$K, .combine = rbind) %dopar%{
           segments_weights <- tauijk[,k] # poids du kieme segment   pour le cluster g
           # poids pour avoir K segments floues du gieme cluster flou
           phigk <- (sqrt(cluster_weights * segments_weights) %*% ones(1,mixModel$p+1))*phi$XBeta #[(n*m)*(p+1)]
@@ -251,6 +256,8 @@ MixParam <- setRefClass(
             sigma_gk[k] <- colSums((Xgk-phigk%*%beta_gk[,k])^2)/(colSums(cluster_weights*segments_weights));
           }
         }
+
+
         betag[,,g] <<- beta_gk
         if (mixOptions$variance_type == variance_types$common){
           sigmag[g] <<- sigma_gk
