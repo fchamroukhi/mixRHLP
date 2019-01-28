@@ -87,7 +87,7 @@ MixParam <- setRefClass(
           }
        }
        else{ # random initialization
-         Lmin <- round(m/(K+1)) #nbr pts min dans un segments
+         Lmin <- round(m/K) #nbr pts min dans un segments
          tk_init <- zeros(1,K+1)
          K_1 <- K
          for (k in 2:K) {
@@ -276,6 +276,8 @@ MixParam <- setRefClass(
           Wg_init<-matrix(Wg_init)
         }
 
+
+		#print(which(is.infinite(tauijk) | is.nan(tauijk) | is.na(tauijk)))
         res_irls <- IRLS_MixFRHLP(tauijk, phi$Xw, Wg_init, cluster_weights, mixOptions$verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
 
         Wg[,,g] <<- res_irls[[1]]
