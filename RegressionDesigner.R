@@ -6,8 +6,11 @@ RegressionDesigner <- setRefClass(
   ),
 
   methods = list(
-    ##pour 1 courbe
     designmatrix_FRHLP = function(x,p,q=NULL){
+      "
+       constructs the desing matrix of a polynomial regression with degree p
+       (for the regimes), and with degree q (for the logistic regression)
+      "
       if (ncol(x) == 1){
         x<-t(x)
       }
@@ -18,7 +21,7 @@ RegressionDesigner <- setRefClass(
 
       X <- matrix(NA, length(x), order_max+1)
       for (i in 0:(order_max)){
-        X[,i+1] <- x^i
+        X[,i+1] <- x^i # X = [1 x x^2 x^3 x^p;......;...]
       }
 
       XBeta <<- X[,1:(p+1)]; # design matrix for Beta (the polynomial regressions)

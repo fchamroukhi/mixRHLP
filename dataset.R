@@ -9,9 +9,9 @@ MyData <- setRefClass(
   fields = list(
     X="matrix",  # the data set
     XR="matrix", # reshaped data
-    n="numeric",
-    m="numeric",
-    t="matrix"),
+    n="numeric", # number of signals (individuals);
+    m="numeric", # number of points for each signal
+    t="matrix"), # the regressuib matrix
 
   # Set the methods
   methods=list(
@@ -49,8 +49,8 @@ MyData <- setRefClass(
       XR <<- matrix(t(X), ncol = 1)
       n <<- nrow(X)
       m <<- ncol(X)
-      #construction des matrices de regression
-      t <<- t(matrix(seq(0, 1, length.out = m)));# ou rentrer le vecteur de covariables des courbes
+      #construction of regression matrix
+      t <<- t(matrix(seq(0, 1, length.out = m)));
     }
   )
 )

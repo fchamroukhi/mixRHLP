@@ -53,7 +53,10 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
    the parameters of a multinomial logistic regression model given the
    predictors X and a partition (hard or smooth) Tau into K>=2 segments,
    and a cluster weights Gamma (hard or smooth)
-  %% References
+  
+
+  References:
+
   % Please cite the following papers for this code:
   %
   %
@@ -94,7 +97,7 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
 "
   K <- ncol(tauijk)
   n <- nrow(phiW)
-  q <- ncol(phiW)
+  q <- ncol(phiW) # q here is (q+1)
   if (K==1){
     W <- matrix( nrow = (q), ncol = 0)
     piik <- ones(piik_len, 1)
@@ -105,10 +108,10 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
   }
 
   if (is.null(Wg_init)){
-    Wg_init <- zeros(q,K-1)
+    Wg_init <- zeros(q,K-1) # if there is no a specified initialization
   }
-  lambda <- 1e-9
-  I <- diag(q*(K-1))
+  lambda <- 1e-9 # if a MAP regularization (a gaussian prior on W) (L_2 penalization); lambda isa positive hyperparameter
+  I <- diag(q*(K-1)) # define an identity matrix
 
 
   #IRLS Initialization (iter = 0)
@@ -182,7 +185,7 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
     w <- as.vector(W_old) - solve(Hw_old)%*%gw_old # [(q+1)x(K-1),1]
     W <- matrix(w,q,(K-1)) #[(q+1)*(K-1)]
 
-    # mise a jour des probas et de la loglik
+    # update the probabilities and the loglik
     problik <- modele_logit(W, phiW, tauijk, cluster_weights)
     piik <- problik[[1]]
     loglik <- problik[[2]]
@@ -190,14 +193,13 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
 
     ##  check if Qw1(w^(t+1),w^(t))> Qw1(w^(t),w^(t))
     ##(adaptive stepsize in case of troubles with stepsize 1) Newton Raphson : W(t+1) = W(t) - stepsize*H(W)^(-1)*g(W)
-    pas <- 1
+    stepsize <- 1
     alpha <- 2
 
     while(loglik < loglik_old){
-      pas <- pas/alpha # pas d'adaptation de l'algo Newton raphson
-      #recalcul du parametre W et de la loglik
-      #Hw_old = Hw_old + lambda*I;
-      w <- as.vector(W_old) - pas * solve(Hw_old)%*%gw_old
+      stepsize <- stepsize/alpha # 
+      #recompute the parameter W and loglik
+      w <- as.vector(W_old) - stepsize * solve(Hw_old)%*%gw_old
       W = matrix(w,q,K-1)
       problik <- modele_logit(W, phiW, tauijk, cluster_weights)
       piik <- problik[[1]]
@@ -223,16 +225,16 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
 
   if (converge){
     if (verbose_IRLS){
-      message("IRLS : convergence  OK ; nbre d''iterations : ", iter)
+      message("IRLS : convergence  OK ; nbr of iterations : ", iter)
     }
   }
   else{
-    message("IRLS : pas de convergence (augmenter le nombre d''iterations > ", max_iter, ")")
+    message("IRLS : doesn't concerged (augment the number of iterations > ", max_iter, ")")
   }
 
   reg_irls <- 0
-  if (lambda!=0){
-    reg_irls <- lambda * (norm(as.vector(W),"2"))^2
+  if (lambda!=0){ #  calculate the value of the regularization part to calculate the value of the MAP criterion in case of regularization
+    reg_irls <- lambda * (norm(as.vector(W),"2"))^2 #  bayesian l2 regularization
   }
 
   return(list(W, piik, reg_irls, LL, loglik))
@@ -240,7 +242,7 @@ IRLS_MixFRHLP <- function(tauijk, phiW, Wg_init=NULL, cluster_weights=NULL, verb
 
 modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
   "
-   calculates the pobabilities according to multinomial logistic model
+    Calculates the pobabilities according to multinomial logistic model
   "
   if (!is.null(Y)) {
     n1 <- nrow(Y)
@@ -310,6 +312,7 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
 
       eps <- .Machine$double.eps
 
+      # log-likelihood
       if (is.null(Gamma)) {
         loglik <- sum((Y*MW) - (Y*log(rowSums(expMW)%*%ones(1,K)+eps)))
       }
@@ -318,7 +321,7 @@ modele_logit <- function(Wg, phiW, Y=NULL, Gamma=NULL){
       }
     }
     if (is.nan(loglik)){
-      stop("Probleme loglik NaN (!!!)")
+      stop("Loglikelihood problem: NaN (!!!)")
     }
   }
   else{

@@ -1,20 +1,24 @@
 MixStats <- setRefClass(
   "MixStats",
   fields = list(
-    h_ig="matrix", #post probabilities
-    c_ig="matrix",
-    klas="matrix",
-    # pi_jgk = "matrix",
-    Ex_g = "matrix",
-    log_lik="numeric",
-    com_loglik="numeric",
-    stored_loglik = "list",
+    h_ig="matrix", # h_ig = prob(curve|cluster_g) : post prob (fuzzy segmentation matrix of dim [nxG])
+    c_ig="matrix", # c_ig : Hard partition obtained by the AP rule :  c_{ig} = 1
+                   # if and only c_i = arg max_g h_ig (g=1,...,G)
+    klas="matrix", # klas : column vector of cluster labels
+    Ex_g = "matrix", # Ex_g: curve expectation: sum of the polynomial components beta_gk ri weighted by
+                     # the logitic probabilities pij_gk: Ex_g(j) = sum_{k=1}^K pi_jgk beta_gk rj, j=1,...,m. Ex_g
+                     # is a column vector of dimension m for each g.
+    log_lik="numeric",  # the loglikelihood of the EM or CEM algorithm
+    com_loglik="numeric", # the complete loglikelihood of the EM (computed at the convergence) or CEM algorithm
+    stored_loglik = "list", # vector of stored valued of the comp-log-lik at each EM teration
     stored_com_loglik = "list",
-    tau_ijgk = "array", # segments post probabilities
+    tau_ijgk = "array", # tau_ijgk prob(y_{ij}|kth_segment,cluster_g), fuzzy
+                        # segmentation for the cluster g. matrix of dimension
+                        # [nmxK] for each g  (g=1,...,G).
     log_tau_ijgk = "array",
-    BIC="numeric",
-    ICL="numeric",
-    AIC="numeric",
+    BIC="numeric", # BIC value = loglik - nu*log(nm)/2.
+    ICL="numeric", # ICL value = comp-loglik_star - nu*log(nm)/2.
+    AIC="numeric", # AIC value = loglik - nu.
     cpu_time = "numeric",
     log_fg_xij="matrix",
     log_alphag_fg_xij="matrix",

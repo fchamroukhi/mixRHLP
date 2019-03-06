@@ -24,10 +24,8 @@ EM <- function(mixModel, modelOptions){
 
     # Initialization
     mixParam <- MixParam(mixModel, modelOptions)
-    time_init <- Sys.time()
     mixParam$initParam(mixModel, phi, modelOptions, try_EM)
-    #message("Time initialize params: ",Sys.time()-time_init)
-
+    
     iter <- 0
     converge <- FALSE
     prev_loglik <- -Inf
@@ -35,13 +33,9 @@ EM <- function(mixModel, modelOptions){
     mixStats <- MixStats(mixModel, modelOptions)
 
     while(!converge && (iter <= modelOptions$max_iter)){
-      time_estep <- Sys.time()
       mixStats$EStep(mixModel, mixParam, phi, modelOptions$variance_type)
-      #message("Time e step: ", Sys.time()-time_estep)
-
-      time_mstep <- Sys.time()
+      
       mixParam$MStep(mixModel, mixStats, phi, modelOptions)
-      #message("Time m step: ", Sys.time()-time_mstep)
       # FIN EM
 
       iter <- iter + 1
@@ -60,7 +54,7 @@ EM <- function(mixModel, modelOptions){
 
       prev_loglik <- mixStats$log_lik
       mixStats$stored_loglik[iter] <- mixStats$log_lik
-    }# Eend of the EM LOOP
+    }# End of the EM LOOP
 
     cpu_time_all[try_EM] <- Sys.time()-time
 

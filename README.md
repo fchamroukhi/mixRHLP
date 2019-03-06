@@ -13,6 +13,8 @@ firstname.lastname@unicaen.fr
 
 When using this code please cite the following papers : The two first ones concern the model and its use in clusterng and the last ones concern the model and its use in discrimination.
 
+The script to run is: main_MixFRHLP_EM.R. The main function is in ModelLearner.R:
+EM(...) for the EM algorithm (respectively CEM(...) for the CEM-like algorithm)
 
 ```
  @article{Chamroukhi-RHLP-2009,

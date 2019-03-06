@@ -4,14 +4,19 @@ source("utils.R")
 MixParam <- setRefClass(
   "MixParam",
   fields = list(
-    Wg = "array",
-    betag = "array",
-    sigmag = "matrix",
-    pi_jgk = "array",
-    alpha_g = "matrix"
+    Wg = "array", # Wg = (Wg1,...,w_gK-1) parameters of the logistic process:
+                  # matrix of dimension [(q+1)x(K-1)] with q the order of logistic regression.
+    betag = "array", # betag = (beta_g1,...,beta_gK) polynomial regression coefficient vectors: matrix of
+                     # dimension [(p+1)xK] p being the polynomial  degree.
+    sigmag = "matrix", # sigma_g = (sigma_g1,...,sigma_gK) : the variances for the K regmies. vector of dimension [Kx1]
+    pi_jgk = "array", # pi_jgk :logistic proportions for cluster g
+    alpha_g = "matrix" #cluster weights
   ),
   methods = list(
     init_hlp = function(mixModel, phiW, try_algo){
+      "
+        initialize the Hidden Logistic Process
+      "
       nm <- mixModel$m * mixModel$n
       if  (try_algo == 1){
         for (g in (1:mixModel$G)){
@@ -21,7 +26,7 @@ MixParam <- setRefClass(
       }
       else{
         for (g in (1:mixModel$G)){
-          Wg[,,g] <<- rand(mixModel$q+1, mixModel$K-1);#random initialization of parameter vector for IRLS
+          Wg[,,g] <<- rand(mixModel$q+1, mixModel$K-1); # random initialization of parameter vector for IRLS
           problik <- modele_logit(Wg[,,g], phiW)
           pi_jgk[,,g] <<- problik[[1]]
         }
@@ -29,8 +34,11 @@ MixParam <- setRefClass(
     },
 
     initParam = function(mixModel, phi, mixOptions, try_algo){
+      # 1. Initialization of cluster weights
       alpha_g <<- 1/(mixModel$G * ones(mixModel$G, 1))
+      # 2. Initialization of the model parameters for each cluster: W (pi_jgk), betak and sigmak
       init_hlp(mixModel, phi$Xw, try_algo) # setting Wg and pi_jgk
+      # betagk and sigmagk
       if (mixOptions$init_kmeans){
         # run k means
         kmeans_res <- kmeans(mixModel$X, iter.max = 400, centers=mixModel$G, nstart=20, trace=FALSE)
@@ -55,10 +63,13 @@ MixParam <- setRefClass(
     },
 
     initRegressionParam = function(Xg, g, K, p, phiBeta, variance_type, try_algo){
+      "
+        Initialize the Regresssion model with Hidden Logistic Process
+      "
        n <- nrow(Xg)
        m <- ncol(Xg)
        if (try_algo==1){
-          # decoupage de l'echantillon (signal) en K segments
+          # cutting the sample (signal) in K segments
           zi <- round(m/K)-1
 
           beta_k <- matrix(NA, p+1, K)
@@ -87,7 +98,7 @@ MixParam <- setRefClass(
           }
        }
        else{ # random initialization
-         Lmin <- round(m/K) #nbr pts min dans un segments
+         Lmin <- round(m/K) #nbr pts min into one segment
          tk_init <- zeros(1,K+1)
          K_1 <- K
          for (k in 2:K) {
