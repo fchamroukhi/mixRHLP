@@ -101,7 +101,6 @@ mixStatsSolution <- solution[[2]]
 
 # show the results
 mixStatsSolution$showDataClusterSegmentation(mixModel, mixParamSolution)
-
 ####
 # CEM Algorithm
 ####

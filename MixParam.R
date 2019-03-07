@@ -1,6 +1,6 @@
 source("enums.R")
 source("utils.R")
-
+source("myKmeans.R")
 MixParam <- setRefClass(
   "MixParam",
   fields = list(
@@ -40,9 +40,13 @@ MixParam <- setRefClass(
       init_hlp(mixModel, phi$Xw, try_algo) # setting Wg and pi_jgk
       # betagk and sigmagk
       if (mixOptions$init_kmeans){
-        # run k means
-        kmeans_res <- kmeans(mixModel$X, iter.max = 400, centers=mixModel$G, nstart=20, trace=FALSE)
-        klas <- kmeans_res$cluster
+        # run k means original R
+        # kmeans_res <- kmeans(mixModel$X, iter.max = 400, centers=mixModel$G, nstart=20, trace=FALSE)
+        # klas <- kmeans_res$cluster
+        
+        # run myKmeans
+        kmeans_res <- myKmeans(mixModel$X, mixModel$G, nbr_runs = 20, nbr_iter_max = 400, verbose = FALSE)
+        klas <- kmeans_res$klas
         for (g in 1:mixModel$G){
           Xg <- mixModel$X[klas==g,]
           initRegressionParam(Xg, g, mixModel$K, mixModel$p, phi$XBeta, mixOptions$variance_type, try_algo)
