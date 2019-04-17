@@ -62,7 +62,6 @@
 %     }
 "
 rm(list = ls())
-#setwd("/export//home/bartcus/Documents/git/MixFRHLP_R_v1/")
 source("dataset.R")
 source("MixModel.R")
 source("ModelOptions.R")
@@ -94,7 +93,7 @@ modelOptions <- ModelOptions(n_tries, max_iter, threshold, verbose, verbose_IRLS
 # 1. running the em algorithm giving mixModel (data, and model itself) and the modelOptions
 solution <- EM(mixModel, modelOptions)
 # 2. getting the mixture parameters solution
-mixParamSolution <- solution[[1]] 
+mixParamSolution <- solution[[1]]
 # 3. getting the mixture stats solution
 mixStatsSolution <- solution[[2]]
 
