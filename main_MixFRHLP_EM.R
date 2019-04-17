@@ -62,14 +62,14 @@
 %     }
 "
 rm(list = ls())
-setwd("~/Documents/travail_CAEN/MixFRHLP_R/") # setting the path of your working directory
+#setwd("/export//home/bartcus/Documents/git/MixFRHLP_R_v1/")
 source("dataset.R")
 source("MixModel.R")
 source("ModelOptions.R")
 source("ModelLearner.R")
 
 
-# loading and setting the data
+
 mixData <- MyData$new()
 mixData$setData("data/generated_data_1.txt")
 
@@ -80,13 +80,12 @@ p <- 1; # degree of the polynomials
 q <- 1; # order of the logistic regression (by default 1 for contiguous segmentation)
 mixModel <- MixModel(mixData,G,K,p,q)
 
-# setting the model options
-n_tries <- 1 # number of tries EM/CEM to run
-max_iter <- 1000 # maximum number of iteration in the EM/CEM algorithm
-threshold <- 1e-5 # threshold to check the concergence
-verbose <- TRUE # verbose the EM/CEM algorithm
-verbose_IRLS <- FALSE # verbose the IRLS algorithm
-init_kmeans <- TRUE # initialization of the parameters (with/without) Kmeans algorithm
+n_tries <- 2
+max_iter <- 1000
+threshold <- 1e-5
+verbose <- TRUE
+verbose_IRLS <- FALSE
+init_kmeans <- TRUE
 modelOptions <- ModelOptions(n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans, variance_types$free)
 
 ####

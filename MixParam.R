@@ -292,7 +292,6 @@ MixParam <- setRefClass(
         }
 
 
-		#print(which(is.infinite(tauijk) | is.nan(tauijk) | is.na(tauijk)))
         res_irls <- IRLS_MixFRHLP(tauijk, phi$Xw, Wg_init, cluster_weights, mixOptions$verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
 
         Wg[,,g] <<- res_irls[[1]]
