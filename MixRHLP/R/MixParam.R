@@ -1,6 +1,6 @@
-source("enums.R")
-source("utils.R")
-source("myKmeans.R")
+source("R/enums.R")
+source("R/utils.R")
+source("R/myKmeans.R")
 MixParam <- setRefClass(
   "MixParam",
   fields = list(
@@ -43,7 +43,7 @@ MixParam <- setRefClass(
         # run k means original R
         # kmeans_res <- kmeans(mixModel$X, iter.max = 400, centers=mixModel$G, nstart=20, trace=FALSE)
         # klas <- kmeans_res$cluster
-        
+
         # run myKmeans
         kmeans_res <- myKmeans(mixModel$X, mixModel$G, nbr_runs = 20, nbr_iter_max = 400, verbose = FALSE)
         klas <- kmeans_res$klas
@@ -108,9 +108,9 @@ MixParam <- setRefClass(
          for (k in 2:K) {
            K_1 <- K_1-1;
            #temp <- (tk_init[k-1] + Lmin) : (m - (K_1*Lmin))
-           
+
            temp <- tk_init[k-1] + Lmin : (m - (K_1*Lmin) - tk_init[k-1])
-           
+
            ind <- sample(length(temp));
            tk_init[k] <- temp[ind[1]]
          }

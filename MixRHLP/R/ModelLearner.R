@@ -1,8 +1,8 @@
-source("enums.R")
-source("utils.R")
-source("MixParam.R")
-source("MixStats.R")
-source("RegressionDesigner.R")
+source("R/enums.R")
+source("R/utils.R")
+source("R/MixParam.R")
+source("R/MixStats.R")
+source("R/RegressionDesigner.R")
 
 ################################################
 # The EM algorithm for the MixFRHLP model
@@ -25,7 +25,7 @@ EM <- function(mixModel, modelOptions){
     # Initialization
     mixParam <- MixParam(mixModel, modelOptions)
     mixParam$initParam(mixModel, phi, modelOptions, try_EM)
-    
+
     iter <- 0
     converge <- FALSE
     prev_loglik <- -Inf
@@ -34,7 +34,7 @@ EM <- function(mixModel, modelOptions){
 
     while(!converge && (iter <= modelOptions$max_iter)){
       mixStats$EStep(mixModel, mixParam, phi, modelOptions$variance_type)
-      
+
       mixParam$MStep(mixModel, mixStats, phi, modelOptions)
       # FIN EM
 

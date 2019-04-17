@@ -62,10 +62,10 @@
 %     }
 "
 rm(list = ls())
-source("dataset.R")
-source("MixModel.R")
-source("ModelOptions.R")
-source("ModelLearner.R")
+source("R/dataset.R")
+source("R/MixModel.R")
+source("R/ModelOptions.R")
+source("R/ModelLearner.R")
 
 
 
