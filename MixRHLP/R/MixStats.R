@@ -161,10 +161,10 @@ MixStats <- setRefClass(
           pi_jgk <- matrix(pi_jgk)
         }
         log_pijgk_fgk_xij <- zeros(mixModel$n*mixModel$m, mixModel$K)
-        
+
         for (k in 1:mixModel$K){
           beta_gk <- beta_g[,k]
-          if (variance_type == variance_types$common){
+          if (variance_type == variance_types$homoskedastic){
             sgk <- mixParam$sigmag[g]
           }
           else{
@@ -173,7 +173,7 @@ MixStats <- setRefClass(
           z <- ((mixModel$XR - phi$XBeta %*% beta_gk)^2)/sgk
           log_pijgk_fgk_xij[,k] <- log(pi_jgk[,k]) - 0.5 * (log(2*pi) + log(sgk)) - 0.5 * z # pdf cond à c_i = g et z_i = k de xij
         }
-        
+
         log_pijgk_fgk_xij <- pmin(log_pijgk_fgk_xij, log(.Machine$double.xmax))
         log_pijgk_fgk_xij <- pmax(log_pijgk_fgk_xij, log(.Machine$double.xmin))
 

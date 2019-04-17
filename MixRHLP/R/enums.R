@@ -4,7 +4,5 @@ enum <- function(...) {
   x
 }
 
-# to enumerate the variance types
-variance_types <- enum(free, common)
-
+variance_types <- enum(homoskedastic, hetereskedastic)
 #algorithms <- enum(em, cem)

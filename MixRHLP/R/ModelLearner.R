@@ -2,15 +2,13 @@ source("R/enums.R")
 source("R/utils.R")
 source("R/MixParam.R")
 source("R/MixStats.R")
-source("R/RegressionDesigner.R")
 
 ################################################
 # The EM algorithm for the MixFRHLP model
 ################################################
 
 EM <- function(mixModel, modelOptions){
-  phi <- RegressionDesigner$new()
-  phi$setPhiN(mixModel$t,mixModel$p,mixModel$q, mixModel$n)
+  phi <- designmatrix(mixModel$t, mixModel$p, mixModel$q, mixModel$n)
 
   top <- 0
   try_EM <- 0

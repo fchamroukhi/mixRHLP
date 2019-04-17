@@ -1,4 +1,6 @@
 source("R/enums.R")
+source("R/IRLS.R")
+source("R/model_logit.R")
 source("R/utils.R")
 source("R/myKmeans.R")
 MixParam <- setRefClass(
@@ -90,7 +92,7 @@ MixParam <- setRefClass(
             bk <- solve(t(Phi_ij)%*%Phi_ij)%*%t(Phi_ij)%*%Xij
             beta_k[,k] <- bk
 
-            if (variance_type == variance_types$common){
+            if (variance_type == variance_types$homoskedastic){
               sigma <- var(Xij)
             }
             else{
@@ -130,7 +132,7 @@ MixParam <- setRefClass(
            bk <- solve(t(Phi_ij)%*%Phi_ij)%*%t(Phi_ij)%*%Xij
            beta_k[,k] <- bk
 
-           if (variance_type == variance_types$common){
+           if (variance_type == variance_types$homoskedastic){
              sigma <- var(Xij)
            }
            else{
@@ -143,7 +145,7 @@ MixParam <- setRefClass(
        }
 
        betag[,,g] <<- beta_k
-       if (variance_type == variance_types$common){
+       if (variance_type == variance_types$homoskedastic){
          sigmag[g] <<- sigma
        }
        else{
@@ -166,7 +168,7 @@ MixParam <- setRefClass(
           tauijk <- matrix(tauijk)
         }
 
-        if (mixOptions$variance_type == variance_types$common){
+        if (mixOptions$variance_type == variance_types$homoskedastic){
           s <- 0
         }
         else{
@@ -188,7 +190,7 @@ MixParam <- setRefClass(
           #                 W_gk = diag(cluster_weights.*segment_weights);
           #                 beta_gk(:,k) = inv(phiBeta'*W_gk*phiBeta)*phiBeta'*W_gk*X;
           #   Maximization w.r.t au sigma_gk :
-          if (mixOptions$variance_type == variance_types$common){
+          if (mixOptions$variance_type == variance_types$homoskedastic){
             sk <- colSums((Xgk-phigk%*%beta_gk[,k])^2)
             s <- s+sk
             sigma_gk <- s/sum(tauijk)
@@ -203,7 +205,7 @@ MixParam <- setRefClass(
         }
 
         betag[,,g] <<- beta_gk
-        if (mixOptions$variance_type == variance_types$common){
+        if (mixOptions$variance_type == variance_types$homoskedastic){
           sigmag[g] <<- sigma_gk
         }
         else{
@@ -239,7 +241,7 @@ MixParam <- setRefClass(
         if (!is.matrix(tauijk)){
           tauijk <- matrix(tauijk)
         }
-        if (mixOptions$variance_type == variance_types$common){
+        if (mixOptions$variance_type == variance_types$homoskedastic){
           s <- 0
         }
         else{
@@ -262,7 +264,7 @@ MixParam <- setRefClass(
           #                 W_gk = diag(cluster_weights.*segment_weights);
           #                 beta_gk(:,k) = inv(phiBeta'*W_gk*phiBeta)*phiBeta'*W_gk*X;
           #   Maximization w.r.t au sigma_gk :
-          if (mixOptions$variance_type == variance_types$common){
+          if (mixOptions$variance_type == variance_types$homoskedastic){
             sk <- colSums((Xgk-phigk%*%beta_gk[,k])^2)
             s <- s+sk
             sigma_gk <- s/sum(colSums((cluster_weights%*%ones(1,mixModel$K))*tauijk))
@@ -274,7 +276,7 @@ MixParam <- setRefClass(
 
 
         betag[,,g] <<- beta_gk
-        if (mixOptions$variance_type == variance_types$common){
+        if (mixOptions$variance_type == variance_types$homoskedastic){
           sigmag[g] <<- sigma_gk
         }
         else{
@@ -292,10 +294,10 @@ MixParam <- setRefClass(
         }
 
 
-        res_irls <- IRLS_MixFRHLP(tauijk, phi$Xw, Wg_init, cluster_weights, mixOptions$verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
+        res_irls <- IRLS(tauijk, phi$Xw, Wg_init, cluster_weights, mixOptions$verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
 
-        Wg[,,g] <<- res_irls[[1]]
-        piik <- res_irls[[2]]
+        Wg[,,g] <<- res_irls$W
+        piik <- res_irls$piik
         pi_jgk[,,g] <<- repmat(piik[1:mixModel$m,], mixModel$n, 1)
 
       }
@@ -309,7 +311,7 @@ MixParam<-function(mixModel, options){
   #mixModel <- mixModel
   Wg <- array(0,dim=c(mixModel$q+1, mixModel$K-1, mixModel$G))
   betag <- array(NA, dim=c(mixModel$p+1, mixModel$K, mixModel$G))
-  if (options$variance_type == variance_types$common){
+  if (options$variance_type == variance_types$homoskedastic){
     sigmag <- matrix(NA, mixModel$G)
   }
   else{
