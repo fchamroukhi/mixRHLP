@@ -3,8 +3,9 @@ source("R/IRLS.R")
 source("R/model_logit.R")
 source("R/utils.R")
 source("R/myKmeans.R")
-MixParam <- setRefClass(
-  "MixParam",
+
+ParamMixRHLP <- setRefClass(
+  "ParamMixRHLP",
   fields = list(
     Wg = "array", # Wg = (Wg1,...,w_gK-1) parameters of the logistic process:
                   # matrix of dimension [(q+1)x(K-1)] with q the order of logistic regression.
@@ -15,55 +16,55 @@ MixParam <- setRefClass(
     alpha_g = "matrix" #cluster weights
   ),
   methods = list(
-    init_hlp = function(mixModel, phiW, try_algo){
+    init_hlp = function(modelMixRHLP, phiW, try_algo){
       "
         initialize the Hidden Logistic Process
       "
-      nm <- mixModel$m * mixModel$n
+      nm <- modelMixRHLP$m * modelMixRHLP$n
       if  (try_algo == 1){
-        for (g in (1:mixModel$G)){
+        for (g in (1:modelMixRHLP$G)){
           problik <- modele_logit(Wg[,,g],phiW)
           pi_jgk[,,g] <<- problik[[1]]
         }
       }
       else{
-        for (g in (1:mixModel$G)){
-          Wg[,,g] <<- rand(mixModel$q+1, mixModel$K-1); # random initialization of parameter vector for IRLS
+        for (g in (1:modelMixRHLP$G)){
+          Wg[,,g] <<- rand(modelMixRHLP$q+1, modelMixRHLP$K-1); # random initialization of parameter vector for IRLS
           problik <- modele_logit(Wg[,,g], phiW)
           pi_jgk[,,g] <<- problik[[1]]
         }
       }
     },
 
-    initParam = function(mixModel, phi, mixOptions, try_algo){
+    initParam = function(modelMixRHLP, phi, init_kmeans, try_algo){
       # 1. Initialization of cluster weights
-      alpha_g <<- 1/(mixModel$G * ones(mixModel$G, 1))
+      alpha_g <<- 1/(modelMixRHLP$G * ones(modelMixRHLP$G, 1))
       # 2. Initialization of the model parameters for each cluster: W (pi_jgk), betak and sigmak
-      init_hlp(mixModel, phi$Xw, try_algo) # setting Wg and pi_jgk
+      init_hlp(modelMixRHLP, phi$Xw, try_algo) # setting Wg and pi_jgk
       # betagk and sigmagk
-      if (mixOptions$init_kmeans){
+      if (init_kmeans){
         # run k means original R
         # kmeans_res <- kmeans(mixModel$X, iter.max = 400, centers=mixModel$G, nstart=20, trace=FALSE)
         # klas <- kmeans_res$cluster
 
         # run myKmeans
-        kmeans_res <- myKmeans(mixModel$X, mixModel$G, nbr_runs = 20, nbr_iter_max = 400, verbose = FALSE)
+        kmeans_res <- myKmeans(modelMixRHLP$Y, modelMixRHLP$G, nbr_runs = 20, nbr_iter_max = 400, verbose = FALSE)
         klas <- kmeans_res$klas
-        for (g in 1:mixModel$G){
-          Xg <- mixModel$X[klas==g,]
-          initRegressionParam(Xg, g, mixModel$K, mixModel$p, phi$XBeta, mixOptions$variance_type, try_algo)
+        for (g in 1:modelMixRHLP$G){
+          Xg <- modelMixRHLP$Y[klas==g,]
+          initRegressionParam(Xg, g, modelMixRHLP$K, modelMixRHLP$p, phi$XBeta, modelMixRHLP$variance_type, try_algo)
         }
       }
       else{
-        ind <- sample(mixModel$n)
-        for (g in 1:mixModel$G){
+        ind <- sample(modelMixRHLP$n)
+        for (g in 1:modelMixRHLP$G){
           if (g<G){
-            Xg <- mixModel$X[ind[(g-1)*round(mixModel$n/mixModel$G) +1 : g*round(mixModel$n/mixModel$G)],]
+            Xg <- modelMixRHLP$Y[ind[(g-1)*round(modelMixRHLP$n/modelMixRHLP$G) +1 : g*round(modelMixRHLP$n/modelMixRHLP$G)],]
           }
           else{
-            Xg <- mixModel$X[ind[(g-1)*round(n/G) +1 : length(ind)],]
+            Xg <- modelMixRHLP$Y[ind[(g-1)*round(n/G) +1 : length(ind)],]
           }
-          initRegressionParam(Xg, g, mixModel$K, mixModel$p, phi$XBeta, mixOptions$variance_type, try_algo)
+          initRegressionParam(Xg, g, modelMixRHLP$K, modelMixRHLP$p, phi$XBeta, modelMixRHLP$variance_type, try_algo)
         }
       }
     },
@@ -153,34 +154,34 @@ MixParam <- setRefClass(
        }
     },
 
-    CMStep = function(mixModel, mixStats, phi, mixOptions){
+    CMStep = function(modelMixRHLP, mixStats, phi){
       good_segmentation = TRUE
       #MStep for CEM algorithm
-      alpha_g <<- t(colSums(mixStats$c_ig))/mixModel$n
+      alpha_g <<- t(colSums(mixStats$c_ig))/modelMixRHLP$n
       # Maximization w.r.t betagk et sigmagk
-      cluster_labels <-  t(repmat(mixStats$klas,1,mixModel$m)) # [m x n]
+      cluster_labels <-  t(repmat(mixStats$klas,1,modelMixRHLP$m)) # [m x n]
       cluster_labels <- as.vector(cluster_labels)
 
-      for (g in 1:mixModel$G){
-        Xg = mixModel$XR[cluster_labels==g,] # cluster g (found from a hard clustering)
+      for (g in 1:modelMixRHLP$G){
+        Xg = modelMixRHLP$vecY[cluster_labels==g,] # cluster g (found from a hard clustering)
         tauijk <- mixStats$tau_ijgk[cluster_labels==g,,g] #[(ng xm) x K]
         if (!is.matrix(tauijk)){
           tauijk <- matrix(tauijk)
         }
 
-        if (mixOptions$variance_type == variance_types$homoskedastic){
+        if (modelMixRHLP$variance_type == variance_types$homoskedastic){
           s <- 0
         }
         else{
-          sigma_gk <- zeros(mixModel$K, 1)
+          sigma_gk <- zeros(modelMixRHLP$K, 1)
         }
 
-        beta_gk <- matrix(NA, mixModel$p+1, mixModel$K)
+        beta_gk <- matrix(NA, modelMixRHLP$p+1, modelMixRHLP$K)
 
-        for (k in 1:mixModel$K){
+        for (k in 1:modelMixRHLP$K){
           segments_weights <- tauijk[,k] # poids du kieme segment   pour le cluster g
           # poids pour avoir K segments floues du gieme cluster flou
-          phigk <- (sqrt(segments_weights) %*% ones(1,mixModel$p+1))*phi$XBeta[cluster_labels==g,] #[(ng*m)*(p+1)]
+          phigk <- (sqrt(segments_weights) %*% ones(1,modelMixRHLP$p+1))*phi$XBeta[cluster_labels==g,] #[(ng*m)*(p+1)]
           Xgk <- sqrt(segments_weights) * Xg
 
           # maximization w.r.t beta_gk: Weighted least squares
@@ -190,7 +191,7 @@ MixParam <- setRefClass(
           #                 W_gk = diag(cluster_weights.*segment_weights);
           #                 beta_gk(:,k) = inv(phiBeta'*W_gk*phiBeta)*phiBeta'*W_gk*X;
           #   Maximization w.r.t au sigma_gk :
-          if (mixOptions$variance_type == variance_types$homoskedastic){
+          if (modelMixRHLP$variance_type == variance_types$homoskedastic){
             sk <- colSums((Xgk-phigk%*%beta_gk[,k])^2)
             s <- s+sk
             sigma_gk <- s/sum(tauijk)
@@ -205,7 +206,7 @@ MixParam <- setRefClass(
         }
 
         betag[,,g] <<- beta_gk
-        if (mixOptions$variance_type == variance_types$homoskedastic){
+        if (modelMixRHLP$variance_type == variance_types$homoskedastic){
           sigmag[g] <<- sigma_gk
         }
         else{
@@ -220,42 +221,40 @@ MixParam <- setRefClass(
           Wg_init<-matrix(Wg_init)
         }
 
-        #todo: problem empty clusters
+        res_irls <- IRLS(tauijk, phi$Xw[cluster_labels==g,], Wg_init, verbose_IRLS=verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
 
-        res_irls <- IRLS_MixFRHLP(tauijk, phi$Xw[cluster_labels==g,], Wg_init, verbose_IRLS=mixOptions$verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
-
-        Wg[,,g] <<- res_irls[[1]]
-        piik <- res_irls[[2]]
-        pi_jgk[,,g] <<- repmat(piik[1:mixModel$m,], mixModel$n, 1)
-        reg_irls <- res_irls[[3]]
+        Wg[,,g] <<- res_irls$W
+        piik <- res_irls$piik
+        pi_jgk[,,g] <<- repmat(piik[1:modelMixRHLP$m,], modelMixRHLP$n, 1)
+        reg_irls <- res_irls$reg_irls
       }
       return(list(reg_irls, good_segmentation))
     },
 
-    MStep = function(mixModel, mixStats, phi, mixOptions){
-      alpha_g <<- t(colSums(mixStats$h_ig))/mixModel$n
-      for (g in 1:mixModel$G){
-        temp <- repmat(mixStats$h_ig[,g], 1, mixModel$m) # [m x n]
-        cluster_weights <- matrix(t(temp), mixModel$m*mixModel$n, 1) # cluster_weights(:)% [mn x 1]
+    MStep = function(modelMixRHLP, mixStats, phi, verbose_IRLS){
+      alpha_g <<- t(colSums(mixStats$h_ig)) / modelMixRHLP$n
+      for (g in 1 : modelMixRHLP$G){
+        temp <- repmat(mixStats$h_ig[,g], 1, modelMixRHLP$m) # [m x n]
+        cluster_weights <- matrix(t(temp), modelMixRHLP$m * modelMixRHLP$n, 1) # cluster_weights(:)% [mn x 1]
         tauijk <- mixStats$tau_ijgk[,,g] #[(nxm) x K]
         if (!is.matrix(tauijk)){
           tauijk <- matrix(tauijk)
         }
-        if (mixOptions$variance_type == variance_types$homoskedastic){
+        if (modelMixRHLP$variance_type == variance_types$homoskedastic){
           s <- 0
         }
         else{
-          sigma_gk <- zeros(mixModel$K, 1)
+          sigma_gk <- zeros(modelMixRHLP$K, 1)
         }
 
-        beta_gk <- matrix(NA, mixModel$p+1, mixModel$K)
+        beta_gk <- matrix(NA, modelMixRHLP$p + 1, modelMixRHLP$K)
 
 
-        for (k in 1:mixModel$K){ # foreach (k = 1:mixModel$K, .combine = rbind) %dopar%{
+        for (k in 1:modelMixRHLP$K){ # foreach (k = 1:mixModel$K, .combine = rbind) %dopar%{
           segments_weights <- tauijk[,k] # poids du kieme segment   pour le cluster g
           # poids pour avoir K segments floues du gieme cluster flou
-          phigk <- (sqrt(cluster_weights * segments_weights) %*% ones(1,mixModel$p+1))*phi$XBeta #[(n*m)*(p+1)]
-          Xgk <- sqrt(cluster_weights * segments_weights) * mixModel$XR
+          phigk <- (sqrt(cluster_weights * segments_weights) %*% ones(1,modelMixRHLP$p+1))*phi$XBeta #[(n*m)*(p+1)]
+          Xgk <- sqrt(cluster_weights * segments_weights) * modelMixRHLP$vecY
 
           # maximization w.r.t beta_gk: Weighted least squares
           beta_gk[,k] <- solve(t(phigk)%*%phigk + .Machine$double.eps*diag(p+1))%*%t(phigk)%*%Xgk # Maximization w.r.t betagk
@@ -264,19 +263,19 @@ MixParam <- setRefClass(
           #                 W_gk = diag(cluster_weights.*segment_weights);
           #                 beta_gk(:,k) = inv(phiBeta'*W_gk*phiBeta)*phiBeta'*W_gk*X;
           #   Maximization w.r.t au sigma_gk :
-          if (mixOptions$variance_type == variance_types$homoskedastic){
-            sk <- colSums((Xgk-phigk%*%beta_gk[,k])^2)
-            s <- s+sk
-            sigma_gk <- s/sum(colSums((cluster_weights%*%ones(1,mixModel$K))*tauijk))
+          if (modelMixRHLP$variance_type == variance_types$homoskedastic){
+            sk <- colSums((Xgk - phigk %*% beta_gk[,k])^2)
+            s <- s + sk
+            sigma_gk <- s/sum(colSums((cluster_weights %*% ones(1,mixModel$K)) * tauijk))
           }
           else{
-            sigma_gk[k] <- colSums((Xgk-phigk%*%beta_gk[,k])^2)/(colSums(cluster_weights*segments_weights));
+            sigma_gk[k] <- colSums((Xgk - phigk %*% beta_gk[,k])^2)/(colSums(cluster_weights * segments_weights));
           }
         }
 
 
         betag[,,g] <<- beta_gk
-        if (mixOptions$variance_type == variance_types$homoskedastic){
+        if (modelMixRHLP$variance_type == variance_types$homoskedastic){
           sigmag[g] <<- sigma_gk
         }
         else{
@@ -290,15 +289,15 @@ MixParam <- setRefClass(
         Wg_init <- Wg[,,g]
 
         if (!is.matrix(Wg_init)){
-          Wg_init<-matrix(Wg_init)
+          Wg_init <- matrix(Wg_init)
         }
 
 
-        res_irls <- IRLS(tauijk, phi$Xw, Wg_init, cluster_weights, mixOptions$verbose_IRLS, piik_len=(mixModel$n*mixModel$m))
+        res_irls <- IRLS(tauijk, phi$Xw, Wg_init, cluster_weights, verbose_IRLS, piik_len = (mixModel$n*mixModel$m))
 
         Wg[,,g] <<- res_irls$W
         piik <- res_irls$piik
-        pi_jgk[,,g] <<- repmat(piik[1:mixModel$m,], mixModel$n, 1)
+        pi_jgk[,,g] <<- repmat(piik[1 : modelMixRHLP$m,], modelMixRHLP$n, 1)
 
       }
 
@@ -307,17 +306,16 @@ MixParam <- setRefClass(
   )
 )
 
-MixParam<-function(mixModel, options){
-  #mixModel <- mixModel
-  Wg <- array(0,dim=c(mixModel$q+1, mixModel$K-1, mixModel$G))
-  betag <- array(NA, dim=c(mixModel$p+1, mixModel$K, mixModel$G))
-  if (options$variance_type == variance_types$homoskedastic){
-    sigmag <- matrix(NA, mixModel$G)
+ParamMixRHLP<-function(modelMixRHLP){
+  Wg <- array(0,dim=c(modelMixRHLP$q+1, modelMixRHLP$K-1, modelMixRHLP$G))
+  betag <- array(NA, dim=c(modelMixRHLP$p+1, modelMixRHLP$K, modelMixRHLP$G))
+  if (modelMixRHLP$variance_type == variance_types$homoskedastic){
+    sigmag <- matrix(NA, modelMixRHLP$G)
   }
   else{
-    sigmag <- matrix(NA, mixModel$K, mixModel$G)
+    sigmag <- matrix(NA, modelMixRHLP$K, modelMixRHLP$G)
   }
-  pi_jgk <- array(0, dim=c(mixModel$m*mixModel$n, mixModel$K, mixModel$G))
-  alpha_g <- matrix(NA, mixModel$G)
-  new("MixParam", Wg=Wg, betag=betag, sigmag=sigmag, pi_jgk=pi_jgk, alpha_g=alpha_g)#, mixModel = mixModel)
+  pi_jgk <- array(0, dim=c(modelMixRHLP$m*modelMixRHLP$n, modelMixRHLP$K, modelMixRHLP$G))
+  alpha_g <- matrix(NA, modelMixRHLP$G)
+  new("ParamMixRHLP", Wg=Wg, betag=betag, sigmag=sigmag, pi_jgk=pi_jgk, alpha_g=alpha_g)#, mixModel = mixModel)
 }

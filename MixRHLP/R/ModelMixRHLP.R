@@ -33,6 +33,7 @@ ModelMixRHLP <- function(fData, G, K, p, q, variance_type) {
     X = fData$X,
     m = fData$m,
     n = fData$n,
+    vecY = fData$vecY,
     G = G,
     K = K,
     p = p,
