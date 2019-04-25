@@ -101,4 +101,3 @@ solution$plot()
 #solution <- CEM(modelMixRHLP, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans)
 # show the results
 #solution$plot()
-
