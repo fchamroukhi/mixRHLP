@@ -1,0 +1,3 @@
+[submodule "MixRHLP/R/utils"]
+	path = MixRHLP/R/utils
+	url = https://github.com/fchamroukhi/utils.git
