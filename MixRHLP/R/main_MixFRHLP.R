@@ -95,9 +95,9 @@ solution <- EM(modelMixRHLP, n_tries, max_iter, threshold, verbose, verbose_IRLS
 solution$plot()
 
 
-####
+###
 # CEM Algorithm
 ####
-#solution <- CEM(modelMixRHLP, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans)
-# show the results
-#solution$plot()
+# solution <- CEM(modelMixRHLP, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans)
+# # show the results
+# solution$plot()

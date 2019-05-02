@@ -59,10 +59,10 @@ ParamMixRHLP <- setRefClass(
         ind <- sample(modelMixRHLP$n)
         for (g in 1:modelMixRHLP$G){
           if (g<G){
-            Xg <- modelMixRHLP$Y[ind[(g-1)*round(modelMixRHLP$n/modelMixRHLP$G) +1 : g*round(modelMixRHLP$n/modelMixRHLP$G)],]
+            Xg <- modelMixRHLP$Y[ind[((g-1)*round(modelMixRHLP$n/modelMixRHLP$G) + 1) : (g * round(modelMixRHLP$n/modelMixRHLP$G))],]
           }
           else{
-            Xg <- modelMixRHLP$Y[ind[(g-1)*round(n/G) +1 : length(ind)],]
+            Xg <- modelMixRHLP$Y[ind[((g-1)*round(modelMixRHLP$n/modelMixRHLP$G) + 1) : length(ind)],]
           }
           initRegressionParam(Xg, g, modelMixRHLP$K, modelMixRHLP$p, phi$XBeta, modelMixRHLP$variance_type, try_algo)
         }
