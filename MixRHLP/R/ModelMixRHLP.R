@@ -21,10 +21,10 @@ ModelMixRHLP <- setRefClass(
 
 ModelMixRHLP <- function(fData, G, K, p, q, variance_type) {
   if (variance_type == variance_types$homoskedastic) {
-    nu <<- (G - 1) + G * ((q+1) * (K-1) + K * (p+1) + 1)
+    nu <<- (G - 1) + G * ((q + 1) * (K - 1) + K * (p + 1) + 1)
   }
   else{
-    nu <<- (G - 1) + G * ((q+1) * (K-1) + K * (p+1) + K)
+    nu <<- (G - 1) + G * ((q + 1) * (K - 1) + K * (p +  1) + K)
   }
 
   new(
