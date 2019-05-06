@@ -8,11 +8,14 @@ FittedMixRHLP <- setRefClass(
   methods = list(
     plot = function() {
 
+      oldpar <- par()[c("mfrow", "mai", "mgp")]
+      on.exit(par(oldpar), add = TRUE)
+
       # yaxislim <- c(min(modelMixRHLP$Y) - 2 * mean(sqrt(apply(modelMixRHLP$Y, 1, var))), max(modelMixRHLP$Y) + 2 * mean(sqrt(apply(modelMixRHLP$Y, 1, var))))
 
       # Cluster and means
       colorsvector = rainbow(modelMixRHLP$G)
-      par(mfrow=c(round(sqrt(modelMixRHLP$G + 1)), round(sqrt(modelMixRHLP$G + 1))), mai = c(0.6, 0.6, 0.5, 0.25), mgp = c(2, 1, 0))
+      par(mfrow = c(round(sqrt(modelMixRHLP$G + 1)), round(sqrt(modelMixRHLP$G + 1))), mai = c(0.6, 0.6, 0.5, 0.25), mgp = c(2, 1, 0))
 
       matplot(t(modelMixRHLP$Y), type = "l", lty = "solid", col = "black", xlab = "Time", ylab = "y(t)")
       title(main = "Original time series")
