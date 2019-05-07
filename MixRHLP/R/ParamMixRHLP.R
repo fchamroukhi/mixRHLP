@@ -1,6 +1,9 @@
+library(Rcpp)
+Rcpp::sourceCpp("src/IRLS.cpp")
+
+# source("R/IRLS.R")
+# source("R/model_logit.R")
 source("R/enums.R")
-source("R/IRLS.R")
-source("R/model_logit.R")
 source("R/utils.R")
 source("R/myKmeans.R")
 
@@ -27,16 +30,20 @@ ParamMixRHLP <- setRefClass(
       nm <- modelMixRHLP$m * modelMixRHLP$n
       if (try_algo == 1) {
         for (g in (1:modelMixRHLP$G)) {
-          problik <- modele_logit(Wg[, , g], phiW)
-          pi_jgk[, , g] <<- problik[[1]]
+          problik <- multinomialLogit(Wg[, , g], phiW, ones(nrow(phiW), ncol(Wg[, , g]) + 1), ones(nrow(phiW), 1))
+          pi_jgk[, , g] <<- problik$piik
+          # problik <- modele_logit(Wg[, , g], phiW)
+          # pi_jgk[, , g] <<- problik$probas
         }
       }
       else{
         for (g in (1:modelMixRHLP$G)) {
           Wg[, , g] <<- rand(modelMixRHLP$q + 1, modelMixRHLP$K - 1)
           # random initialization of parameter vector for IRLS
-          problik <- modele_logit(Wg[, , g], phiW)
-          pi_jgk[, , g] <<- problik[[1]]
+          problik <- multinomialLogit(Wg[, , g], phiW, ones(nrow(phiW), ncol(Wg[, , g]) + 1), ones(nrow(phiW), 1))
+          pi_jgk[, , g] <<- problik$piik
+          # problik <- modele_logit(Wg[, , g], phiW)
+          # pi_jgk[, , g] <<- problik$probas
         }
       }
     },
@@ -237,7 +244,8 @@ ParamMixRHLP <- setRefClass(
           Wg_init <- matrix(Wg_init)
         }
 
-        res_irls <- IRLS(tauijk, phi$Xw[cluster_labels == g, ], Wg_init, verbose_IRLS = verbose_IRLS, piik_len = (mixModel$n * mixModel$m))
+        res_irls <- IRLS(phi$Xw, tauijk, cluster_weights, Wg_init, verbose_IRLS)
+        # res_irls <- IRLS(tauijk, phi$Xw, Wg_init, cluster_weights, verbose_IRLS)
 
         Wg[, , g] <<- res_irls$W
         piik <- res_irls$piik
@@ -310,8 +318,8 @@ ParamMixRHLP <- setRefClass(
           Wg_init <- matrix(Wg_init)
         }
 
-
-        res_irls <- IRLS(tauijk, phi$Xw, Wg_init, cluster_weights, verbose_IRLS, piik_len = (mixModel$n * mixModel$m))
+        res_irls <- IRLS(phi$Xw, tauijk, cluster_weights, Wg_init, verbose_IRLS)
+        # res_irls <- IRLS(tauijk, phi$Xw, Wg_init, cluster_weights, verbose_IRLS)
 
         Wg[, , g] <<- res_irls$W
         piik <- res_irls$piik
