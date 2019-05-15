@@ -7,6 +7,8 @@ R codes written by
 **Faicel Chamrouckhi**
 &
 **Marius Bartcus**
+&
+**Florian Lecocq**
 
 firstname.lastname@unicaen.fr
 
@@ -69,17 +71,16 @@ EM(...) for the EM algorithm (respectively CEM(...) for the CEM-like algorithm)
 ```
 
 
-### THE SHORT DESCRIPTION OF EACH PYTHON FILE. For more detailed description, please see the individual files
+### THE SHORT DESCRIPTION OF EACH R FILE. For more detailed description, please see the individual files
 
-1) main_MixFRHLP_EM _Main script to run the EM or CEM algorithm_
-2) ModelLearner _Contains the two functions of the EM and the CEM algorithm._
-3) datasets _Contains the object to load (mainly contains the dataset)_                        
-4) MixModel _The MixModel class containts the data object and the model settings (number of clusters, the number of regimes, the degree of polynomials, the order of the logistic regression)_
-4) MixParam _Initializes and updates (the M-step) the model parameters (parameters of the logistic process for each of the clusters, polynomial regression coefficients, and the variances for the regmies for each cluster)._
-5) MixStats _Calculates mainly the posterior memberships (E-step), the loglikelihood, the parition, different information criterias BIC, ICL, etc_
-6) ModelOptions _contains some options needed to set before learning the model (like the number of runs, threshold, type of initialization, etc)._
-8) enums _Used to enumerate the variance type (heteroskedastic or homoscedastic)_
-9) RegressionDesinger.py _Design matrices for the polynomial regression and the logistic regression_
-10) utils _Contains mainly the model_logit function that calculates the pobabilities according to the multinomial logistic model, and an efficient Iteratively Reweighted Least-Squares (IRLS) algorithm.
+1) ModelLearner _Contains the two functions of the EM and the CEM algorithm._
+2) FData _Contains the dataset object._                        
+3) ModelMixRHLP _The ModelMixRHLP class containts the data object and the model settings (number of clusters, the number of regimes, the degree of polynomials, the order of the logistic regression)_
+4) ParamMixRHLP _Initializes and updates (the M-step) the model parameters (parameters of the logistic process for each of the clusters, polynomial regression coefficients, and the variances for the regmies for each cluster)._
+5) StatMixRHLP _Calculates mainly the posterior memberships (E-step), the loglikelihood, the parition, different information criterias BIC, ICL, etc_
+6) enums _Used to enumerate the variance type (heteroskedastic or homoscedastic)_
+7) utils _Contains some helping functions_
+8) myKmeans _Kmeans algorithm_
+9) FittedMixRHLP _The learned model_
 
 

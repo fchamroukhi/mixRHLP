@@ -1,9 +1,3 @@
-source("R/enums.R")
-source("R/utils.R")
-source("R/ParamMixRHLP.R")
-source("R/StatMixRHLP.R")
-source("R/FittedMixRHLP.R")
-
 ################################################
 # The EM algorithm for the MixFRHLP model
 ################################################

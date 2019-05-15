@@ -1,12 +1,3 @@
-library(Rcpp)
-Rcpp::sourceCpp("src/IRLS.cpp")
-
-# source("R/IRLS.R")
-# source("R/model_logit.R")
-source("R/enums.R")
-source("R/utils.R")
-source("R/myKmeans.R")
-
 ParamMixRHLP <- setRefClass(
   "ParamMixRHLP",
   fields = list(
@@ -32,8 +23,6 @@ ParamMixRHLP <- setRefClass(
         for (g in (1:modelMixRHLP$G)) {
           problik <- multinomialLogit(Wg[, , g], phiW, ones(nrow(phiW), ncol(Wg[, , g]) + 1), ones(nrow(phiW), 1))
           pi_jgk[, , g] <<- problik$piik
-          # problik <- modele_logit(Wg[, , g], phiW)
-          # pi_jgk[, , g] <<- problik$probas
         }
       }
       else{
@@ -42,8 +31,6 @@ ParamMixRHLP <- setRefClass(
           # random initialization of parameter vector for IRLS
           problik <- multinomialLogit(Wg[, , g], phiW, ones(nrow(phiW), ncol(Wg[, , g]) + 1), ones(nrow(phiW), 1))
           pi_jgk[, , g] <<- problik$piik
-          # problik <- modele_logit(Wg[, , g], phiW)
-          # pi_jgk[, , g] <<- problik$probas
         }
       }
     },
@@ -237,7 +224,7 @@ ParamMixRHLP <- setRefClass(
         }
 
         # Maximization w.r.t W
-        #  IRLS : Regression logistique multinomiale pondérée par cluster
+        #  IRLS : Regression logistique multinomiale ponderee par cluster
         # setting of Wg[,,g] and pi_jgk
         Wg_init <- Wg[, , g]
         if (!is.matrix(Wg_init)) {
@@ -245,7 +232,6 @@ ParamMixRHLP <- setRefClass(
         }
 
         res_irls <- IRLS(phi$Xw, tauijk, cluster_weights, Wg_init, verbose_IRLS)
-        # res_irls <- IRLS(tauijk, phi$Xw, Wg_init, cluster_weights, verbose_IRLS)
 
         Wg[, , g] <<- res_irls$W
         piik <- res_irls$piik
@@ -259,7 +245,7 @@ ParamMixRHLP <- setRefClass(
       alpha_g <<- t(colSums(mixStats$h_ig)) / modelMixRHLP$n
       for (g in 1:modelMixRHLP$G) {
         temp <- repmat(mixStats$h_ig[, g], 1, modelMixRHLP$m) # [m x n]
-        cluster_weights <- matrix(t(temp), modelMixRHLP$m * modelMixRHLP$n, 1) # cluster_weights(:)% [mn x 1]
+        cluster_weights <- matrix(t(temp), modelMixRHLP$m * modelMixRHLP$n, 1) # cluster_weights(:) [mn x 1]
         tauijk <- mixStats$tau_ijgk[, , g] #[(nxm) x K]
         if (!is.matrix(tauijk)) {
           tauijk <- matrix(tauijk)
@@ -310,7 +296,7 @@ ParamMixRHLP <- setRefClass(
 
 
         # Maximization w.r.t W
-        #  IRLS : Regression logistique multinomiale pondérée par cluster
+        #  IRLS : Regression logistique multinomiale pond??r??e par cluster
         # setting of Wg[,,g] and pi_jgk
         Wg_init <- Wg[, , g]
 
@@ -319,7 +305,6 @@ ParamMixRHLP <- setRefClass(
         }
 
         res_irls <- IRLS(phi$Xw, tauijk, cluster_weights, Wg_init, verbose_IRLS)
-        # res_irls <- IRLS(tauijk, phi$Xw, Wg_init, cluster_weights, verbose_IRLS)
 
         Wg[, , g] <<- res_irls$W
         piik <- res_irls$piik

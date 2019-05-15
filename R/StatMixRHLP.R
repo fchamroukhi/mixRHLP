@@ -131,7 +131,7 @@ StatMixRHLP <- setRefClass(
             sgk <- mixParam$sigmag[k, g]
           }
           z <- ((modelMixRHLP$vecY - phi$XBeta %*% beta_gk) ^ 2) / sgk
-          log_pijgk_fgk_xij[, k] <- log(pi_jgk[, k]) - 0.5 * (log(2 * pi) + log(sgk)) - 0.5 * z # pdf cond à c_i = g et z_i = k de xij
+          log_pijgk_fgk_xij[, k] <- log(pi_jgk[, k]) - 0.5 * (log(2 * pi) + log(sgk)) - 0.5 * z # pdf cond c_i = g et z_i = k de xij
         }
 
         log_pijgk_fgk_xij <- pmin(log_pijgk_fgk_xij, log(.Machine$double.xmax))
