@@ -150,7 +150,7 @@ List IRLS(arma::mat& X, arma::mat& Tau, arma::mat& Gamma, arma::mat& Winit, bool
   piik = tmp;
 
 
-  loglik_old = loglik_old - lambda * arma::as_scalar(arma::sum(arma::sum(W_old % W_old)));
+  loglik_old = loglik_old - lambda * std::pow(arma::norm(W_old), 2.0);
 
   int iter = 0;
   int max_iter = 300;
@@ -222,7 +222,7 @@ List IRLS(arma::mat& X, arma::mat& Tau, arma::mat& Gamma, arma::mat& Winit, bool
     // Mise a jour des probas et de la loglik
     out = multinomialLogit(W, X, Tau, Gamma);
     loglik = out["loglik"];
-    loglik = loglik - lambda * arma::norm(W) * arma::norm(W);
+    loglik = loglik - lambda * std::pow(arma::norm(W), 2.0);
     arma::mat tmp = out["piik"];
     piik = tmp;
 
@@ -242,7 +242,7 @@ List IRLS(arma::mat& X, arma::mat& Tau, arma::mat& Gamma, arma::mat& Winit, bool
       out = multinomialLogit(W, X, Tau, Gamma);
       loglik = out["loglik"];
 
-      loglik = loglik - lambda * arma::norm(W) * arma::norm(W);
+      loglik = loglik - lambda * std::pow(arma::norm(W), 2.0);
 
       arma::mat tmp = out["piik"];
       piik = tmp;
@@ -276,7 +276,7 @@ List IRLS(arma::mat& X, arma::mat& Tau, arma::mat& Gamma, arma::mat& Winit, bool
 
   double reg_irls = 0;
   if (lambda != 0) { // Calculate the value of the regularization part to calculate the value of the MAP criterion in case of regularization
-    reg_irls = - lambda * arma::as_scalar(arma::sum(arma::sum(W % W))); // bayesian l2 regularization
+    reg_irls = - lambda * std::pow(arma::norm(W), 2.0); // bayesian l2 regularization
   }
 
   return List::create(Named("W") = W, Named("LL") = LL, Named("loglik") = loglik, Named("piik") = piik, Named("reg_irls") = reg_irls);
