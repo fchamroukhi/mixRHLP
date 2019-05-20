@@ -1,31 +1,36 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center",
+  fig.path = "man/figures/README-"
+)
+```
 ## Overview
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
-R code for the **clustering** and **segmentation** of time series
-(including with regime changes) by mixture of Hidden Logistic Processes
-(MixRHLP) and the EM algorithm; i.e functional data clustering and
-segmentation.
+R code for the **clustering** and **segmentation** of time series (including with regime changes) by mixture of Hidden Logistic Processes (MixRHLP) and the EM algorithm; i.e functional data clustering and segmentation.
 
 ## Installation
 
-You can install the development version of mixRHLP from
-[GitHub](https://github.com/) with:
+You can install the development version of mixRHLP from [GitHub](https://github.com/) with:
 
-``` r
+```{r, eval = FALSE}
 # install.packages("devtools")
 devtools::install_github("fchamroukhi/mixRHLP")
 ```
 
-To build *vignettes* for examples of usage, type the command below
-instead:
+To build *vignettes* for examples of usage, type the command below instead:
 
-``` r
+```{r, eval = FALSE}
 # install.packages("devtools")
 devtools::install_github("fchamroukhi/mixRHLP", 
                          build_opts = c("--no-resave-data", "--no-manual"), 
@@ -34,13 +39,13 @@ devtools::install_github("fchamroukhi/mixRHLP",
 
 Use the following command to display vignettes:
 
-``` r
+```{r, eval = FALSE}
 browseVignettes("mixRHLP")
 ```
 
 ## Usage
 
-``` r
+```{r, message = FALSE}
 library(mixRHLP)
 
 data("simulatedtimeseries")
@@ -65,5 +70,3 @@ solution <- EM(modelMixRHLP, n_tries, max_iter, threshold, verbose, verbose_IRLS
 
 solution$plot()
 ```
-
-<img src="man/figures/README-unnamed-chunk-5-1.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-5-2.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-5-3.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-5-4.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-5-5.png" style="display: block; margin: auto;" />
