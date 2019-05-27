@@ -49,8 +49,7 @@ browseVignettes("mixRHLP")
 library(mixRHLP)
 
 data("simulatedtimeseries")
-fData <- FData$new()
-fData$setData(simulatedtimeseries$X, t(simulatedtimeseries[, 2:ncol(simulatedtimeseries)]))
+fData <- FData(simulatedtimeseries$X, t(simulatedtimeseries[, 2:ncol(simulatedtimeseries)]))
 
 G <- 3 # number of clusters
 K <- 3 # number of regimes (polynomial regression components)
