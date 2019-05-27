@@ -51,7 +51,7 @@ G <- 3 # number of clusters
 K <- 3 # number of regimes (polynomial regression components)
 p <- 1 # degree of the polynomials
 q <- 1 # order of the logistic regression (by default 1 for contiguous segmentation)
-variance_type <- variance_types$hetereskedastic
+variance_type <- variance_types$heteroskedastic
 modelMixRHLP <- ModelMixRHLP(fData, G, K, p, q, variance_type)
 
 n_tries <- 1
