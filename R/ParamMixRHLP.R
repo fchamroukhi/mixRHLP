@@ -46,8 +46,8 @@ ParamMixRHLP <- setRefClass(
         # kmeans_res <- kmeans(mixModel$X, iter.max = 400, centers=mixModel$G, nstart=20, trace=FALSE)
         # klas <- kmeans_res$cluster
 
-        # run myKmeans
-        kmeans_res <- myKmeans(modelMixRHLP$Y, modelMixRHLP$G, nbr_runs = 20, nbr_iter_max = 400, verbose = FALSE)
+        # run kmeans
+        kmeans_res <- kmeans(modelMixRHLP$Y, modelMixRHLP$G, nbr_runs = 20, nbr_iter_max = 400, verbose = FALSE)
         klas <- kmeans_res$klas
         for (g in 1:modelMixRHLP$G) {
           Xg <- modelMixRHLP$Y[klas == g, ]
