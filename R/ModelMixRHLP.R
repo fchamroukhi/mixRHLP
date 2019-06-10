@@ -1,7 +1,7 @@
-FittedMixRHLP <- setRefClass(
-  "FittedMixRHLP",
+#' @export
+ModelMixRHLP <- setRefClass(
+  "ModelMixRHLP",
   fields = list(
-    modelMixRHLP = "ModelMixRHLP",
     paramMixRHLP = "ParamMixRHLP",
     statMixRHLP = "StatMixRHLP"
   ),
@@ -14,14 +14,14 @@ FittedMixRHLP <- setRefClass(
       # yaxislim <- c(min(modelMixRHLP$Y) - 2 * mean(sqrt(apply(modelMixRHLP$Y, 1, var))), max(modelMixRHLP$Y) + 2 * mean(sqrt(apply(modelMixRHLP$Y, 1, var))))
 
       # Cluster and means
-      colorsvector = rainbow(modelMixRHLP$G)
-      par(mfrow = c(round(sqrt(modelMixRHLP$G + 1)), round(sqrt(modelMixRHLP$G + 1))), mai = c(0.6, 0.6, 0.5, 0.25), mgp = c(2, 1, 0))
+      colorsvector = rainbow(paramMixRHLP$G)
+      par(mfrow = c(round(sqrt(paramMixRHLP$G + 1)), round(sqrt(paramMixRHLP$G + 1))), mai = c(0.6, 0.6, 0.5, 0.25), mgp = c(2, 1, 0))
 
-      matplot(t(modelMixRHLP$Y), type = "l", lty = "solid", col = "black", xlab = "Time", ylab = "y(t)")
+      matplot(t(paramMixRHLP$fData$Y), type = "l", lty = "solid", col = "black", xlab = "Time", ylab = "y(t)")
       title(main = "Original time series")
 
-      for (g in 1:modelMixRHLP$G) {
-        cluster_g = modelMixRHLP$Y[statMixRHLP$klas == g,]
+      for (g in 1:paramMixRHLP$G) {
+        cluster_g = paramMixRHLP$fData$Y[statMixRHLP$klas == g,]
         matplot(t(cluster_g), type = "l", lty = "dotted", col = colorsvector[g], xlab = "Time", ylab = "y(t)")
         if (is.null(dim(statMixRHLP$Ex_g))) {
           lines(statMixRHLP$Ex_g, col = "black", lty = "solid", lwd = 1.5)
@@ -32,9 +32,9 @@ FittedMixRHLP <- setRefClass(
       }
 
       par(mfrow = c(2, 1), mai = c(0.6, 0.8, 0.5, 0.5))
-      for (g in 1:modelMixRHLP$G) {
+      for (g in 1:paramMixRHLP$G) {
 
-        cluster_g = modelMixRHLP$Y[statMixRHLP$klas == g,]
+        cluster_g = paramMixRHLP$fData$Y[statMixRHLP$klas == g,]
         matplot(t(cluster_g), type = "l", lty = "dotted", col = colorsvector[g], xlab = "Time", ylab = "y(t)")
         # Polynomial regressors
         for (i in 1:ncol(statMixRHLP$polynomials[, , g])) {
@@ -47,7 +47,7 @@ FittedMixRHLP <- setRefClass(
         }
         title(main = sprintf("Cluster %1.1i", g))
 
-        matplot(paramMixRHLP$pi_jgk[1:modelMixRHLP$m, , g], type = "l", lty = "solid", xlab = "Time", ylab = "Logistic proportions")
+        matplot(paramMixRHLP$pi_jgk[1:paramMixRHLP$fData$m, , g], type = "l", lty = "solid", xlab = "Time", ylab = "Logistic proportions")
 
       }
 
@@ -59,6 +59,3 @@ FittedMixRHLP <- setRefClass(
   )
 )
 
-FittedMixRHLP <- function(modelMixRHLP, paramMixRHLP, statMixRHLP) {
-  new("FittedMixRHLP", modelMixRHLP = modelMixRHLP, paramMixRHLP = paramMixRHLP, statMixRHLP = statMixRHLP)
-}
