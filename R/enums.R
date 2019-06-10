@@ -4,4 +4,5 @@ enum <- function(...) {
   return(x)
 }
 
+#' @export
 variance_types <- enum(homoskedastic, heteroskedastic)

@@ -38,7 +38,6 @@ See `help(package="mixRHLP")` for further details and references provided by `ci
 
 ```{r}
 data("simulatedtimeseries")
-fData <- FData(simulatedtimeseries$X, t(simulatedtimeseries[, 2:ncol(simulatedtimeseries)]))
 ```
 
 # Set up mixRHLP model parameters
@@ -49,7 +48,6 @@ K <- 3 # number of regimes (polynomial regression components)
 p <- 1 # degree of the polynomials
 q <- 1 # order of the logistic regression (by default 1 for contiguous segmentation)
 variance_type <- variance_types$heteroskedastic
-modelMixRHLP <- ModelMixRHLP(fData, G, K, p, q, variance_type)
 ```
 
 # Set up EM parameters
@@ -66,7 +64,8 @@ init_kmeans <- TRUE
 # Estimation
 
 ```{r}
-solution <- EM(modelMixRHLP, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans)
+solution <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:30])), G, K, p, q, 
+               variance_type, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans)
 ```
 
 

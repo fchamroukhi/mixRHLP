@@ -1,10 +1,11 @@
 ################################################
 # The EM algorithm for the MixFRHLP model
 ################################################
+#' @export
+emMixRHLP <-
+  function(X, Y, G, K, p, q = 1, variance_type = 2, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans) {
 
-EM <-
-  function(modelMixRHLP, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans) {
-    phi <- designmatrix(modelMixRHLP$X, modelMixRHLP$p, modelMixRHLP$q, modelMixRHLP$n)
+    fData <- FData(X, Y)
 
     top <- 0
     try_EM <- 0
@@ -17,19 +18,19 @@ EM <-
       time <- Sys.time()
 
       # Initialization
-      mixParam <- ParamMixRHLP(modelMixRHLP)
-      mixParam$initParam(modelMixRHLP, phi, init_kmeans, try_EM)
+      mixParam <- ParamMixRHLP$new(fData = fData, G = G, K = K, p = p, q = q, variance_type = variance_type)
+      mixParam$initParam(init_kmeans, try_EM)
 
       iter <- 0
       converge <- FALSE
       prev_loglik <- -Inf
 
-      mixStats <- StatMixRHLP(modelMixRHLP)
+      mixStats <- StatMixRHLP(mixParam)
 
       while (!converge && (iter <= max_iter)) {
-        mixStats$EStep(modelMixRHLP, mixParam, phi)
+        mixStats$EStep(mixParam)
 
-        mixParam$MStep(modelMixRHLP, mixStats, phi, verbose_IRLS)
+        mixParam$MStep(mixStats, verbose_IRLS)
         # FIN EM
 
         iter <- iter + 1
@@ -60,12 +61,12 @@ EM <-
         mixStatsSolution <- mixStats$copy()
         mixParamSolution <- mixParam$copy()
 
-        if (modelMixRHLP$K == 1 && modelMixRHLP$G == 1) {
+        if (mixParam$K == 1 && mixParam$G == 1) {
           mixParamSolution$pi_jgk <-
-            matrix(mixParam$pi_jgk, nrow = modelMixRHLP$m, ncol = 1)
+            matrix(mixParam$pi_jgk, nrow = mixParam$fData$m, ncol = 1)
         }
         else{
-          mixParamSolution$pi_jgk <- mixParam$pi_jgk[1:modelMixRHLP$m, , ]
+          mixParamSolution$pi_jgk <- mixParam$pi_jgk[1:mixParam$fData$m, , ]
         }
 
         best_loglik <- mixStats$log_lik
@@ -83,9 +84,9 @@ EM <-
     }
 
 
-    mixStatsSolution$computeStats(modelMixRHLP, mixParamSolution, phi, cpu_time_all)
+    mixStatsSolution$computeStats(mixParamSolution, cpu_time_all)
 
-    return(FittedMixRHLP(modelMixRHLP, mixParamSolution, mixStatsSolution))
+    return(ModelMixRHLP(paramMixRHLP = mixParamSolution, statMixRHLP = mixStatsSolution))
   }
 
 
@@ -93,8 +94,9 @@ EM <-
 ####                  CEM algorithm
 ################################################
 
-CEM <- function(modelMixRHLP, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans) {
-    phi <- designmatrix(modelMixRHLP$X, modelMixRHLP$p, modelMixRHLP$q, modelMixRHLP$n)
+CEM <- function(X, Y, G, K, p, q = 1, variance_type = 2, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans) {
+
+    fData <- FData(X, Y)
 
     top <- 0
     try_CEM <- 0
@@ -107,19 +109,19 @@ CEM <- function(modelMixRHLP, n_tries, max_iter, threshold, verbose, verbose_IRL
       time <- Sys.time()
 
       # Initialization
-      mixParam <- ParamMixRHLP(modelMixRHLP)
-      mixParam$initParam(modelMixRHLP, phi, init_kmeans, try_CEM)
+      mixParam <- ParamMixRHLP$new(fData = fData, G = G, K = K, p = p, q = q, variance_type = variance_type)
+      mixParam$initParam(init_kmeans, try_EM)
 
       iter <- 0
       converge <- FALSE
       prev_com_loglik <- -Inf
       reg_irls <- 0
-      mixStats <- StatMixRHLP(modelMixRHLP)
+      mixStats <- StatMixRHLP(mixParam)
 
       while (!converge && (iter <= max_iter)) {
-        mixStats$EStep(modelMixRHLP, mixParam, phi)
+        mixStats$EStep(mixParam)
         mixStats$CStep(reg_irls)
-        res <- mixParam$CMStep(modelMixRHLP, mixStats, phi)
+        res <- mixParam$CMStep(mixStats)
         reg_irls = res[[1]]
         good_segmentation = res[[2]]
         if (good_segmentation == FALSE) {
@@ -157,11 +159,11 @@ CEM <- function(modelMixRHLP, n_tries, max_iter, threshold, verbose, verbose_IRL
         mixStatsSolution <- mixStats$copy()
         mixParamSolution <- mixParam$copy()
 
-        if (modelMixRHLP$K == 1 && modelMixRHLP$G == 1) {
-          mixParamSolution$pi_jgk <- matrix(mixParam$pi_jgk, nrow = modelMixRHLP$m, ncol = 1)
+        if (mixParam$K == 1 && mixParam$G == 1) {
+          mixParamSolution$pi_jgk <- matrix(mixParam$pi_jgk, nrow = mixParam$fData$m, ncol = 1)
         }
         else{
-          mixParamSolution$pi_jgk <- mixParam$pi_jgk[1:modelMixRHLP$m, , ]
+          mixParamSolution$pi_jgk <- mixParam$pi_jgk[1:mixParam$fData$m, , ]
         }
 
         best_com_loglik <- mixStats$com_loglik
@@ -176,7 +178,7 @@ CEM <- function(modelMixRHLP, n_tries, max_iter, threshold, verbose, verbose_IRL
     }
 
 
-    mixStatsSolution$computeStats(modelMixRHLP, mixParamSolution, phi, cpu_time_all)
+    mixStatsSolution$computeStats(mixParamSolution, cpu_time_all)
 
-    return(FittedMixRHLP(modelMixRHLP, mixParamSolution, mixStatsSolution))
+    return(ModelMixRHLP(paramMixRHLP = mixParamSolution, statMixRHLP = mixStatsSolution))
   }
