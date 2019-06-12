@@ -2,21 +2,33 @@ citHeader("To cite mixRHLP in publications use:")
 
 citEntry(
   entry = "Article",
-  title = "Time series modeling by a regression approach based on a latent process",
+  title = "Model-Based Clustering and Classification of Functional Data",
   author = personList(person(given="F.", family="Chamroukhi"),
-                      person(given="A.", family="Sam\\'{e}"),
-                      person(given="G.", family="Govaert"),
-                      person(given="P.", family="Aknin")),
-  journal = "Neural Networks",
-  publisher = "Elsevier Science Ltd.",
-  year = "2009",
-  volume = "22",
-  number = "5-6",
-  pages = "593--602",
-  url = "https://chamroukhi.com/papers/Chamroukhi_Neural_Networks_2009.pdf",
-  textVersion = "Chamroukhi F, Sam\u00e9 A, Govaert G, Aknin P (2009). \u201cTime series
-  modeling by a  regression approach based on a latent process.\u201d _Neural Networks_,
-  *22*(5-6), 593-602. <URL:https://chamroukhi.com/papers/Chamroukhi_Neural_Networks_2009.pdf>."
+                      person(given="Hien D.", family="Nguyen")),
+  journal = "Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery",
+  year = "2019",
+  url = "https://chamroukhi.com/papers/MBCC-FDA.pdf",
+  doi = "https://doi.org/10.1002/widm.1298",
+  textVersion = "Chamroukhi F, Nguyen H (2019). \u201cModel-Based Clustering and
+  Classification of Functional Data.\u201d Wiley Interdisciplinary Reviews: Data Mining and
+  Knowledge Discovery. doi: 10.1002/widm.1298 (URL: https://doi.org/10.1002/widm.1298),
+  <URL:https://chamroukhi.com/papers/MBCC-FDA.pdf>."
+)
+
+citEntry(
+  entry = "Article",
+  title = "Model-based functional mixture discriminant analysis with hidden process
+          regression for curve classification",
+  author = personList(person(given="F.", family="Chamroukhi"),
+                      person(given="H.", family="Glotin"),
+                      person(given="A.", family="Sam\\'{e}")),
+  journal = "Neurocomputing",
+  year = "2013",
+  volume = "112",
+  pages = "153-163",
+  textVersion = "Chamroukhi F, Glotin H, Sam\u00e9 A (2013). \u201cModel-based functional
+  mixture discriminant analysis with hidden process regression for curve
+  classification.\u201c Neurocomputing, 112, 153-163."
 )
 
 citEntry(
@@ -32,8 +44,8 @@ citEntry(
   volume = "5",
   pages = "301--321",
   textVersion = "Sam\u00e9 A, Chamroukhi F, Govaert G, Aknin P (2011). \u201cModel-based
-  clustering and segmentation of time series with changes in regime.\u201d _Advances in Data
-  Analysis and Classification_, *5*, 301-321."
+  clustering and segmentation of time series with changes in regime.\u201d Advances in Data
+  Analysis and Classification, 5, 301-321."
 )
 
 citEntry(
@@ -50,37 +62,25 @@ citEntry(
   number = "7-9",
   pages = "1210--1221",
   textVersion = "Chamroukhi F, Sam\u00e9 A, Govaert G, Aknin P (2010). \u201cA hidden process
-  regression model for functional data description.  Application to curve discrimination.\u201d
-  _Neurocomputing_, *73*(7-9), 1210-1221."
+  regression model for functional data description. Application to curve
+  discrimination.\u201d Neurocomputing, 73(7-9), 1210-1221."
 )
 
-citEntry(
-  entry = "Article",
-  title = "Model-based functional mixture discriminant analysis with hidden process
-          regression for curve classification",
-  author = personList(person(given="F.", family="Chamroukhi"),
-                      person(given="H.", family="Glotin"),
-                      person(given="A.", family="Sam\\'{e}")),
-  journal = "Neurocomputing",
-  year = "2013",
-  volume = "112",
-  pages = "153-163",
-  textVersion = "Chamroukhi F, Glotin H, Sam\u00e9 A (2013). \u201cModel-based functional
-  mixture discriminant analysis with hidden process regression for curve classification.\u201c
-  _Neurocomputing_, *112*, 153-163."
-)
-
-citEntry(
-  entry = "Article",
-  title = "Model-Based Clustering and Classification of Functional Data",
-  author = personList(person(given="F.", family="Chamroukhi"),
-                      person(given="Hien D.", family="Nguyen")),
-  journal = "Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery",
-  year = "2019",
-  url = "https://chamroukhi.com/papers/MBCC-FDA.pdf",
-  doi = "https://doi.org/10.1002/widm.1298",
-  textVersion = "Chamroukhi F, Nguyen H (2019). \u201cModel-Based Clustering and
-  Classification of Functional Data.\u201d _Wiley Interdisciplinary Reviews: Data Mining and
-  Knowledge Discovery_. doi: 10.1002/widm.1298 (URL: https://doi.org/10.1002/widm.1298),
-  <URL:https://chamroukhi.com/papers/MBCC-FDA.pdf>."
-)
+# citEntry(
+#   entry = "Article",
+#   title = "Time series modeling by a regression approach based on a latent process",
+#   author = personList(person(given="F.", family="Chamroukhi"),
+#                       person(given="A.", family="Sam\\'{e}"),
+#                       person(given="G.", family="Govaert"),
+#                       person(given="P.", family="Aknin")),
+#   journal = "Neural Networks",
+#   publisher = "Elsevier Science Ltd.",
+#   year = "2009",
+#   volume = "22",
+#   number = "5-6",
+#   pages = "593--602",
+#   url = "https://chamroukhi.com/papers/Chamroukhi_Neural_Networks_2009.pdf",
+#   textVersion = "Chamroukhi F, Sam\u00e9 A, Govaert G, Aknin P (2009). \u201cTime series
+#   modeling by a  regression approach based on a latent process.\u201d Neural Networks,
+#   22(5-6), 593-602. <URL:https://chamroukhi.com/papers/Chamroukhi_Neural_Networks_2009.pdf>."
+# )
