@@ -1,14 +1,26 @@
-Package: mixRHLP
 Type: Package
-Title: What the Package Does (Title Case)
+Package: mixRHLP
+Title: Mixture of Regression Models with Hidden Logistic Processes (mixRHLP) for Simultaneous Curve Clustering and Segmentation
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-Encoding: UTF-8
-License: What license is it under?
-LazyData: true
+Authors@R: c(person("Faicel", "Chamroukhi", role = c("aut"),
+    email = "faicel.chamroukhi@unicaen.fr",
+    comment = c(ORCID = "0000-0002-5894-3103")),
+    person("Marius", "Bartcus", role = c("aut")),
+    person("Florian", "Lecocq", role = c("aut", "cre"),
+    email = "florian.lecocq@outlook.com"))
+Description: Simultaneous model-based clustering and segmentation of heterogeneous and 
+    dynamical functional data (curves/times series) with smooth and/or abrupt changes in 
+    regime by a mixture of regression models with hidden logistic processes, fitted by the 
+    EM algorithm and extensions. See also the packages 'mixHMM', 'mixHMMR', and 'RHLP'.
+License: GPL (>= 3)
+Imports: 
+    Rcpp
+Suggests: 
+    knitr,
+    rmarkdown
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo
 Collate:
     mixRHLP-package.R
     RcppExports.R
@@ -20,14 +32,8 @@ Collate:
     StatMixRHLP.R
     ModelMixRHLP.R
     ModelLearner.R
+VignetteBuilder: knitr
+Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
-LinkingTo: 
-    Rcpp,
-    RcppArmadillo
-Imports: 
-    Rcpp
-Suggests: 
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
