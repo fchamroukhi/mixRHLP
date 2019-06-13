@@ -5,16 +5,12 @@ ParamMixRHLP <- setRefClass(
     fData = "FData",
     phi = "list",
 
-    G = "numeric",
-    # number of clusters
-    K = "numeric",
-    # number of regimes
-    p = "numeric",
-    # dimension of beta (order of polynomial regression)
-    q = "numeric",
-    # dimension of w (order of logistic regression)
+    G = "numeric", # Number of clusters
+    K = "numeric", # Number of regimes
+    p = "numeric", # Dimension of beta (order of polynomial regression)
+    q = "numeric", # Dimension of w (order of logistic regression)
     variance_type = "numeric",
-    nu = "numeric", # degree of freedom
+    nu = "numeric", # Degree of freedom
 
     Wg = "array",
     # Wg = (Wg1,...,w_gK-1) parameters of the logistic process:
@@ -22,8 +18,8 @@ ParamMixRHLP <- setRefClass(
     betag = "array",
     # betag = (beta_g1,...,beta_gK) polynomial regression coefficient vectors: matrix of
     # dimension [(p+1)xK] p being the polynomial  degree.
-    sigmag = "matrix",
-    # sigma_g = (sigma_g1,...,sigma_gK) : the variances for the K regmies. vector of dimension [Kx1]
+    sigma2_g = "matrix",
+    # sigma2_g = (sigma_g1,...,sigma_gK) : the variances for the K regmies. vector of dimension [Kx1]
     pi_jgk = "array",
     # pi_jgk :logistic proportions for cluster g
     alpha_g = "matrix" #cluster weights
@@ -51,10 +47,10 @@ ParamMixRHLP <- setRefClass(
       Wg <<- array(0, dim = c(q + 1, K - 1, G))
       betag <<- array(NA, dim = c(p + 1, K, G))
       if (variance_type == variance_types$homoskedastic) {
-        sigmag <<- matrix(NA, G)
+        sigma2_g <<- matrix(NA, G)
       }
       else{
-        sigmag <<- matrix(NA, K, G)
+        sigma2_g <<- matrix(NA, K, G)
       }
       pi_jgk <<- array(0, dim = c(fData$m * fData$n, K, G))
       alpha_g <<- matrix(NA, G)
@@ -86,7 +82,7 @@ ParamMixRHLP <- setRefClass(
       alpha_g <<- 1 / (G * ones(G, 1))
       # 2. Initialization of the model parameters for each cluster: W (pi_jgk), betak and sigmak
       init_hlp(try_algo) # setting Wg and pi_jgk
-      # betagk and sigmagk
+      # betagk and sigma2_gk
       if (init_kmeans) {
         # run k means original R
         # kmeans_res <- kmeans(mixModel$X, iter.max = 400, centers=mixModel$G, nstart=20, trace=FALSE)
@@ -201,10 +197,10 @@ ParamMixRHLP <- setRefClass(
 
       betag[, , g] <<- beta_k
       if (variance_type == variance_types$homoskedastic) {
-        sigmag[g] <<- sigma
+        sigma2_g[g] <<- sigma
       }
       else{
-        sigmag[, g] <<- sigma
+        sigma2_g[, g] <<- sigma
       }
     },
 
@@ -212,7 +208,7 @@ ParamMixRHLP <- setRefClass(
       good_segmentation = TRUE
       #MStep for CEM algorithm
       alpha_g <<- t(colSums(mixStats$c_ig)) / fData$n
-      # Maximization w.r.t betagk et sigmagk
+      # Maximization w.r.t betagk et sigma2_gk
       cluster_labels <- t(repmat(mixStats$klas, 1, fData$m)) # [m x n]
       cluster_labels <- as.vector(cluster_labels)
 
@@ -262,10 +258,10 @@ ParamMixRHLP <- setRefClass(
 
         betag[, , g] <<- beta_gk
         if (variance_type == variance_types$homoskedastic) {
-          sigmag[g] <<- sigma_gk
+          sigma2_g[g] <<- sigma_gk
         }
         else{
-          sigmag[, g] <<- sigma_gk
+          sigma2_g[, g] <<- sigma_gk
 
         }
 
@@ -333,10 +329,10 @@ ParamMixRHLP <- setRefClass(
 
         betag[, , g] <<- beta_gk
         if (variance_type == variance_types$homoskedastic) {
-          sigmag[g] <<- sigma_gk
+          sigma2_g[g] <<- sigma_gk
         }
         else{
-          sigmag[, g] <<- sigma_gk
+          sigma2_g[, g] <<- sigma_gk
 
         }
 

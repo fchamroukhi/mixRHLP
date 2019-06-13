@@ -111,7 +111,7 @@ ModelMixRHLP <- setRefClass(
 
         cat(paste0(ifelse(paramMixRHLP$variance_type == variance_types$homoskedastic, "\n",
                           "\nVariances:\n\n")))
-        sigma2 <- data.frame(t(paramMixRHLP$sigmag[, g]))
+        sigma2 <- data.frame(t(paramMixRHLP$sigma2_g[, g]))
         if (paramMixRHLP$variance_type == variance_types$homoskedastic) {
           colnames(sigma2) <- "Sigma2"
           print(sigma2, digits = digits, row.names = FALSE)

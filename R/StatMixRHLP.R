@@ -102,7 +102,7 @@ StatMixRHLP <- setRefClass(
 
       Ex_g <<- matrix(Ex_g, nrow = mixParam$fData$m)
       cpu_time <<- mean(cpu_time_all)
-      Psi <- c(as.vector(mixParam$alpha_g), as.vector(mixParam$Wg), as.vector(mixParam$betag), as.vector(mixParam$sigmag))
+      Psi <- c(as.vector(mixParam$alpha_g), as.vector(mixParam$Wg), as.vector(mixParam$betag), as.vector(mixParam$sigma2_g))
       nu <- length(Psi)
       BIC <<- log_lik - (nu * log(mixParam$fData$n) / 2)
       AIC <<- log_lik - nu
@@ -145,10 +145,10 @@ StatMixRHLP <- setRefClass(
         for (k in 1:mixParam$K) {
           beta_gk <- beta_g[, k]
           if (mixParam$variance_type == variance_types$homoskedastic) {
-            sgk <- mixParam$sigmag[g]
+            sgk <- mixParam$sigma2_g[g]
           }
           else{
-            sgk <- mixParam$sigmag[k, g]
+            sgk <- mixParam$sigma2_g[k, g]
           }
           z <- ((mixParam$fData$vecY - mixParam$phi$XBeta %*% beta_gk) ^ 2) / sgk
           log_pijgk_fgk_xij[, k] <- log(pi_jgk[, k]) - 0.5 * (log(2 * pi) + log(sgk)) - 0.5 * z # pdf cond c_i = g et z_i = k de xij
