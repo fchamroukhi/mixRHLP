@@ -64,10 +64,14 @@ init_kmeans <- TRUE
 # Estimation
 
 ```{r}
-solution <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:30])), G, K, p, q, 
-               variance_type, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans)
+solution <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:31])), G, K, p, q, variance_type, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans)
 ```
 
+# Summary
+
+```{r}
+solution$summary()
+```
 
 # Plots
 
