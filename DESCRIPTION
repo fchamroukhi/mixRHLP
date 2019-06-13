@@ -13,7 +13,11 @@ Description: Simultaneous model-based clustering and segmentation of heterogeneo
     regime by a mixture of regression models with hidden logistic processes, fitted by the 
     EM algorithm and extensions. See also the packages 'mixHMM', 'mixHMMR', and 'RHLP'.
 License: GPL (>= 3)
+Depends: 
+    R (>= 2.10)
 Imports: 
+    methods,
+    stats,
     Rcpp
 Suggests: 
     knitr,

@@ -1,6 +1,6 @@
 enum <- function(...) {
   nms <- eval(substitute(alist(...)))
-  x <- as.list(setNames(seq_along(nms), nms))
+  x <- as.list(stats::setNames(seq_along(nms), nms))
   return(x)
 }
 

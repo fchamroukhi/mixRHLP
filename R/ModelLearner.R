@@ -91,9 +91,8 @@ emMixRHLP <-
 
 
 ################################################
-####                  CEM algorithm
+#                  CEM algorithm
 ################################################
-
 CEM <- function(X, Y, G, K, p, q = 1, variance_type = 2, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans) {
 
     fData <- FData(X, Y)
@@ -110,7 +109,7 @@ CEM <- function(X, Y, G, K, p, q = 1, variance_type = 2, n_tries, max_iter, thre
 
       # Initialization
       mixParam <- ParamMixRHLP$new(fData = fData, G = G, K = K, p = p, q = q, variance_type = variance_type)
-      mixParam$initParam(init_kmeans, try_EM)
+      mixParam$initParam(init_kmeans, try_CEM)
 
       iter <- 0
       converge <- FALSE
@@ -136,7 +135,7 @@ CEM <- function(X, Y, G, K, p, q = 1, variance_type = 2, n_tries, max_iter, thre
           message("CEM     : Iteration : ", iter, "  complete log-likelihood : "  , mixStats$com_loglik)
         }
         if (prev_com_loglik - mixStats$com_loglik > 1e-5) {
-          message("!!!!! CEM complete log-likelihood is decreasing from ", prev_loglik, "to ", mixStats$com_loglik)
+          message("!!!!! CEM complete log-likelihood is decreasing from ", prev_com_loglik, "to ", mixStats$com_loglik)
           top <- top + 1
           if (top > 20)
             break
