@@ -1,3 +1,29 @@
+#' A Reference Class which contains parameters of a MixRHLP model.
+#'
+#' ParamMixRHLP contains all the parameters of a MixRHLP model.
+#'
+#' @field fData [FData][FData] object representing the sample.
+#' @param G The number of clusters.
+#' @field K The number of regimes (mixture components).
+#' @field p The order of the polynomial regression.
+#' @field q The dimension of the logistic regression. For the purpose of
+#' segmentation, it must be set to 1.
+#' @field variance_type Numeric indicating if the model is homoskedastic
+#' (`variance_type` = 1) or heteroskedastic (`variance_type` = 2).
+#' @field Wg Parameters of the logistic process.
+#' \eqn{Wg = w_{g1},\dots,w_{gK-1}}{Wg = (wg1,\dots,wgK-1)} is a matrix of dimension
+#' \eqn{(q + 1, K - 1)}, with \emph{q} the order of the logistic regression.
+#' @field betag Parameters of the polynomial regressions.
+#' \eqn{\betag = (\beta_{g1},\dots,\beta_{gK})}{\beta = (\betag1,\dots,\betagK)} is
+#' a matrix of dimension \eqn{(p + 1, K)}, with \emph{p} the order of the
+#' polynomial regression.
+#' @field sigma2_g The variances for the \emph{K} regimes. If MixRHLP model is
+#' homoskedastic (\emph{variance_type} = 1) then sigma2_g is a matrix of size
+#' \eqn{(1, 1)}, else if MixRHLP model is heteroskedastic then sigma2_g is a matrix
+#' of size \eqn{(K, 1)}.
+#' @field pi_jgk Logistic proportions for cluster of size \eqn{(mn, K, G)}.
+#' @field alpha_g Cluster weights of size \eqn{(G, 1)}.
+#' @seealso [FData]
 #' @export
 ParamMixRHLP <- setRefClass(
   "ParamMixRHLP",

@@ -1,3 +1,12 @@
+#' A Reference Class which represents a fitted MixRHLP model.
+#'
+#' ModelMixRHLP represents a [MixRHLP][ModelMixRHLP] model for which parameters have
+#' been estimated.
+#'
+#' @usage NULL
+#' @field paramMixRHLP A [ParamMixRHLP][ParamMixRHLP] object. It contains the estimated values of the parameters.
+#' @field statMixRHLP A [StatMixRHLP][StatMixRHLP] object. It contains all the statistics associated to the MixRHLP model.
+#' @seealso [ParamMixRHLP], [StatMixRHLP]
 #' @export
 ModelMixRHLP <- setRefClass(
   "ModelMixRHLP",
