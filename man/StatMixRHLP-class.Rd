@@ -4,9 +4,9 @@
 \name{StatMixRHLP-class}
 \alias{StatMixRHLP-class}
 \alias{StatMixRHLP}
-\title{A Reference Class which contains statistics of a MRHLP model.}
+\title{A Reference Class which contains statistics of a MixRHLP model.}
 \description{
-StatMRHLP contains all the parameters of a \link[=ParamMRHLP]{MRHLP} model.
+StatMRHLP contains all the parameters of a \link[=ParamMixRHLP]{MixRHLP} model.
 }
 \section{Fields}{
 
@@ -76,5 +76,5 @@ criterion. The formula is \eqn{AIC = log\_lik - nu}{AIC = log\_lik - nu}.}
 }}
 
 \seealso{
-\link{ParamMRHLP}, \link{FData}
+\link{ParamMixRHLP}, \link{FData}
 }

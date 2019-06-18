@@ -1,6 +1,6 @@
-#' A Reference Class which contains statistics of a MRHLP model.
+#' A Reference Class which contains statistics of a MixRHLP model.
 #'
-#' StatMRHLP contains all the parameters of a [MRHLP][ParamMRHLP] model.
+#' StatMRHLP contains all the parameters of a [MixRHLP][ParamMixRHLP] model.
 #'
 #' @field h_ig Fuzzy segmentation matrix of size \eqn{(n, G)} representing the
 #' post probabilities prob(curve|cluster_g)
@@ -40,7 +40,7 @@
 #' @field polynomials Matrix of size \eqn{(m, K, G)} giving the values of
 #' \eqn{\beta_{k} \times X_{i}}{\betak x X_i}, \eqn{i = 1,\dots,m}.
 #' @field weighted_polynomials Matrix of size \eqn{(m, K, G)}
-#' @seealso [ParamMRHLP], [FData]
+#' @seealso [ParamMixRHLP], [FData]
 #' @export
 StatMixRHLP <- setRefClass(
   "StatMixRHLP",
