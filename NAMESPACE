@@ -2,7 +2,6 @@
 
 export(CEM)
 export(emMixRHLP)
-export(variance_types)
 exportClasses(FData)
 exportClasses(ModelMixRHLP)
 exportClasses(ParamMixRHLP)

@@ -50,11 +50,11 @@ library(mixRHLP)
 
 data("simulatedtimeseries")
 
-G <- 3 # number of clusters
-K <- 3 # number of regimes (polynomial regression components)
-p <- 1 # degree of the polynomials
-q <- 1 # order of the logistic regression (by default 1 for contiguous segmentation)
-variance_type <- variance_types$heteroskedastic
+G <- 3 # Number of clusters
+K <- 3 # Number of regimes (polynomial regression components)
+p <- 1 # Degree of the polynomials
+q <- 1 # Order of the logistic regression (by default 1 for contiguous segmentation)
+variance_type <- "heteroskedastic" # "heteroskedastic" or "homoskedastic" model
 
 n_tries <- 1
 max_iter <- 1000
@@ -63,8 +63,11 @@ verbose <- TRUE
 verbose_IRLS <- FALSE
 init_kmeans <- TRUE
 
-solution <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:30])), G, K, p, q, 
-               variance_type, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans)
+mixrhlp <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:30])), 
+                     G, K, p, q, variance_type, n_tries, max_iter, 
+                     threshold, verbose, verbose_IRLS, init_kmeans)
 
-solution$plot()
+mixrhlp$summary()
+
+mixrhlp$plot()
 ```

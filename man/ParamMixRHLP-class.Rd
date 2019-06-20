@@ -7,6 +7,10 @@
 \title{A Reference Class which contains parameters of a MixRHLP model.}
 \arguments{
 \item{G}{The number of clusters.}
+
+\item{variance_type}{Optional character indicating if the model is
+"homoskedastic" or "heteroskedastic". By default the model is
+"heteroskedastic".}
 }
 \description{
 ParamMixRHLP contains all the parameters of a MixRHLP model.
@@ -22,9 +26,6 @@ ParamMixRHLP contains all the parameters of a MixRHLP model.
 
 \item{\code{q}}{The dimension of the logistic regression. For the purpose of
 segmentation, it must be set to 1.}
-
-\item{\code{variance_type}}{Numeric indicating if the model is homoskedastic
-(\code{variance_type} = 1) or heteroskedastic (\code{variance_type} = 2).}
 
 \item{\code{Wg}}{Parameters of the logistic process.
 \eqn{Wg = w_{g1},\dots,w_{gK-1}}{Wg = (wg1,\dots,wgK-1)} is a matrix of dimension

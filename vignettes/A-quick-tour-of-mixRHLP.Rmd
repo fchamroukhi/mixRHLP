@@ -31,7 +31,7 @@ library(mixRHLP)
 
 # Introduction
 
-**mixRHLP** is a contributed R package for segmentation. It provides functions for parameter estimation via the EM algorithm. This document gives a quick tour of **mixRHLP** (version `r packageVersion("mixRHLP")`) functionalities. It was written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr) package for production. 
+**mixRHLP** is a R package for segmentation. It provides functions for parameter estimation via the EM algorithm. This document gives a quick tour of **mixRHLP** (version `r packageVersion("mixRHLP")`) functionalities. It was written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr) package for production. 
 See `help(package="mixRHLP")` for further details and references provided by `citation("mixRHLP")`.
 
 # Load data
@@ -43,11 +43,11 @@ data("simulatedtimeseries")
 # Set up mixRHLP model parameters
 
 ```{r}
-G <- 3 # number of clusters
-K <- 3 # number of regimes (polynomial regression components)
-p <- 1 # degree of the polynomials
-q <- 1 # order of the logistic regression (by default 1 for contiguous segmentation)
-variance_type <- variance_types$heteroskedastic
+G <- 3 # Number of clusters
+K <- 3 # Number of regimes (polynomial regression components)
+p <- 1 # Degree of the polynomials
+q <- 1 # Order of the logistic regression (by default 1 for contiguous segmentation)
+variance_type <- "heteroskedastic" # "heteroskedastic" or "homoskedastic" model
 ```
 
 # Set up EM parameters
@@ -64,18 +64,19 @@ init_kmeans <- TRUE
 # Estimation
 
 ```{r}
-solution <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:31])), G, K, p, q, variance_type, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans)
+mixrhlp <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:ncol(simulatedtimeseries)])), 
+                     G, K, p, q, variance_type, n_tries, max_iter, threshold, 
+                     verbose, verbose_IRLS, init_kmeans)
 ```
 
 # Summary
 
 ```{r}
-solution$summary()
+mixrhlp$summary()
 ```
 
 # Plots
 
 ```{r}
-solution$plot()
+mixrhlp$plot()
 ```
-

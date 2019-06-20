@@ -4,8 +4,9 @@
 \alias{emMixRHLP}
 \title{emMixRHLP is used to fit a MixRHLP model.}
 \usage{
-emMixRHLP(X, Y, G, K, p, q = 1, variance_type = 2, n_tries, max_iter,
-  threshold, verbose, verbose_IRLS, init_kmeans)
+emMixRHLP(X, Y, G, K, p = 3, q = 1,
+  variance_type = c("heteroskedastic", "homoskedastic"), n_tries,
+  max_iter, threshold, verbose, verbose_IRLS, init_kmeans)
 }
 \arguments{
 \item{X}{Numeric vector of length \emph{m} representing the covariates.}
@@ -22,8 +23,9 @@ observed at points \eqn{1,\dots,m}.}
 \item{q}{The dimension of the logistic regression. For the purpose of
 segmentation, it must be set to 1.}
 
-\item{variance_type}{Numeric indicating if the model is homoskedastic
-(\code{variance_type} = 1) or heteroskedastic (\code{variance_type} = 2).}
+\item{variance_type}{Optional character indicating if the model is
+"homoskedastic" or "heteroskedastic". By default the model is
+"heteroskedastic".}
 
 \item{n_tries}{Number of times EM algorithm will be launched.
 The solution providing the highest log-likelihood will be returned.

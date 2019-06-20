@@ -118,10 +118,10 @@ ModelMixRHLP <- setRefClass(
         colnames(betas) <- sapply(1:paramMixRHLP$K, function(x) paste0("Beta(K = ", x, ")"))
         print(betas, digits = digits)
 
-        cat(paste0(ifelse(paramMixRHLP$variance_type == variance_types$homoskedastic, "\n",
+        cat(paste0(ifelse(paramMixRHLP$variance_type == "homoskedastic", "\n",
                           "\nVariances:\n\n")))
         sigma2 <- data.frame(t(paramMixRHLP$sigma2_g[, g]))
-        if (paramMixRHLP$variance_type == variance_types$homoskedastic) {
+        if (paramMixRHLP$variance_type == "homoskedastic") {
           colnames(sigma2) <- "Sigma2"
           print(sigma2, digits = digits, row.names = FALSE)
         } else {

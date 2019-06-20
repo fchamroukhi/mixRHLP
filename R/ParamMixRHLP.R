@@ -8,8 +8,9 @@
 #' @field p The order of the polynomial regression.
 #' @field q The dimension of the logistic regression. For the purpose of
 #' segmentation, it must be set to 1.
-#' @field variance_type Numeric indicating if the model is homoskedastic
-#' (`variance_type` = 1) or heteroskedastic (`variance_type` = 2).
+#' @param variance_type Optional character indicating if the model is
+#' "homoskedastic" or "heteroskedastic". By default the model is
+#' "heteroskedastic".
 #' @field Wg Parameters of the logistic process.
 #' \eqn{Wg = w_{g1},\dots,w_{gK-1}}{Wg = (wg1,\dots,wgK-1)} is a matrix of dimension
 #' \eqn{(q + 1, K - 1)}, with \emph{q} the order of the logistic regression.
@@ -35,7 +36,7 @@ ParamMixRHLP <- setRefClass(
     K = "numeric", # Number of regimes
     p = "numeric", # Dimension of beta (order of polynomial regression)
     q = "numeric", # Dimension of w (order of logistic regression)
-    variance_type = "numeric",
+    variance_type = "character",
     nu = "numeric", # Degree of freedom
 
     Wg = "array",
@@ -51,7 +52,7 @@ ParamMixRHLP <- setRefClass(
     alpha_g = "matrix" #cluster weights
   ),
   methods = list(
-    initialize = function(fData = FData(numeric(1), matrix(1)), G = 1, K = 1, p = 2, q = 1, variance_type = 1) {
+    initialize = function(fData = FData(numeric(1), matrix(1)), G = 1, K = 1, p = 3, q = 1, variance_type = "heteroskedastic") {
 
       fData <<- fData
 
@@ -63,7 +64,7 @@ ParamMixRHLP <- setRefClass(
       q <<- q
       variance_type <<- variance_type
 
-      if (variance_type == variance_types$homoskedastic) {
+      if (variance_type == "homoskedastic") {
         nu <<- (G - 1) + G * ((q + 1) * (K - 1) + K * (p + 1) + 1)
       }
       else{
@@ -72,7 +73,7 @@ ParamMixRHLP <- setRefClass(
 
       Wg <<- array(0, dim = c(q + 1, K - 1, G))
       betag <<- array(NA, dim = c(p + 1, K, G))
-      if (variance_type == variance_types$homoskedastic) {
+      if (variance_type == "homoskedastic") {
         sigma2_g <<- matrix(NA, G)
       }
       else{
@@ -160,7 +161,7 @@ ParamMixRHLP <- setRefClass(
           bk <- solve(t(Phi_ij) %*% Phi_ij) %*% t(Phi_ij) %*% Xij
           beta_k[, k] <- bk
 
-          if (variance_type == variance_types$homoskedastic) {
+          if (variance_type == "homoskedastic") {
             sigma <- var(Xij)
           }
           else{
@@ -206,7 +207,7 @@ ParamMixRHLP <- setRefClass(
           bk <- solve(t(Phi_ij) %*% Phi_ij) %*% t(Phi_ij) %*% Xij
           beta_k[, k] <- bk
 
-          if (variance_type == variance_types$homoskedastic) {
+          if (variance_type == "homoskedastic") {
             sigma <- var(Xij)
           }
           else{
@@ -222,7 +223,7 @@ ParamMixRHLP <- setRefClass(
       }
 
       betag[, , g] <<- beta_k
-      if (variance_type == variance_types$homoskedastic) {
+      if (variance_type == "homoskedastic") {
         sigma2_g[g] <<- sigma
       }
       else{
@@ -245,7 +246,7 @@ ParamMixRHLP <- setRefClass(
           tauijk <- matrix(tauijk)
         }
 
-        if (variance_type == variance_types$homoskedastic) {
+        if (variance_type == "homoskedastic") {
           s <- 0
         }
         else{
@@ -268,7 +269,7 @@ ParamMixRHLP <- setRefClass(
           #                 W_gk = diag(cluster_weights.*segment_weights);
           #                 beta_gk(:,k) = inv(phiBeta'*W_gk*phiBeta)*phiBeta'*W_gk*X;
           #   Maximization w.r.t au sigma_gk :
-          if (variance_type == variance_types$homoskedastic) {
+          if (variance_type == "homoskedastic") {
             sk <- colSums((Xgk - phigk %*% beta_gk[, k]) ^ 2)
             s <- s + sk
             sigma_gk <- s / sum(tauijk)
@@ -283,7 +284,7 @@ ParamMixRHLP <- setRefClass(
         }
 
         betag[, , g] <<- beta_gk
-        if (variance_type == variance_types$homoskedastic) {
+        if (variance_type == "homoskedastic") {
           sigma2_g[g] <<- sigma_gk
         }
         else{
@@ -318,7 +319,7 @@ ParamMixRHLP <- setRefClass(
         if (!is.matrix(tauijk)) {
           tauijk <- matrix(tauijk)
         }
-        if (variance_type == variance_types$homoskedastic) {
+        if (variance_type == "homoskedastic") {
           s <- 0
         }
         else{
@@ -342,7 +343,7 @@ ParamMixRHLP <- setRefClass(
           #                 W_gk = diag(cluster_weights.*segment_weights);
           #                 beta_gk(:,k) = inv(phiBeta'*W_gk*phiBeta)*phiBeta'*W_gk*X;
           #   Maximization w.r.t au sigma_gk :
-          if (variance_type == variance_types$homoskedastic) {
+          if (variance_type == "homoskedastic") {
             sk <- colSums((Xgk - phigk %*% beta_gk[, k]) ^ 2)
             s <- s + sk
             sigma_gk <- s / sum(colSums((cluster_weights %*% ones(1, K)) * tauijk))
@@ -354,7 +355,7 @@ ParamMixRHLP <- setRefClass(
 
 
         betag[, , g] <<- beta_gk
-        if (variance_type == variance_types$homoskedastic) {
+        if (variance_type == "homoskedastic") {
           sigma2_g[g] <<- sigma_gk
         }
         else{

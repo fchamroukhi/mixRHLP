@@ -81,7 +81,7 @@ StatMixRHLP <- setRefClass(
     weighted_polynomials = "array"
   ),
   methods = list(
-    initialize = function(paramMixRHLP = ParamMixRHLP(fData = FData(numeric(1), matrix(1)), G = 1, K = 1, p = 2, q = 1, variance_type = 1)) {
+    initialize = function(paramMixRHLP = ParamMixRHLP()) {
       h_ig <<- matrix(NA, paramMixRHLP$fData$n, paramMixRHLP$G)
       c_ig <<- matrix(NA, paramMixRHLP$fData$n, paramMixRHLP$G)
       klas <<- matrix(NA, paramMixRHLP$fData$n, 1)
@@ -187,7 +187,7 @@ StatMixRHLP <- setRefClass(
 
         for (k in 1:mixParam$K) {
           beta_gk <- beta_g[, k]
-          if (mixParam$variance_type == variance_types$homoskedastic) {
+          if (mixParam$variance_type == "homoskedastic") {
             sgk <- mixParam$sigma2_g[g]
           }
           else{

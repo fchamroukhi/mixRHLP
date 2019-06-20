@@ -19,8 +19,9 @@
 #' @param p The order of the polynomial regression.
 #' @param q The dimension of the logistic regression. For the purpose of
 #' segmentation, it must be set to 1.
-#' @param variance_type Numeric indicating if the model is homoskedastic
-#' (`variance_type` = 1) or heteroskedastic (`variance_type` = 2).
+#' @param variance_type Optional character indicating if the model is
+#' "homoskedastic" or "heteroskedastic". By default the model is
+#' "heteroskedastic".
 #' @param n_tries Number of times EM algorithm will be launched.
 #' The solution providing the highest log-likelihood will be returned.
 #'
@@ -43,7 +44,7 @@
 #' @seealso [ModelMixRHLP], [ParamMixRHLP], [StatMixRHLP]
 #' @export
 emMixRHLP <-
-  function(X, Y, G, K, p, q = 1, variance_type = 2, n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans) {
+  function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedastic", "homoskedastic"), n_tries, max_iter, threshold, verbose, verbose_IRLS, init_kmeans) {
 
     fData <- FData(X, Y)
 
@@ -58,6 +59,7 @@ emMixRHLP <-
       time <- Sys.time()
 
       # Initialization
+      variance_type <- match.arg(variance_type)
       mixParam <- ParamMixRHLP$new(fData = fData, G = G, K = K, p = p, q = q, variance_type = variance_type)
       mixParam$initParam(init_kmeans, try_EM)
 
