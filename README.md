@@ -58,7 +58,7 @@ verbose <- TRUE
 verbose_IRLS <- FALSE
 init_kmeans <- TRUE
 
-mixrhlp <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:30])), 
+mixrhlp <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:ncol(simulatedtimeseries)])), 
                      G, K, p, q, variance_type, n_tries, max_iter, 
                      threshold, verbose, verbose_IRLS, init_kmeans)
 
@@ -69,16 +69,16 @@ mixrhlp$summary()
 #> 
 #> MixRHLP model with G = 3 clusters and K = 3 regimes:
 #> 
-#>  log-likelihood nu    AIC       BIC       ICL
-#>          -14336 41 -14378 -14406.71 -14406.71
+#>  log-likelihood nu       AIC       BIC       ICL
+#>       -14810.69 41 -14852.69 -14882.11 -14882.11
 #> 
 #> Clustering table:
 #>  1  2  3 
-#>  9 10 10 
+#> 10 10 10 
 #> 
 #> Mixing probabilities (cluster weights):
 #>          1         2         3
-#>  0.3103448 0.3448276 0.3448276
+#>  0.3333333 0.3333333 0.3333333
 #> 
 #> 
 #> --------------------
@@ -87,13 +87,13 @@ mixrhlp$summary()
 #> Regression coefficients:
 #> 
 #>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
-#> 1     6.9032773   5.0896213 3.965468560
-#> X^1   0.8259549  -0.3383998 0.004463925
+#> 1     6.3513369    4.214736   6.6536553
+#> X^1  -0.2449377    0.839666   0.1024863
 #> 
 #> Variances:
 #> 
 #>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
-#>       1.007093     0.9946919     0.9688277
+#>      0.9498285     0.9270384      1.001413
 #> 
 #> --------------------
 #> Cluster 2 (G = 2):
@@ -115,13 +115,13 @@ mixrhlp$summary()
 #> Regression coefficients:
 #> 
 #>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
-#> 1     6.3513369    4.214736   6.6536553
-#> X^1  -0.2449377    0.839666   0.1024863
+#> 1     6.8902863   5.1134337  3.90153421
+#> X^1   0.9265632  -0.3959402  0.08748466
 #> 
 #> Variances:
 #> 
 #>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
-#>      0.9498285     0.9270384      1.001413
+#>       0.981915     0.9787717     0.9702211
 
 mixrhlp$plot()
 ```

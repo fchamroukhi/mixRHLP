@@ -77,6 +77,20 @@ mixrhlp$summary()
 
 # Plots
 
+## Mean curve
+
 ```{r}
-mixrhlp$plot()
+mixrhlp$plot(what = "meancurve")
+```
+
+## Regressors
+
+```{r}
+mixrhlp$plot(what = "regressors")
+```
+
+## Log-likelihood
+
+```{r}
+mixrhlp$plot(what = "loglikelihood")
 ```
