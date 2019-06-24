@@ -60,7 +60,211 @@ init_kmeans <- TRUE
 
 mixrhlp <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:ncol(simulatedtimeseries)])), 
                      G, K, p, q, variance_type, n_tries, max_iter, 
-                     threshold, verbose, verbose_IRLS, init_kmeans)
+                     threshold, init_kmeans, verbose, verbose_IRLS)
+#> EM: Iteration : 1 || log-likelihood : -18129.8169520025
+#> EM: Iteration : 2 || log-likelihood : -16642.732267463
+#> EM: Iteration : 3 || log-likelihood : -16496.947898833
+#> EM: Iteration : 4 || log-likelihood : -16391.6755568235
+#> EM: Iteration : 5 || log-likelihood : -16308.151649539
+#> EM: Iteration : 6 || log-likelihood : -16242.6749975019
+#> EM: Iteration : 7 || log-likelihood : -16187.9951484578
+#> EM: Iteration : 8 || log-likelihood : -16138.360050325
+#> EM: Iteration : 9 || log-likelihood : -16092.9430959116
+#> EM: Iteration : 10 || log-likelihood : -16053.588838999
+#> EM: Iteration : 11 || log-likelihood : -16020.7365667916
+#> EM: Iteration : 12 || log-likelihood : -15993.7513179937
+#> EM: Iteration : 13 || log-likelihood : -15972.7088032469
+#> EM: Iteration : 14 || log-likelihood : -15957.3889127412
+#> EM: Iteration : 15 || log-likelihood : -15946.5663566082
+#> EM: Iteration : 16 || log-likelihood : -15938.693534838
+#> EM: Iteration : 17 || log-likelihood : -15932.584112949
+#> EM: Iteration : 18 || log-likelihood : -15927.5299507605
+#> EM: Iteration : 19 || log-likelihood : -15923.1499635319
+#> EM: Iteration : 20 || log-likelihood : -15919.2392546398
+#> EM: Iteration : 21 || log-likelihood : -15915.6795793534
+#> EM: Iteration : 22 || log-likelihood : -15912.3944381959
+#> EM: Iteration : 23 || log-likelihood : -15909.327585346
+#> EM: Iteration : 24 || log-likelihood : -15906.4326405988
+#> EM: Iteration : 25 || log-likelihood : -15903.6678636145
+#> EM: Iteration : 26 || log-likelihood : -15900.9933370165
+#> EM: Iteration : 27 || log-likelihood : -15898.3692402859
+#> EM: Iteration : 28 || log-likelihood : -15895.7545341827
+#> EM: Iteration : 29 || log-likelihood : -15893.1056775993
+#> EM: Iteration : 30 || log-likelihood : -15890.3751610539
+#> EM: Iteration : 31 || log-likelihood : -15887.5097378815
+#> EM: Iteration : 32 || log-likelihood : -15884.4482946475
+#> EM: Iteration : 33 || log-likelihood : -15881.1193453446
+#> EM: Iteration : 34 || log-likelihood : -15877.4381561224
+#> EM: Iteration : 35 || log-likelihood : -15873.3037170772
+#> EM: Iteration : 36 || log-likelihood : -15868.595660791
+#> EM: Iteration : 37 || log-likelihood : -15863.171868441
+#> EM: Iteration : 38 || log-likelihood : -15856.8678694783
+#> EM: Iteration : 39 || log-likelihood : -15849.5002500459
+#> EM: Iteration : 40 || log-likelihood : -15840.8778843568
+#> EM: Iteration : 41 || log-likelihood : -15830.8267303162
+#> EM: Iteration : 42 || log-likelihood : -15819.2343887404
+#> EM: Iteration : 43 || log-likelihood : -15806.11425583
+#> EM: Iteration : 44 || log-likelihood : -15791.6651550126
+#> EM: Iteration : 45 || log-likelihood : -15776.2575311116
+#> EM: Iteration : 46 || log-likelihood : -15760.2525673176
+#> EM: Iteration : 47 || log-likelihood : -15743.6600428386
+#> EM: Iteration : 48 || log-likelihood : -15725.8494727209
+#> EM: Iteration : 49 || log-likelihood : -15705.5392028324
+#> EM: Iteration : 50 || log-likelihood : -15681.0330055801
+#> EM: Iteration : 51 || log-likelihood : -15650.7058006772
+#> EM: Iteration : 52 || log-likelihood : -15614.1891628978
+#> EM: Iteration : 53 || log-likelihood : -15574.3209962234
+#> EM: Iteration : 54 || log-likelihood : -15536.9561042095
+#> EM: Iteration : 55 || log-likelihood : -15505.9888676546
+#> EM: Iteration : 56 || log-likelihood : -15480.3479747868
+#> EM: Iteration : 57 || log-likelihood : -15456.7432033066
+#> EM: Iteration : 58 || log-likelihood : -15432.855894347
+#> EM: Iteration : 59 || log-likelihood : -15408.4123139152
+#> EM: Iteration : 60 || log-likelihood : -15384.7708355233
+#> EM: Iteration : 61 || log-likelihood : -15363.3704926307
+#> EM: Iteration : 62 || log-likelihood : -15344.3247788467
+#> EM: Iteration : 63 || log-likelihood : -15326.444200793
+#> EM: Iteration : 64 || log-likelihood : -15308.1502066517
+#> EM: Iteration : 65 || log-likelihood : -15288.3650661699
+#> EM: Iteration : 66 || log-likelihood : -15267.1380314858
+#> EM: Iteration : 67 || log-likelihood : -15245.8151021308
+#> EM: Iteration : 68 || log-likelihood : -15226.3007649639
+#> EM: Iteration : 69 || log-likelihood : -15209.9671868432
+#> EM: Iteration : 70 || log-likelihood : -15197.3697193674
+#> EM: Iteration : 71 || log-likelihood : -15187.8845852548
+#> EM: Iteration : 72 || log-likelihood : -15180.4065779427
+#> EM: Iteration : 73 || log-likelihood : -15174.1897193241
+#> EM: Iteration : 74 || log-likelihood : -15168.8680084097
+#> EM: Iteration : 75 || log-likelihood : -15164.161562744
+#> EM: Iteration : 76 || log-likelihood : -15159.6679572487
+#> EM: Iteration : 77 || log-likelihood : -15155.1488045683
+#> EM: Iteration : 78 || log-likelihood : -15150.9231858151
+#> EM: Iteration : 79 || log-likelihood : -15147.2212168197
+#> EM: Iteration : 80 || log-likelihood : -15144.0789426592
+#> EM: Iteration : 81 || log-likelihood : -15141.3516305637
+#> EM: Iteration : 82 || log-likelihood : -15138.8602529876
+#> EM: Iteration : 83 || log-likelihood : -15136.5059345663
+#> EM: Iteration : 84 || log-likelihood : -15134.2384537765
+#> EM: Iteration : 85 || log-likelihood : -15132.0298589309
+#> EM: Iteration : 86 || log-likelihood : -15129.8608706576
+#> EM: Iteration : 87 || log-likelihood : -15127.7157936566
+#> EM: Iteration : 88 || log-likelihood : -15125.5797196054
+#> EM: Iteration : 89 || log-likelihood : -15123.4372146492
+#> EM: Iteration : 90 || log-likelihood : -15121.2712280835
+#> EM: Iteration : 91 || log-likelihood : -15119.0622569397
+#> EM: Iteration : 92 || log-likelihood : -15116.7874031378
+#> EM: Iteration : 93 || log-likelihood : -15114.4192658119
+#> EM: Iteration : 94 || log-likelihood : -15111.924529349
+#> EM: Iteration : 95 || log-likelihood : -15109.2620474528
+#> EM: Iteration : 96 || log-likelihood : -15106.3802520756
+#> EM: Iteration : 97 || log-likelihood : -15103.2137060051
+#> EM: Iteration : 98 || log-likelihood : -15099.678756535
+#> EM: Iteration : 99 || log-likelihood : -15095.6664401396
+#> EM: Iteration : 100 || log-likelihood : -15091.0341403184
+#> EM: Iteration : 101 || log-likelihood : -15085.5952982169
+#> EM: Iteration : 102 || log-likelihood : -15079.1100803658
+#> EM: Iteration : 103 || log-likelihood : -15071.2863216185
+#> EM: Iteration : 104 || log-likelihood : -15061.8155026985
+#> EM: Iteration : 105 || log-likelihood : -15050.493194886
+#> EM: Iteration : 106 || log-likelihood : -15037.4728805034
+#> EM: Iteration : 107 || log-likelihood : -15023.5663638759
+#> EM: Iteration : 108 || log-likelihood : -15010.227713088
+#> EM: Iteration : 109 || log-likelihood : -14998.9216243789
+#> EM: Iteration : 110 || log-likelihood : -14990.3428946327
+#> EM: Iteration : 111 || log-likelihood : -14984.2931646882
+#> EM: Iteration : 112 || log-likelihood : -14980.0317051089
+#> EM: Iteration : 113 || log-likelihood : -14976.7574542665
+#> EM: Iteration : 114 || log-likelihood : -14973.9768267617
+#> EM: Iteration : 115 || log-likelihood : -14971.5304235806
+#> EM: Iteration : 116 || log-likelihood : -14969.3710026573
+#> EM: Iteration : 117 || log-likelihood : -14967.3301314645
+#> EM: Iteration : 118 || log-likelihood : -14965.1319732937
+#> EM: Iteration : 119 || log-likelihood : -14962.8186262578
+#> EM: Iteration : 120 || log-likelihood : -14961.1657986111
+#> EM: Iteration : 121 || log-likelihood : -14960.1001793749
+#> EM: Iteration : 122 || log-likelihood : -14959.2029493341
+#> EM: Iteration : 123 || log-likelihood : -14958.3643653541
+#> EM: Iteration : 124 || log-likelihood : -14957.5579272886
+#> EM: Iteration : 125 || log-likelihood : -14956.7769206477
+#> EM: Iteration : 126 || log-likelihood : -14956.0220832165
+#> EM: Iteration : 127 || log-likelihood : -14955.2990068333
+#> EM: Iteration : 128 || log-likelihood : -14954.6080936936
+#> EM: Iteration : 129 || log-likelihood : -14953.9546052531
+#> EM: Iteration : 130 || log-likelihood : -14953.3424683027
+#> EM: Iteration : 131 || log-likelihood : -14952.7742704911
+#> EM: Iteration : 132 || log-likelihood : -14952.2512735472
+#> EM: Iteration : 133 || log-likelihood : -14951.7732467959
+#> EM: Iteration : 134 || log-likelihood : -14951.3384384789
+#> EM: Iteration : 135 || log-likelihood : -14950.943954739
+#> EM: Iteration : 136 || log-likelihood : -14950.5860673338
+#> EM: Iteration : 137 || log-likelihood : -14950.2605961882
+#> EM: Iteration : 138 || log-likelihood : -14949.9632302116
+#> EM: Iteration : 139 || log-likelihood : -14949.6897803641
+#> EM: Iteration : 140 || log-likelihood : -14949.4363440445
+#> EM: Iteration : 141 || log-likelihood : -14949.1993934317
+#> EM: Iteration : 142 || log-likelihood : -14948.9758045749
+#> EM: Iteration : 143 || log-likelihood : -14948.7628462597
+#> EM: Iteration : 144 || log-likelihood : -14948.5581447392
+#> EM: Iteration : 145 || log-likelihood : -14948.3596363745
+#> EM: Iteration : 146 || log-likelihood : -14948.165516153
+#> EM: Iteration : 147 || log-likelihood : -14947.974186687
+#> EM: Iteration : 148 || log-likelihood : -14947.7842100553
+#> EM: Iteration : 149 || log-likelihood : -14947.5942633297
+#> EM: Iteration : 150 || log-likelihood : -14947.4030977477
+#> EM: Iteration : 151 || log-likelihood : -14947.2095010209
+#> EM: Iteration : 152 || log-likelihood : -14947.0122620431
+#> EM: Iteration : 153 || log-likelihood : -14946.8101371905
+#> EM: Iteration : 154 || log-likelihood : -14946.6018173978
+#> EM: Iteration : 155 || log-likelihood : -14946.3858952294
+#> EM: Iteration : 156 || log-likelihood : -14946.1608312129
+#> EM: Iteration : 157 || log-likelihood : -14945.9249187651
+#> EM: Iteration : 158 || log-likelihood : -14945.6762471282
+#> EM: Iteration : 159 || log-likelihood : -14945.4126618455
+#> EM: Iteration : 160 || log-likelihood : -14945.1317224704
+#> EM: Iteration : 161 || log-likelihood : -14944.8306574043
+#> EM: Iteration : 162 || log-likelihood : -14944.5063160126
+#> EM: Iteration : 163 || log-likelihood : -14944.1551184332
+#> EM: Iteration : 164 || log-likelihood : -14943.7730037291
+#> EM: Iteration : 165 || log-likelihood : -14943.3553771444
+#> EM: Iteration : 166 || log-likelihood : -14942.897057094
+#> EM: Iteration : 167 || log-likelihood : -14942.3922219935
+#> EM: Iteration : 168 || log-likelihood : -14941.8343560099
+#> EM: Iteration : 169 || log-likelihood : -14941.216191265
+#> EM: Iteration : 170 || log-likelihood : -14940.5296397136
+#> EM: Iteration : 171 || log-likelihood : -14939.7657191098
+#> EM: Iteration : 172 || log-likelihood : -14938.9144460447
+#> EM: Iteration : 173 || log-likelihood : -14937.9647057624
+#> EM: Iteration : 174 || log-likelihood : -14936.9040831227
+#> EM: Iteration : 175 || log-likelihood : -14935.7186499996
+#> EM: Iteration : 176 || log-likelihood : -14934.3927038989
+#> EM: Iteration : 177 || log-likelihood : -14932.9084527541
+#> EM: Iteration : 178 || log-likelihood : -14931.2456400075
+#> EM: Iteration : 179 || log-likelihood : -14929.3811026379
+#> EM: Iteration : 180 || log-likelihood : -14927.2882537405
+#> EM: Iteration : 181 || log-likelihood : -14924.936482197
+#> EM: Iteration : 182 || log-likelihood : -14922.2904675463
+#> EM: Iteration : 183 || log-likelihood : -14919.3094232066
+#> EM: Iteration : 184 || log-likelihood : -14915.9463144789
+#> EM: Iteration : 185 || log-likelihood : -14912.1471647756
+#> EM: Iteration : 186 || log-likelihood : -14907.8506902104
+#> EM: Iteration : 187 || log-likelihood : -14902.9887290443
+#> EM: Iteration : 188 || log-likelihood : -14897.4883102841
+#> EM: Iteration : 189 || log-likelihood : -14891.2767683404
+#> EM: Iteration : 190 || log-likelihood : -14884.2919447513
+#> EM: Iteration : 191 || log-likelihood : -14876.4995909727
+#> EM: Iteration : 192 || log-likelihood : -14867.9179321831
+#> EM: Iteration : 193 || log-likelihood : -14858.6442978299
+#> EM: Iteration : 194 || log-likelihood : -14848.880433822
+#> EM: Iteration : 195 || log-likelihood : -14838.9872847862
+#> EM: Iteration : 196 || log-likelihood : -14829.6292321871
+#> EM: Iteration : 197 || log-likelihood : -14821.8717823507
+#> EM: Iteration : 198 || log-likelihood : -14816.6461672164
+#> EM: Iteration : 199 || log-likelihood : -14813.7497363848
+#> EM: Iteration : 200 || log-likelihood : -14812.2267827625
+#> EM: Iteration : 201 || log-likelihood : -14811.4198287243
+#> EM: Iteration : 202 || log-likelihood : -14811.0049217158
+#> EM: Iteration : 203 || log-likelihood : -14810.7960368619
+#> EM: Iteration : 204 || log-likelihood : -14810.6883875883
 
 mixrhlp$summary()
 #> ------------------------
@@ -87,20 +291,6 @@ mixrhlp$summary()
 #> Regression coefficients:
 #> 
 #>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
-#> 1     6.3513369    4.214736   6.6536553
-#> X^1  -0.2449377    0.839666   0.1024863
-#> 
-#> Variances:
-#> 
-#>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
-#>      0.9498285     0.9270384      1.001413
-#> 
-#> --------------------
-#> Cluster 2 (G = 2):
-#> 
-#> Regression coefficients:
-#> 
-#>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
 #> 1    4.96556671   6.7326717   4.8807183
 #> X^1  0.08880479   0.4984443   0.1350271
 #> 
@@ -108,6 +298,20 @@ mixrhlp$summary()
 #> 
 #>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
 #>      0.9559969       1.03849     0.9506928
+#> 
+#> --------------------
+#> Cluster 2 (G = 2):
+#> 
+#> Regression coefficients:
+#> 
+#>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
+#> 1     6.3513369    4.214736   6.6536553
+#> X^1  -0.2449377    0.839666   0.1024863
+#> 
+#> Variances:
+#> 
+#>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
+#>      0.9498285     0.9270384      1.001413
 #> 
 #> --------------------
 #> Cluster 3 (G = 3):

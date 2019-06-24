@@ -30,17 +30,13 @@ ModelMixRHLP <- setRefClass(
         # Cluster and means
         par(mfrow = c(round(sqrt(paramMixRHLP$G + 1)), round(sqrt(paramMixRHLP$G + 1))), mai = c(0.6, 0.6, 0.5, 0.25), mgp = c(2, 1, 0))
 
-        matplot(paramMixRHLP$fData$X, t(paramMixRHLP$fData$Y), type = "l", lty = "solid", col = "black", xlab = "Time", ylab = "y(t)")
-        title(main = "Original time series")
+        matplot(paramMixRHLP$fData$X, t(paramMixRHLP$fData$Y), type = "l", lty = "solid", col = "black", xlab = "x", ylab = "y")
+        title(main = "Dataset")
 
         for (g in 1:paramMixRHLP$G) {
-          cluster_g = paramMixRHLP$fData$Y[statMixRHLP$klas == g,]
-          matplot(paramMixRHLP$fData$X, t(cluster_g), type = "l", lty = "dotted", col = colorsvector[g], xlab = "Time", ylab = "y(t)")
-          if (is.null(dim(statMixRHLP$Ex_g))) {
-            lines(paramMixRHLP$fData$X, statMixRHLP$Ex_g, col = "black", lty = "solid", lwd = 1.5)
-          } else {
-            lines(paramMixRHLP$fData$X, statMixRHLP$Ex_g[, g], col = "black", lty = "solid", lwd = 1.5)
-          }
+          cluster_g = paramMixRHLP$fData$Y[statMixRHLP$klas == g, ]
+          matplot(paramMixRHLP$fData$X, t(cluster_g), type = "l", lty = "dotted", col = colorsvector[g], xlab = "x", ylab = "y")
+          lines(paramMixRHLP$fData$X, as.matrix(statMixRHLP$Ex_g)[, g], col = "black", lty = "solid", lwd = 1.5)
           title(main = sprintf("Cluster %1.1i", g))
         }
       }
@@ -48,21 +44,25 @@ ModelMixRHLP <- setRefClass(
       if (any(what == "regressors")) {
         par(mfrow = c(2, 1), mai = c(0.6, 0.8, 0.5, 0.5))
         for (g in 1:paramMixRHLP$G) {
-
-          cluster_g = paramMixRHLP$fData$Y[statMixRHLP$klas == g,]
-          matplot(paramMixRHLP$fData$X, t(cluster_g), type = "l", lty = "dotted", col = colorsvector[g], xlab = "Time", ylab = "y(t)")
+          cluster_g = paramMixRHLP$fData$Y[statMixRHLP$klas == g, ]
+          matplot(paramMixRHLP$fData$X, t(cluster_g), type = "l", lty = "dotted", col = colorsvector[g], xlab = "x", ylab = "y")
           # Polynomial regressors
-          for (i in 1:ncol(statMixRHLP$polynomials[, , g])) {
-            lines(paramMixRHLP$fData$X, statMixRHLP$polynomials[, i, g], col = "black", lty = "dotted", lwd = 1.5)
-          }
-          if (is.null(dim(statMixRHLP$Ex_g))) {
-            lines(paramMixRHLP$fData$X, statMixRHLP$Ex_g, col = "black", lty = "solid", lwd = 1.5)
+          if (paramMixRHLP$K > 0) {
+            for (k in 1:paramMixRHLP$K) {
+              lines(paramMixRHLP$fData$X, statMixRHLP$polynomials[, k, g], col = "black", lty = "dotted", lwd = 1.5)
+            }
           } else {
-            lines(paramMixRHLP$fData$X, statMixRHLP$Ex_g[, g], col = "black", lty = "solid", lwd = 1.5)
+            lines(paramMixRHLP$fData$X, statMixRHLP$polynomials[, , g], col = "black", lty = "dotted", lwd = 1.5)
           }
+
+          lines(paramMixRHLP$fData$X, as.matrix(statMixRHLP$Ex_g)[, g], col = "black", lty = "solid", lwd = 1.5)
           title(main = sprintf("Cluster %1.1i", g))
 
-          matplot(paramMixRHLP$fData$X, paramMixRHLP$pi_jgk[1:paramMixRHLP$fData$m, , g], type = "l", lty = "solid", xlab = "Time", ylab = "Logistic proportions", ylim = c(0, 1))
+          if (paramMixRHLP$G > 1) {
+            matplot(paramMixRHLP$fData$X, paramMixRHLP$pi_jgk[1:paramMixRHLP$fData$m, , g], type = "l", lty = "solid", xlab = "x", ylab = "Logistic proportions", ylim = c(0, 1))
+          } else {
+            matplot(paramMixRHLP$fData$X, paramMixRHLP$pi_jgk[1:paramMixRHLP$fData$m, ], type = "l", lty = "solid", xlab = "x", ylab = "Logistic proportions", ylim = c(0, 1))
+          }
 
         }
       }
@@ -76,7 +76,6 @@ ModelMixRHLP <- setRefClass(
     },
 
     summary = function() {
-
       digits = getOption("digits")
 
       title <- paste("Fitted mixRHLP model")
@@ -91,13 +90,13 @@ ModelMixRHLP <- setRefClass(
 
       cat("\n")
       cat("\n")
-      cat(paste0("MixRHLP model with G = ", paramMixRHLP$G, ifelse(paramMixRHLP$G > 1, " clusters", " cluster"),
-                 " and K = ", paramMixRHLP$K, ifelse(paramMixRHLP$K > 1, " regimes", " regime"), ":"))
+      cat(paste0("MixRHLP model with G = ", paramMixRHLP$G, ifelse(paramMixRHLP$G > 1, " clusters", " cluster"), " and K = ", paramMixRHLP$K, ifelse(paramMixRHLP$K > 1, " regimes", " regime"), ":"))
       cat("\n")
       cat("\n")
 
-      tab <- data.frame("log-likelihood" = statMixRHLP$log_lik, "nu" = paramMixRHLP$nu, "AIC" = statMixRHLP$AIC,
-                        "BIC" = statMixRHLP$BIC, "ICL" = statMixRHLP$ICL, row.names = "", check.names = FALSE)
+      tab <- data.frame("log-likelihood" = statMixRHLP$log_lik, "nu" = paramMixRHLP$nu,
+                        "AIC" = statMixRHLP$AIC, "BIC" = statMixRHLP$BIC, "ICL" = statMixRHLP$ICL,
+                        row.names = "", check.names = FALSE)
       print(tab, digits = digits)
 
       cat("\nClustering table:")
@@ -127,8 +126,7 @@ ModelMixRHLP <- setRefClass(
         colnames(betas) <- sapply(1:paramMixRHLP$K, function(x) paste0("Beta(K = ", x, ")"))
         print(betas, digits = digits)
 
-        cat(paste0(ifelse(paramMixRHLP$variance_type == "homoskedastic", "\n",
-                          "\nVariances:\n\n")))
+        cat(paste0(ifelse(paramMixRHLP$variance_type == "homoskedastic", "\n", "\nVariances:\n\n")))
         sigma2 <- data.frame(t(paramMixRHLP$sigma2_g[, g]))
         if (paramMixRHLP$variance_type == "homoskedastic") {
           colnames(sigma2) <- "Sigma2"
@@ -144,4 +142,3 @@ ModelMixRHLP <- setRefClass(
 
   )
 )
-
