@@ -11,10 +11,10 @@
 #' arg max_k P(c_i = g | Y, W, \beta); 0 otherwise}, \eqn{k = 1,\dots,G}.
 #' @field klas Column matrix of the labels issued from `z_ik`. Its elements are
 #' \eqn{klas(i) = k}, \eqn{k = 1,\dots,K}.
-#' @field Ex_g Column vector of dimension m for each g \emph{(m,G)}. `Ex_g` is the curve expectation
+#' @field Ex Column vector of dimension m for each g \emph{(m,G)}. `Ex` is the curve expectation
 #' : sum of the polynomial components \eqn{\beta_{gk} \times X_{i}}{\betak x X_i}
 #' weighted by the logistic probabilities `pij_gk`:
-#' \eqn{Ex_g(j) = \sum_{k = 1}^{K} pi_jik \times \beta_{gk} \times X_{i}}{Ey(i) =
+#' \eqn{Ex(j) = \sum_{k = 1}^{K} pi_jik \times \beta_{gk} \times X_{i}}{Ey(i) =
 #' \sum_{k=1}^K pi_jik x \betak x X_i}, \eqn{i = 1,\dots,n}.
 #' @field log\_lik Numeric. Log-likelihood of the MixRHLP model.
 #' @field com_loglik Numeric. Complete log-likelihood of the MixRHLP model.
@@ -45,15 +45,16 @@
 StatMixRHLP <- setRefClass(
   "StatMixRHLP",
   fields = list(
+    pi_jgk = "array", # pi_jgk :logistic proportions for cluster g
     h_ig = "matrix", # h_ig = prob(curve|cluster_g) : post prob (fuzzy segmentation matrix of dim [nxG])
     c_ig = "matrix", # c_ig : Hard partition obtained by the AP rule :  c_{ig} = 1
     # if and only c_i = arg max_g h_ig (g=1,...,G)
     klas = "matrix", # klas : column vector of cluster labels
-    Ex_g = "matrix",
-    # Ex_g: curve expectation: sum of the polynomial components beta_gk ri weighted by
-    # the logitic probabilities pij_gk: Ex_g(j) = sum_{k=1}^K pi_jgk beta_gk rj, j=1,...,m. Ex_g
+    Ex = "matrix",
+    # Ex: curve expectation: sum of the polynomial components beta_gk ri weighted by
+    # the logitic probabilities pij_gk: Ex(j) = sum_{k=1}^K pi_jgk beta_gk rj, j=1,...,m. Ex
     # is a column vector of dimension m for each g.
-    log_lik = "numeric", # the loglikelihood of the EM or CEM algorithm
+    loglik = "numeric", # the loglikelihood of the EM or CEM algorithm
     com_loglik = "numeric", # the complete loglikelihood of the EM (computed at the convergence) or CEM algorithm
     stored_loglik = "list", # vector of stored valued of the comp-log-lik at each EM teration
     stored_com_loglik = "list",
@@ -74,11 +75,12 @@ StatMixRHLP <- setRefClass(
   methods = list(
     initialize = function(paramMixRHLP = ParamMixRHLP()) {
 
+      pi_jgk <<- array(0, dim = c(paramMixRHLP$fData$m * paramMixRHLP$fData$n, paramMixRHLP$K, paramMixRHLP$G))
       h_ig <<- matrix(NA, paramMixRHLP$fData$n, paramMixRHLP$G)
       c_ig <<- matrix(NA, paramMixRHLP$fData$n, paramMixRHLP$G)
       klas <<- matrix(NA, paramMixRHLP$fData$n, 1)
-      Ex_g <<- matrix(NA, paramMixRHLP$fData$m, paramMixRHLP$G)
-      log_lik <<- -Inf
+      Ex <<- matrix(NA, paramMixRHLP$fData$m, paramMixRHLP$G)
+      loglik <<- -Inf
       com_loglik <<- -Inf
       stored_loglik <<- list()
       stored_com_loglik <<- list()
@@ -110,39 +112,28 @@ StatMixRHLP <- setRefClass(
       }
     },
 
-    computeStats = function(mixParam, cpu_time_all) {
+    computeStats = function(paramMixRHLP, cpu_time_all) {
 
-      for (g in 1:mixParam$G) {
+      for (g in 1:paramMixRHLP$G) {
 
-        polynomials[, , g] <<- mixParam$phi$XBeta[1:mixParam$fData$m, ] %*% as.matrix(mixParam$betag[, , g])
+        polynomials[, , g] <<- paramMixRHLP$phi$XBeta[1:paramMixRHLP$fData$m, ] %*% as.matrix(paramMixRHLP$beta[, , g])
 
-        if (mixParam$K != 1 && mixParam$G != 1) {
-          weighted_polynomials[, , g] <<- mixParam$pi_jgk[, , g] * polynomials[, , g]
-          Ex_g[, g] <<- rowSums(weighted_polynomials[, , g])
-        } else if (mixParam$K == 1 && mixParam$G != 1) {
-          weighted_polynomials[, , g] <<- mixParam$pi_jgk[, g] * polynomials[, , g]
-          Ex_g[, g] <<- weighted_polynomials[, , g]
-        } else if (mixParam$K != 1 && mixParam$G == 1) {
-          weighted_polynomials[, , g] <<- mixParam$pi_jgk * polynomials[, , g]
-          Ex_g[, g] <<- matrix(rowSums(weighted_polynomials[, , g]))
-        } else {
-          weighted_polynomials[, , g] <<- mixParam$pi_jgk * polynomials[, , g]
-          Ex_g[, g] <<- weighted_polynomials[, , g]
-        }
+        weighted_polynomials[, , g] <<- pi_jgk[1:paramMixRHLP$fData$m, , g] * polynomials[, , g]
+        Ex[, g] <<- rowSums(as.matrix(weighted_polynomials[, , g]))
+
       }
 
-      Ex_g <<- matrix(Ex_g, nrow = mixParam$fData$m)
+      Ex <<- matrix(Ex, nrow = paramMixRHLP$fData$m)
       cpu_time <<- mean(cpu_time_all)
-      Psi <- c(as.vector(mixParam$alpha_g), as.vector(mixParam$Wg), as.vector(mixParam$betag), as.vector(mixParam$sigma2_g))
-      nu <- length(Psi)
-      BIC <<- log_lik - (nu * log(mixParam$fData$n) / 2)
-      AIC <<- log_lik - nu
+
+      BIC <<- loglik - (paramMixRHLP$nu * log(paramMixRHLP$fData$n) / 2)
+      AIC <<- loglik - paramMixRHLP$nu
 
       cig_log_alphag_fg_xij <- (c_ig) * (log_alphag_fg_xij)
 
       com_loglik <<- sum(rowSums(cig_log_alphag_fg_xij))
 
-      ICL <<- com_loglik - nu * log(mixParam$fData$n) / 2
+      ICL <<- com_loglik - paramMixRHLP$nu * log(paramMixRHLP$fData$n) / 2
     },
 
     CStep = function(reg_irls) {
@@ -156,30 +147,32 @@ StatMixRHLP <- setRefClass(
       com_loglik <<- sum(cig_log_alphag_fg_xij) +  reg_irls
     },
 
-    EStep = function(mixParam) {
+    EStep = function(paramMixRHLP) {
 
-      for (g in 1:mixParam$G) {
-        alpha_g <- mixParam$alpha_g[g]
-        beta_g <- mixParam$betag[, , g]
-        Wg <- mixParam$Wg[, , g]
-        pi_jgk <- mixParam$pi_jgk[, , g]
+      for (g in 1:paramMixRHLP$G) {
+
+        alpha_g <- paramMixRHLP$alpha[g]
+        beta_g <- paramMixRHLP$beta[, , g]
+        Wg <- paramMixRHLP$W[, , g]
+        piik <- multinomialLogit(paramMixRHLP$W[, , g], paramMixRHLP$phi$Xw, ones(nrow(paramMixRHLP$phi$Xw), ncol(paramMixRHLP$W[, , g]) + 1), ones(nrow(paramMixRHLP$phi$Xw), 1))$piik
+        pi_jgk[, , g] <<- repmat(piik[1:paramMixRHLP$fData$m,], paramMixRHLP$fData$n, 1)
 
         if (!is.matrix(beta_g)) {
           beta_g <- matrix(beta_g)
-          pi_jgk <- matrix(pi_jgk)
+          pi_jgk[, , g] <- matrix(pi_jgk[, , g])
         }
 
-        log_pijgk_fgk_xij <- zeros(mixParam$fData$n * mixParam$fData$m, mixParam$K)
+        log_pijgk_fgk_xij <- zeros(paramMixRHLP$fData$n * paramMixRHLP$fData$m, paramMixRHLP$K)
 
-        for (k in 1:mixParam$K) {
+        for (k in 1:paramMixRHLP$K) {
           beta_gk <- beta_g[, k]
-          if (mixParam$variance_type == "homoskedastic") {
-            sgk <- mixParam$sigma2_g[g]
+          if (paramMixRHLP$variance_type == "homoskedastic") {
+            sgk <- paramMixRHLP$sigma2[g]
           } else {
-            sgk <- mixParam$sigma2_g[k, g]
+            sgk <- paramMixRHLP$sigma2[k, g]
           }
-          z <- ((mixParam$fData$vecY - mixParam$phi$XBeta %*% beta_gk) ^ 2) / sgk
-          log_pijgk_fgk_xij[, k] <- log(pi_jgk[, k]) - 0.5 * (log(2 * pi) + log(sgk)) - 0.5 * z # pdf cond c_i = g et z_i = k de xij
+          z <- ((paramMixRHLP$fData$vecY - paramMixRHLP$phi$XBeta %*% beta_gk) ^ 2) / sgk
+          log_pijgk_fgk_xij[, k] <- log(pi_jgk[, k, g]) - 0.5 * (log(2 * pi) + log(sgk)) - 0.5 * z # pdf cond c_i = g et z_i = k de xij
         }
 
         log_pijgk_fgk_xij <- pmin(log_pijgk_fgk_xij, log(.Machine$double.xmax))
@@ -189,10 +182,10 @@ StatMixRHLP <- setRefClass(
         sumk_pijgk_fgk_xij <- rowSums(pijgk_fgk_xij) # sum over k
         log_sumk_pijgk_fgk_xij <- log(sumk_pijgk_fgk_xij) # [n*m, 1]
 
-        log_tau_ijgk[, , g] <<- log_pijgk_fgk_xij - log_sumk_pijgk_fgk_xij %*% ones(1, mixParam$K)
+        log_tau_ijgk[, , g] <<- log_pijgk_fgk_xij - log_sumk_pijgk_fgk_xij %*% ones(1, paramMixRHLP$K)
         tau_ijgk[, , g] <<- exp(lognormalize(log_tau_ijgk[, , g]))
 
-        log_fg_xij[, g] <<- rowSums(t(matrix(log_sumk_pijgk_fgk_xij, mixParam$fData$m, mixParam$fData$n))) # [n x 1]:  sum over j=1,...,m: fg_xij = prod_j sum_k pi_{jgk} N(x_{ij},mu_{gk},s_{gk))
+        log_fg_xij[, g] <<- rowSums(t(matrix(log_sumk_pijgk_fgk_xij, paramMixRHLP$fData$m, paramMixRHLP$fData$n))) # [n x 1]:  sum over j=1,...,m: fg_xij = prod_j sum_k pi_{jgk} N(x_{ij},mu_{gk},s_{gk))
         log_alphag_fg_xij[, g] <<- log(alpha_g) + log_fg_xij[, g] # [nxg]
       }
       log_alphag_fg_xij <<- pmin(log_alphag_fg_xij, log(.Machine$double.xmax))
@@ -200,7 +193,7 @@ StatMixRHLP <- setRefClass(
 
       h_ig <<- exp(lognormalize(log_alphag_fg_xij))
 
-      log_lik <<- sum(log(rowSums(exp(log_alphag_fg_xij))))
+      loglik <<- sum(log(rowSums(exp(log_alphag_fg_xij))))
     }
 
   )

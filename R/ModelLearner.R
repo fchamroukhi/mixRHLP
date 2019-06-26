@@ -61,73 +61,66 @@ emMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedast
 
     # Initialization
     variance_type <- match.arg(variance_type)
-    mixParam <- ParamMixRHLP$new(fData = fData, G = G, K = K, p = p, q = q, variance_type = variance_type)
-    mixParam$initParam(init_kmeans, try_EM)
+    param <- ParamMixRHLP$new(fData = fData, G = G, K = K, p = p, q = q, variance_type = variance_type)
+    param$initParam(init_kmeans, try_EM)
 
     iter <- 0
     converge <- FALSE
     prev_loglik <- -Inf
 
-    mixStats <- StatMixRHLP(mixParam)
+    stat <- StatMixRHLP(param)
 
     while (!converge && (iter <= max_iter)) {
-      mixStats$EStep(mixParam)
+      stat$EStep(param)
 
-      mixParam$MStep(mixStats, verbose_IRLS)
+      param$MStep(stat, verbose_IRLS)
 
       iter <- iter + 1
       if (verbose) {
-        cat(paste0("EM: Iteration : ", iter, " || log-likelihood : "  , mixStats$log_lik, "\n"))
+        cat(paste0("EM: Iteration : ", iter, " || log-likelihood : "  , stat$loglik, "\n"))
       }
 
-      if (prev_loglik - mixStats$log_lik > 1e-5) {
-        warning(paste0("EM log-likelihood is decreasing from ", prev_loglik, "to ", mixStats$log_lik, " !"))
-        # top <- top + 1
-        # if (top > 20) {
-        #   break
-        # }
+      if (prev_loglik - stat$loglik > 1e-5) {
+        warning(paste0("EM log-likelihood is decreasing from ", prev_loglik, "to ", stat$loglik, " !"))
+        top <- top + 1
+        if (top > 20) {
+          break
+        }
       }
 
       # Test of convergence
-      converge <- abs((mixStats$log_lik - prev_loglik) / prev_loglik) <= threshold
+      converge <- abs((stat$loglik - prev_loglik) / prev_loglik) <= threshold
       if (is.na(converge)) {
         converge <- FALSE
       }
 
-      prev_loglik <- mixStats$log_lik
-      mixStats$stored_loglik[iter] <- mixStats$log_lik
+      prev_loglik <- stat$loglik
+      stat$stored_loglik[iter] <- stat$loglik
     } # End of EM loop
 
     cpu_time_all[try_EM] <- Sys.time() - time
 
-    if (mixStats$log_lik > best_loglik) {
-      mixStatsSolution <- mixStats$copy()
-      mixParamSolution <- mixParam$copy()
-
-      if (mixParam$K == 1 && mixParam$G == 1) {
-        mixParamSolution$pi_jgk <- matrix(mixParam$pi_jgk, nrow = mixParam$fData$m, ncol = 1)
-      } else {
-        mixParamSolution$pi_jgk <- mixParam$pi_jgk[1:mixParam$fData$m, ,]
-      }
-
-      best_loglik <- mixStats$log_lik
+    if (stat$loglik > best_loglik) {
+      statSolution <- stat$copy()
+      paramSolution <- param$copy()
+      best_loglik <- stat$loglik
     }
 
     if (n_tries > 1 && verbose) {
-        cat(paste0("Log-likelihood at convergence:", mixStats$log_li))
+        cat(paste0("Log-likelihood at convergence:", stat$loglik))
     }
   }
 
   # Computation of c_ig the hard partition of the curves and klas
-  mixStatsSolution$MAP()
+  statSolution$MAP()
 
   if (n_tries > 1 && verbose) {
-    cat(paste0("Best value of the log-likelihood: ", mixStatsSolution$log_lik, "\n"))
+    cat(paste0("Best value of the log-likelihood: ", statSolution$loglik, "\n"))
   }
 
-  mixStatsSolution$computeStats(mixParamSolution, cpu_time_all)
+  statSolution$computeStats(paramSolution, cpu_time_all)
 
-  return(ModelMixRHLP(paramMixRHLP = mixParamSolution, statMixRHLP = mixStatsSolution))
+  return(ModelMixRHLP(paramMixRHLP = paramSolution, statMixRHLP = statSolution))
 }
 
 
@@ -192,19 +185,19 @@ CEM <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedastic", "
     time <- Sys.time()
 
     # Initialization
-    mixParam <- ParamMixRHLP$new(fData = fData, G = G, K = K, p = p, q = q, variance_type = variance_type)
-    mixParam$initParam(init_kmeans, try_CEM)
+    param <- ParamMixRHLP$new(fData = fData, G = G, K = K, p = p, q = q, variance_type = variance_type)
+    param$initParam(init_kmeans, try_CEM)
 
     iter <- 0
     converge <- FALSE
     prev_com_loglik <- -Inf
     reg_irls <- 0
-    mixStats <- StatMixRHLP(mixParam)
+    stat <- StatMixRHLP(param)
 
     while (!converge && (iter <= max_iter)) {
-      mixStats$EStep(mixParam)
-      mixStats$CStep(reg_irls)
-      res <- mixParam$CMStep(mixStats)
+      stat$EStep(param)
+      stat$CStep(reg_irls)
+      res <- param$CMStep(stat)
       reg_irls = res[[1]]
       good_segmentation = res[[2]]
       if (good_segmentation == FALSE) {
@@ -214,53 +207,43 @@ CEM <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedastic", "
 
       iter <- iter + 1
       if (verbose) {
-        cat(paste0("CEM: Iteration : ", iter, " || Complete log-likelihood : "  , mixStats$com_loglik, "\n"))
+        cat(paste0("CEM: Iteration : ", iter, " || Complete log-likelihood : "  , stat$com_loglik, "\n"))
       }
 
-      if (prev_com_loglik - mixStats$com_loglik > 1e-5) {
-        warning(paste0("CEM complete log-likelihood is decreasing from ", prev_com_loglik, "to ", mixStats$com_loglik, " !"))
+      if (prev_com_loglik - stat$com_loglik > 1e-5) {
+        warning(paste0("CEM complete log-likelihood is decreasing from ", prev_com_loglik, "to ", stat$com_loglik, " !"))
         top <- top + 1
         if (top > 20)
           break
       }
 
       # Test of convergence
-      converge <- abs((mixStats$com_loglik - prev_com_loglik) / prev_com_loglik) <= threshold
+      converge <- abs((stat$com_loglik - prev_com_loglik) / prev_com_loglik) <= threshold
       if (is.na(converge)) {
         converge <- FALSE
       }
 
-      prev_com_loglik <- mixStats$com_loglik
-      mixStats$stored_loglik[iter] <- mixStats$com_loglik
+      prev_com_loglik <- stat$com_loglik
+      stat$stored_loglik[iter] <- stat$com_loglik
     } # End of the CEM loop
 
     cpu_time_all[try_CEM] <- Sys.time() - time
 
-    if (mixStats$com_loglik > best_com_loglik) {
-      mixStatsSolution <- mixStats$copy()
-      mixParamSolution <- mixParam$copy()
-
-      if (mixParam$K == 1 && mixParam$G == 1) {
-        mixParamSolution$pi_jgk <-
-          matrix(mixParam$pi_jgk,
-                 nrow = mixParam$fData$m,
-                 ncol = 1)
-      } else {
-        mixParamSolution$pi_jgk <- mixParam$pi_jgk[1:mixParam$fData$m, ,]
-      }
-
-      best_com_loglik <- mixStats$com_loglik
+    if (stat$com_loglik > best_com_loglik) {
+      statSolution <- stat$copy()
+      paramSolution <- param$copy()
+      best_com_loglik <- stat$com_loglik
     }
     if (n_tries > 1 && verbose) {
-      cat(paste0("Complete log-likelihood at convergence:", mixStats$com_loglik))
+      cat(paste0("Complete log-likelihood at convergence:", stat$com_loglik))
     }
   }
 
   if (n_tries > 1 && verbose) {
-    cat(paste0("Best value of the complete log-likelihood: ", mixStatsSolution$com_loglik, "\n"))
+    cat(paste0("Best value of the complete log-likelihood: ", statSolution$com_loglik, "\n"))
   }
 
-  mixStatsSolution$computeStats(mixParamSolution, cpu_time_all)
+  statSolution$computeStats(paramSolution, cpu_time_all)
 
-  return(ModelMixRHLP(paramMixRHLP = mixParamSolution, statMixRHLP = mixStatsSolution))
+  return(ModelMixRHLP(paramMixRHLP = paramSolution, statMixRHLP = statSolution))
 }
