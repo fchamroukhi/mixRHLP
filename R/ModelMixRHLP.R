@@ -1,11 +1,11 @@
 #' A Reference Class which represents a fitted MixRHLP model.
 #'
-#' ModelMixRHLP represents a [MixRHLP][ModelMixRHLP] model for which parameters have
-#' been estimated.
+#' ModelMixRHLP represents an estimated MixRHLP model.
 #'
-#' @usage NULL
-#' @field paramMixRHLP A [ParamMixRHLP][ParamMixRHLP] object. It contains the estimated values of the parameters.
-#' @field statMixRHLP A [StatMixRHLP][StatMixRHLP] object. It contains all the statistics associated to the MixRHLP model.
+#' @field paramMixRHLP A [ParamMixRHLP][ParamMixRHLP] object. It contains the
+#'   estimated values of the parameters.
+#' @field statMixRHLP A [StatMixRHLP][StatMixRHLP] object. It contains all the
+#'   statistics associated to the MixRHLP model.
 #' @seealso [ParamMixRHLP], [StatMixRHLP]
 #' @export
 ModelMixRHLP <- setRefClass(
@@ -15,7 +15,21 @@ ModelMixRHLP <- setRefClass(
     statMixRHLP = "StatMixRHLP"
   ),
   methods = list(
-    plot = function(what = c("meancurve", "regressors", "loglikelihood")) {
+    plot = function(what = c("estimatedsignal", "regressors", "loglikelihood")) {
+      "Plot method.
+      \\describe{
+        \\item{\\code{what}}{The type of graph requested:
+          \\itemize{
+            \\item \\code{\"estimatedsignal\" = } Estimated signal (Sum of the
+            polynomial regression components weighted by the logistic
+            probabilities).
+            \\item \\code{\"regressors\" = } Polynomial regression components.
+            \\item \\code{\"loglikelihood\" = } Value of the log-likelihood for
+            each iteration.
+          }
+        }
+      }
+      By default, all the above graphs are produced."
 
       what <- match.arg(what, several.ok = TRUE)
 
@@ -26,7 +40,7 @@ ModelMixRHLP <- setRefClass(
 
       colorsvector = rainbow(paramMixRHLP$G)
 
-      if (any(what == "meancurve")) {
+      if (any(what == "estimatedsignal")) {
         # Cluster and means
         par(mfrow = c(ceiling(sqrt(paramMixRHLP$G + 1)), round(sqrt(paramMixRHLP$G + 1))), mai = c(0.6, 0.6, 0.5, 0.25), mgp = c(2, 1, 0))
 
@@ -81,6 +95,8 @@ ModelMixRHLP <- setRefClass(
     },
 
     summary = function() {
+      "Summary method."
+
       digits = getOption("digits")
 
       title <- paste("Fitted mixRHLP model")

@@ -6,75 +6,93 @@
 \alias{StatMixRHLP}
 \title{A Reference Class which contains statistics of a MixRHLP model.}
 \description{
-StatMRHLP contains all the parameters of a \link[=ParamMixRHLP]{MixRHLP} model.
+StatMixRHLP contains all the statistics associated to a
+\link[=ParamMixRHLP]{MixRHLP} model.
 }
 \section{Fields}{
 
 \describe{
-\item{\code{h_ig}}{Fuzzy segmentation matrix of size \eqn{(n, G)} representing the
-post probabilities prob(curve|cluster_g)}
+\item{\code{pi_jgk}}{Array of size \eqn{(nm, K, G)} representing the logistic
+proportion for cluster g.}
 
-\item{\code{c_ig}}{Hard partition logical matrix of dimension \eqn{(n, G)}
-obtained by the Maximum a posteriori (MAP) rule:
-\eqn{c_{ig} = 1 \ \textrm{if} \ c_{ig} = \textrm{arg} \ \textrm{max}_{k} \
-P(c_i = g | Y, W, \beta);\ 0 \ \textrm{otherwise}}{c_ig = 1 if c_ig =
-arg max_k P(c_i = g | Y, W, \beta); 0 otherwise}, \eqn{k = 1,\dots,G}.}
+\item{\code{h_ig}}{Matrix of size \eqn{(n, G)} giving the posterior probabilities
+(fuzzy segmentation matrix) that the curve \eqn{Y_{i}} originates from the
+\eqn{g}-th RHLP model.}
 
-\item{\code{klas}}{Column matrix of the labels issued from \code{z_ik}. Its elements are
-\eqn{klas(i) = k}, \eqn{k = 1,\dots,K}.}
+\item{\code{c_ig}}{Hard segmentation logical matrix of dimension \eqn{(n, G)}
+obtained by the Maximum a posteriori (MAP) rule: \eqn{c\_ig = 1 \
+  \textrm{if} \ c\_ig = \textrm{arg} \ \textrm{max}_{g} \ h\_ig;\ 0 \
+  \textrm{otherwise}}{c_ig = 1 if c_ig = arg max_g h_ig; 0 otherwise}, \eqn{g
+  = 1,\dots,G}.}
 
-\item{\code{Ex_g}}{Column vector of dimension m for each g \emph{(m,G)}. \code{Ex_g} is the curve expectation
-: sum of the polynomial components \eqn{\beta_{gk} \times X_{i}}{\betak x X_i}
-weighted by the logistic probabilities \code{pij_gk}:
-\eqn{Ex_g(j) = \sum_{k = 1}^{K} pi_jik \times \beta_{gk} \times X_{i}}{Ey(i) =
-\sum_{k=1}^K pi_jik x \betak x X_i}, \eqn{i = 1,\dots,n}.}
+\item{\code{klas}}{Column matrix of the labels issued from \code{c_ig}. Its elements are
+\eqn{klas(i) = g}, \eqn{i = 1,\dots,n}.}
 
-\item{\code{log\_lik}}{Numeric. Log-likelihood of the MixRHLP model.}
+\item{\code{tau_ijgk}}{Array of size \eqn{(nm, K, G)} giving the posterior
+probabilities that the observation \eqn{Y_{ij}} originates from the
+\eqn{K}-th regime of the \eqn{g}-th RHLP model.}
 
-\item{\code{com_loglik}}{Numeric. Complete log-likelihood of the MixRHLP model.}
+\item{\code{polynomials}}{Array of size \eqn{(m, K, G)} giving the values of the
+estimated polynomial regression components.}
+
+\item{\code{weighted_polynomials}}{Array of size \eqn{(m, K, G)} giving the values
+of the estimated polynomial regression components weighted by the prior
+probabilities \code{pi_jgk}.}
+
+\item{\code{Ex}}{Matrix of size \emph{(m, G)}. \code{Ex} is the curve expectation
+(estimated signal): sum of the polynomial components weighted by the
+logistic probabilities \code{pi_jgk}.}
+
+\item{\code{loglik}}{Numeric. Observed-data log-likelihood of the MixRHLP model.}
+
+\item{\code{com_loglik}}{Numeric. Complete-data log-likelihood of the MixRHLP model.}
 
 \item{\code{stored_loglik}}{List. Stored values of the log-likelihood at each EM
 iteration.}
 
-\item{\code{stored_com_loglik}}{List. Stored values of the complete log-likelihood at each EM iteration.}
+\item{\code{stored_com_loglik}}{List. Stored values of the Complete log-likelihood
+at each EM iteration.}
 
-\item{\code{tau_ijgk}}{Matrix of dimension \emph{(nm,K)} for each g (g=1,...,G), representing the fuzzy segmentation
-for the cluster g prob(y_{ij}|kth_segment,cluster_g)}
+\item{\code{BIC}}{Numeric. Value of BIC (Bayesian Information Criterion).}
 
-\item{\code{log_tau_ijgk}}{the logarithmic values for tau_ijgk}
+\item{\code{ICL}}{Numeric. Value of ICL (Integrated Completed Likelihood).}
 
-\item{\code{BIC}}{Numeric. Value of the BIC (Bayesian Information Criterion)
-criterion. The formula is \eqn{BIC = log\_lik - nu \times
-\textrm{log}(n) / 2}{BIC = log\_lik - nu x log(n) / 2} with \emph{nu} the
-degree of freedom of the MixRHLP model.}
+\item{\code{AIC}}{Numeric. Value of AIC (Akaike Information Criterion).}
 
-\item{\code{ICL}}{Numeric. Value of the ICL (Integrated Completed Likelihood)
-criterion. The formula is \eqn{ICL = com\_loglik - nu \times
-\textrm{log}(n) / 2}{ICL = com_loglik - nu x log(n) / 2} with \emph{nu} the
-degree of freedom of the MixRHLP model.}
+\item{\code{log_fg_xij}}{Matrix of size \eqn{(n, G)} giving the values of the
+probability density function \eqn{f(y_{i} | h_ig = 1, \boldsymbol{x},
+  \boldsymbol{\Psi})}{f(y_{i} | h_ig = 1, x, \Psi)}, \eqn{i = 1,\dots,n}.}
 
-\item{\code{AIC}}{Numeric. Value of the AIC (Akaike Information Criterion)
-criterion. The formula is \eqn{AIC = log\_lik - nu}{AIC = log\_lik - nu}.}
+\item{\code{log_alphag_fg_xij}}{Matrix of size \eqn{(n, G)} giving the values of the
+logarithm of the joint probability density function \eqn{f(y_{i}, \ h_{i} =
+  g | \boldsymbol{x}, \boldsymbol{\Psi})}{f(y_{i}, h_{i} = g | x, \Psi)},
+\eqn{i = 1,\dots,n}.}
 
-\item{\code{cpu_time}}{Numeric. Average executon time of a EM step.}
+\item{\code{log_tau_ijgk}}{Array of size \eqn{(nm, K, G)} giving the logarithm of
+\code{tau_ijgk}.}
 
-\item{\code{log_fg_xij}}{Loglikelihood for the n_g curves of cluster g. Matrix of dimension \eqn{(n, G)}}
-
-\item{\code{log_alphag_fg_xij}}{Matrix of dimension \eqn{(n, G)}}
-
-\item{\code{polynomials}}{Matrix of size \eqn{(m, K, G)} giving the values of
-\eqn{\beta_{k} \times X_{i}}{\betak x X_i}, \eqn{i = 1,\dots,m}.}
-
-\item{\code{weighted_polynomials}}{Matrix of size \eqn{(m, K, G)}}
+\item{\code{cpu_time}}{Numeric. Average computing time of a EM algorithm run.}
 }}
 
 \section{Methods}{
 
 \describe{
-\item{\code{MAP()}}{   calculate a partition by applying the Maximum A Posteriori Bayes
-   allocation rule}
+\item{\code{computeStats(paramMixRHLP, cpu_time_all)}}{Method used in the EM algorithm to compute statistics based on parameters
+provided by \code{paramMixRHLP}. It also calculates the average computing time
+of a single run of the EM algorithm.}
+
+\item{\code{EStep(paramMixRHLP)}}{Method used in the EM algorithm to update statistics based on parameters
+provided by \code{paramMixRHLP} (prior and posterior probabilities).}
+
+\item{\code{MAP()}}{MAP calculates values of the fields \code{c_ig} and \code{klas}
+      by applying the Maximum A Posteriori Bayes allocation rule.
+
+      \eqn{c\_ig = 1 \ \textrm{if} \ c\_ig = \textrm{arg} \
+      \textrm{max}_{g} \ h\_ig;\ 0 \ \textrm{otherwise}
+      }{c_ig = 1 if c_ig = arg max_g h_ig; 0 otherwise}, \eqn{g = 1,\dots,G}.
+      }
 }}
 
 \seealso{
-\link{ParamMixRHLP}, \link{FData}
+\link{ParamMixRHLP}
 }

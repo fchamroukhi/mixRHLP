@@ -1,45 +1,47 @@
 #' emMixRHLP is used to fit a MixRHLP model.
 #'
-#' emMixRHLP is used to fit a MixRHLP model. The estimation method is performed by
-#' the Expectation-Maximization algorithm.
+#' emMixRHLP is used to fit a MixRHLP model. The estimation method is performed
+#' by the Expectation-Maximization algorithm.
 #'
-#' @details emMixRHLP function is based on the EM algorithm. This functions starts
-#' with an initialization of the parameters done by the method `initParam` of
-#' the class [ParamMixRHLP][ParamMixRHLP], then it alternates between a E-Step
-#' (method of the class [StatMixRHLP][StatMixRHLP]) and a M-Step (method of the class
-#' [ParamMixRHLP][ParamMixRHLP]) until convergence (until the absolute difference of
-#' log-likelihood between two steps of the EM algorithm is less than the
-#' `threshold` parameter).
+#' @details emMixRHLP function implements the EM algorithm. This function starts
+#'   with an initialization of the parameters done by the method `initParam` of
+#'   the class [ParamMixRHLP][ParamMixRHLP], then it alternates between the
+#'   E-Step (method of the class [StatMixRHLP][StatMixRHLP]) and the M-Step
+#'   (method of the class [ParamMixRHLP][ParamMixRHLP]) until convergence (until
+#'   the relative variation of log-likelihood between two steps of the EM
+#'   algorithm is less than the `threshold` parameter).
 #'
-#' @param X Numeric vector of length \emph{m} representing the covariates.
-#' @param Y Matrix of size \eqn{(n, m)} representing \emph{n} functions of `X`
-#' observed at points \eqn{1,\dots,m}.
-#' @param G The number of clusters.
-#' @param K The number of regimes (mixture components).
-#' @param p The order of the polynomial regression.
-#' @param q The dimension of the logistic regression. For the purpose of
-#' segmentation, it must be set to 1.
+#' @param X Numeric vector of length \emph{m} representing the covariates/inputs
+#'   \eqn{x_{1},\dots,x_{m}}.
+#' @param Y Matrix of size \eqn{(n, m)} representing the observed
+#'   responses/outputs. `Y` consists of \emph{n} functions of `X` observed at
+#'   points \eqn{1,\dots,m}.
+#' @param G The number of clusters (Number of RHLP models).
+#' @param K The number of regimes (RHLP components) for each cluster.
+#' @param p Optional. The order of the polynomial regression. By default, `p` is
+#'   set at 3.
+#' @param q Optional. The dimension of the logistic regression. For the purpose
+#'   of segmentation, it must be set to 1 (which is the default value).
 #' @param variance_type Optional character indicating if the model is
-#' "homoskedastic" or "heteroskedastic". By default the model is
-#' "heteroskedastic".
-#' @param n_tries Number of times EM algorithm will be launched.
-#' The solution providing the highest log-likelihood will be returned.
+#'   "homoskedastic" or "heteroskedastic". By default the model is
+#'   "heteroskedastic".
+#' @param n_tries Optional. Number of runs of the EM algorithm. The solution
+#'   providing the highest log-likelihood will be returned.
 #'
-#' If `n_tries` > 1, then for the first pass, parameters are initialized
-#' by uniformly segmenting the data into K segments, and for the next passes,
-#' parameters are initialized by randomly segmenting the data into K contiguous
-#'  segments.
-#' @param max_iter The maximum number of iterations for the EM algorithm.
-#' @param threshold A numeric value specifying the threshold for the relative
-#'  difference of log-likelihood between two steps  of the EM as stopping
-#'  criteria.
-#' @param verbose A logical value indicating whether values of the
-#' log-likelihood should be printed during EM iterations.
-#' @param verbose_IRLS A logical value indicating whether values of the
-#' criterion optimized by IRLS should be printed at each step of the EM
-#' algorithm.
-#' @param init_kmeans A logical value indicating wheather the initialization of
-#' the model parameters is performed by kmeans.
+#'   If `n_tries` > 1, then for the first run, parameters are initialized by
+#'   uniformly segmenting the data into K segments, and for the next runs,
+#'   parameters are initialized by randomly segmenting the data into K
+#'   contiguous segments.
+#' @param max_iter Optional. The maximum number of iterations for the EM
+#'   algorithm.
+#' @param threshold Optional. A numeric value specifying the threshold for the
+#'   relative difference of log-likelihood between two steps of the EM as
+#'   stopping criteria.
+#' @param verbose Optional. A logical value indicating whether or not values of
+#'   the log-likelihood should be printed during EM iterations.
+#' @param verbose_IRLS Optional. A logical value indicating whether or not
+#'   values of the criterion optimized by IRLS should be printed at each step of
+#'   the EM algorithm.
 #' @return EM returns an object of class [ModelMixRHLP][ModelMixRHLP].
 #' @seealso [ModelMixRHLP], [ParamMixRHLP], [StatMixRHLP]
 #' @export
@@ -107,7 +109,7 @@ emMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedast
     }
 
     if (n_tries > 1 && verbose) {
-        cat(paste0("Log-likelihood at convergence:", stat$loglik))
+      cat(paste0("Max value of the log-likelihood: ", stat$log_lik, "\n\n"))
     }
   }
 
@@ -123,52 +125,55 @@ emMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedast
   return(ModelMixRHLP(paramMixRHLP = paramSolution, statMixRHLP = statSolution))
 }
 
-
 #' cemMixRHLP is used to fit a MixRHLP model.
 #'
-#' cemMixRHLP is used to fit a MixRHLP model. The estimation method is performed by
-#' the Expectation-Maximization algorithm.
+#' cemMixRHLP is used to fit a MixRHLP model. The estimation method is performed
+#' by the Classification Expectation-Maximization algorithm (CEM algorithm).
 #'
-#' @details cemMixRHLP function is based on the CEM algorithm. This functions starts
-#' with an initialization of the parameters done by the method `initParam` of
-#' the class [ParamMixRHLP][ParamMixRHLP], then it alternates between a E-Step
-#' (method of the class [StatMixRHLP][StatMixRHLP]), a C-Step and a M-Step (methods of the class
-#' [ParamMixRHLP][ParamMixRHLP]) until convergence (until the absolute difference of
-#' log-likelihood between two steps of the EM algorithm is less than the
-#' `threshold` parameter).
+#' @details cemMixRHLP function implements the CEM algorithm. This function
+#'   starts with an initialization of the parameters done by the method
+#'   `initParam` of the class [ParamMixRHLP][ParamMixRHLP], then it alternates
+#'   between the E-Step, the C-Step (methods of the class
+#'   [StatMixRHLP][StatMixRHLP]), and the CM-Step (method of the class
+#'   [ParamMixRHLP][ParamMixRHLP]) until convergence (until the relative
+#'   variation of log-likelihood between two steps of the EM algorithm is less
+#'   than the `threshold` parameter).
 #'
-#' @param X Numeric vector of length \emph{m} representing the covariates.
-#' @param Y Matrix of size \eqn{(n, m)} representing \emph{n} functions of `X`
-#' observed at points \eqn{1,\dots,m}.
-#' @param G The number of clusters.
-#' @param K The number of regimes (mixture components).
-#' @param p The order of the polynomial regression.
-#' @param q The dimension of the logistic regression. For the purpose of
-#' segmentation, it must be set to 1.
-#' @param variance_type Numeric indicating if the model is homoskedastic
-#' (`variance_type` = 1) or heteroskedastic (`variance_type` = 2).
-#' @param n_tries Number of times EM algorithm will be launched.
-#' The solution providing the highest log-likelihood will be returned.
+#' @param X Numeric vector of length \emph{m} representing the covariates/inputs
+#'   \eqn{x_{1},\dots,x_{m}}.
+#' @param Y Matrix of size \eqn{(n, m)} representing the observed
+#'   responses/outputs. `Y` consists of \emph{n} functions of `X` observed at
+#'   points \eqn{1,\dots,m}.
+#' @param G The number of clusters (Number of RHLP models).
+#' @param K The number of regimes (RHLP components) for each cluster.
+#' @param p Optional. The order of the polynomial regression. By default, `p` is
+#'   set at 3.
+#' @param q Optional. The dimension of the logistic regression. For the purpose
+#'   of segmentation, it must be set to 1 (which is the default value).
+#' @param variance_type Optional character indicating if the model is
+#'   "homoskedastic" or "heteroskedastic". By default the model is
+#'   "heteroskedastic".
+#' @param n_tries Optional. Number of runs of the EM algorithm. The solution
+#'   providing the highest log-likelihood will be returned.
 #'
-#' If `n_tries` > 1, then for the first pass, parameters are initialized
-#' by uniformly segmenting the data into K segments, and for the next passes,
-#' parameters are initialized by randomly segmenting the data into K contiguous
-#'  segments.
-#' @param max_iter The maximum number of iterations for the EM algorithm.
-#' @param threshold A numeric value specifying the threshold for the relative
-#'  difference of log-likelihood between two steps  of the EM as stopping
-#'  criteria.
-#' @param verbose A logical value indicating whether values of the
-#' log-likelihood should be printed during EM iterations.
-#' @param verbose_IRLS A logical value indicating whether values of the
-#' criterion optimized by IRLS should be printed at each step of the EM
-#' algorithm.
-#' @param init_kmeans A logical value indicating wheather the initialization of
-#' the model parameters is performed by kmeans.
+#'   If `n_tries` > 1, then for the first run, parameters are initialized by
+#'   uniformly segmenting the data into K segments, and for the next runs,
+#'   parameters are initialized by randomly segmenting the data into K
+#'   contiguous segments.
+#' @param max_iter Optional. The maximum number of iterations for the EM
+#'   algorithm.
+#' @param threshold Optional. A numeric value specifying the threshold for the
+#'   relative difference of log-likelihood between two steps of the EM as
+#'   stopping criteria.
+#' @param verbose Optional. A logical value indicating whether or not values of
+#'   the log-likelihood should be printed during EM iterations.
+#' @param verbose_IRLS Optional. A logical value indicating whether or not
+#'   values of the criterion optimized by IRLS should be printed at each step of
+#'   the EM algorithm.
 #' @return EM returns an object of class [ModelMixRHLP][ModelMixRHLP].
 #' @seealso [ModelMixRHLP], [ParamMixRHLP], [StatMixRHLP]
 #' @export
-CEM <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedastic", "homoskedastic"), n_tries = 1, max_iter = 100, threshold = 1e-5, init_kmeans = TRUE, verbose = TRUE, verbose_IRLS = FALSE) {
+cemMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedastic", "homoskedastic"), n_tries = 1, max_iter = 100, threshold = 1e-5, init_kmeans = TRUE, verbose = TRUE, verbose_IRLS = FALSE) {
 
   fData <- FData(X, Y)
 
@@ -235,7 +240,7 @@ CEM <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedastic", "
       best_com_loglik <- stat$com_loglik
     }
     if (n_tries > 1 && verbose) {
-      cat(paste0("Complete log-likelihood at convergence:", stat$com_loglik))
+      cat(paste0("Max value of the complete log-likelihood: ", stat$com_loglik, "\n\n"))
     }
   }
 

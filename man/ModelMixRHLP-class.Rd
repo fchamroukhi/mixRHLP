@@ -6,17 +6,38 @@
 \alias{ModelMixRHLP}
 \title{A Reference Class which represents a fitted MixRHLP model.}
 \description{
-ModelMixRHLP represents a \link[=ModelMixRHLP]{MixRHLP} model for which parameters have
-been estimated.
+ModelMixRHLP represents an estimated MixRHLP model.
 }
 \section{Fields}{
 
 \describe{
-\item{\code{paramMixRHLP}}{A \link{ParamMixRHLP} object. It contains the estimated values of the parameters.}
+\item{\code{paramMixRHLP}}{A \link{ParamMixRHLP} object. It contains the
+estimated values of the parameters.}
 
-\item{\code{statMixRHLP}}{A \link{StatMixRHLP} object. It contains all the statistics associated to the MixRHLP model.}
+\item{\code{statMixRHLP}}{A \link{StatMixRHLP} object. It contains all the
+statistics associated to the MixRHLP model.}
 }}
 
+\section{Methods}{
+
+\describe{
+\item{\code{plot(what = c("estimatedsignal", "regressors", "loglikelihood"))}}{Plot method.
+\describe{
+  \item{\code{what}}{The type of graph requested:
+    \itemize{
+      \item \code{"estimatedsignal" = } Estimated signal (Sum of the
+      polynomial regression components weighted by the logistic
+      probabilities).
+      \item \code{"regressors" = } Polynomial regression components.
+      \item \code{"loglikelihood" = } Value of the log-likelihood for
+      each iteration.
+    }
+  }
+}
+By default, all the above graphs are produced.}
+
+\item{\code{summary()}}{Summary method.}
+}}
 
 \seealso{
 \link{ParamMixRHLP}, \link{StatMixRHLP}

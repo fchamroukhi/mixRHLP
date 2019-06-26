@@ -36,6 +36,7 @@ Collate:
     StatMixRHLP.R
     ModelMixRHLP.R
     ModelLearner.R
+    data-toydataset.R
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true

@@ -2,28 +2,39 @@
 #'
 #' ParamMixRHLP contains all the parameters of a MixRHLP model.
 #'
-#' @field fData [FData][FData] object representing the sample.
-#' @param G The number of clusters.
-#' @field K The number of regimes (mixture components).
+#' @field fData [FData][FData] object representing the sample (covariates/inputs
+#'   `X` and observed responses/outputs `Y`).
+#' @field G The number of clusters (Number of RHLP models).
+#' @field K The number of regimes (RHLP components) for each cluster.
 #' @field p The order of the polynomial regression.
 #' @field q The dimension of the logistic regression. For the purpose of
-#' segmentation, it must be set to 1.
-#' @param variance_type Optional character indicating if the model is
-#' "homoskedastic" or "heteroskedastic". By default the model is
-#' "heteroskedastic".
-#' @field W Parameters of the logistic process.
-#' \eqn{Wg = w_{g1},\dots,w_{gK-1}}{Wg = (wg1,\dots,wgK-1)} is a matrix of dimension
-#' \eqn{(q + 1, K - 1)}, with \emph{q} the order of the logistic regression.
-#' @field beta Parameters of the polynomial regressions.
-#' \eqn{\betag = (\beta_{g1},\dots,\beta_{gK})}{\beta = (\betag1,\dots,\betagK)} is
-#' a matrix of dimension \eqn{(p + 1, K)}, with \emph{p} the order of the
-#' polynomial regression.
-#' @field sigma2 The variances for the \emph{K} regimes. If MixRHLP model is
-#' homoskedastic (\emph{variance_type} = 1) then sigma2 is a matrix of size
-#' \eqn{(1, 1)}, else if MixRHLP model is heteroskedastic then sigma2 is a matrix
-#' of size \eqn{(K, 1)}.
-#' @field alpha Cluster weights of size \eqn{(G, 1)}.
-#' @seealso [FData]
+#'   segmentation, it must be set to 1.
+#' @field variance_type Character indicating if the model is homoskedastic
+#'   (`variance_type = "homoskedastic"`) or heteroskedastic (`variance_type =
+#'   "heteroskedastic"`). By default the model is heteroskedastic.
+#' @field alpha Cluster weights. Matrix of dimension \eqn{(1, G)}.
+#' @field W Parameters of the logistic process. \eqn{\boldsymbol{W} =
+#'   (\boldsymbol{w}_{1},\dots,\boldsymbol{w}_{G})}{W = (w_{1},\dots,w_{G})} is
+#'   an array of dimension \eqn{(q + 1, K - 1, G)}, with \eqn{\boldsymbol{w}_{g}
+#'   = (\boldsymbol{w}_{g,1},\dots,\boldsymbol{w}_{g,K-1})}{w_{g} =
+#'   (w_{g,1},\dots,w_{g,K-1})}, \eqn{g = 1,\dots,G}, and `q` the order of the
+#'   logistic regression. `q` is fixed to 1 by default.
+#' @field beta Parameters of the polynomial regressions. \eqn{\boldsymbol{\beta}
+#'   = (\boldsymbol{\beta}_{1},\dots,\boldsymbol{\beta}_{G})}{\beta =
+#'   (\beta_{1},\dots,\beta_{G})} is an array of dimension \eqn{(p + 1, K, G)},
+#'   with \eqn{\boldsymbol{\beta}_{g} =
+#'   (\boldsymbol{\beta}_{g,1},\dots,\boldsymbol{\beta}_{g,K})}{\beta_{g} =
+#'   (\beta_{g,1},\dots,\beta_{g,K})}, \eqn{g = 1,\dots,G}, `p` the order of the
+#'   polynomial regression. `p` is fixed to 3 by default.
+#' @field sigma2 The variances for the `K` regimes. If MixRHLP model is
+#'   heteroskedastic (`variance_type = "heteroskedastic"`) then `sigma2` is a
+#'   matrix of size \eqn{(K, G)} (otherwise MixRHLP model is homoskedastic
+#'   (`variance_type = "homoskedastic"`) and `sigma2` is a matrix of size
+#'   \eqn{(G, 1)}).
+#' @field nu The degree of freedom of the MixRHLP model representing the
+#'   complexity of the model.
+#' @field phi A list giving the regression design matrices for the polynomial
+#'   and the logistic regressions.
 #' @export
 ParamMixRHLP <- setRefClass(
   "ParamMixRHLP",
@@ -38,15 +49,10 @@ ParamMixRHLP <- setRefClass(
     variance_type = "character",
     nu = "numeric", # Degree of freedom
 
-    W = "array",
-    # Wg = (Wg1,...,w_gK-1) parameters of the logistic process:
-    # matrix of dimension [(q+1)x(K-1)] with q the order of logistic regression.
-    beta = "array",
-    # betag = (beta_g1,...,beta_gK) polynomial regression coefficient vectors: matrix of
-    # dimension [(p+1)xK] p being the polynomial  degree.
-    sigma2 = "matrix",
-    # sigma2 = (sigma_g1,...,sigma_gK) : the variances for the K regmies. vector of dimension [Kx1]
-    alpha = "matrix" #cluster weights
+    alpha = "matrix", # Cluster weights
+    W = "array", # W = (W1,...WG), Wg = (Wg1,...,w_gK-1) parameters of the logistic process: matrix of dimension [(q+1)x(K-1)] with q the order of logistic regression.
+    beta = "array", # beta = (beta_1,...,beta_G), beta_g = (beta_g1,...,beta_gK) polynomial regression coefficients: matrix of dimension [(p+1)xK] p being the polynomial degree.
+    sigma2 = "matrix" # sigma2 = (sigma_g1,...,sigma_gK) : the variances for the K regmies.
   ),
   methods = list(
     initialize = function(fData = FData(numeric(1), matrix(1)), G = 1, K = 1, p = 3, q = 1, variance_type = "heteroskedastic") {
@@ -78,12 +84,33 @@ ParamMixRHLP <- setRefClass(
     },
 
     initParam = function(init_kmeans = TRUE, try_algo = 1) {
+      "Method to initialize parameters \\code{alpha}, \\code{W}, \\code{beta} and
+      \\code{sigma2}.
 
+      If \\code{init_kmeans = TRUE} then the curve partition is initialized by
+      the K-means algorithm. Otherwise the curve partition is initialized
+      randomly.
+
+      If \\code{try_algo = 1} then \\code{beta} and \\code{sigma2} are
+      initialized by segmenting  the time series \\code{Y} uniformly into
+      \\code{K} contiguous segments. Otherwise, \\code{W}, \\code{beta} and
+      \\code{sigma2} are initialized by segmenting randomly the time series
+      \\code{Y} into \\code{K} segments."
       # 1. Initialization of cluster weights
       alpha <<- 1 / (G * ones(G, 1))
 
       # 2. Initialization of the model parameters for each cluster: W, betak and sigmak
-      initHlp(try_algo) # Setting W
+
+      # Setting W
+      if (try_algo == 1) {
+        for (g in (1:G)) { # Random initialization of parameter vector for IRLS
+          W[, , g] <<- zeros(q + 1, K - 1)
+        }
+      } else {
+        for (g in (1:G)) { # Random initialization of parameter vector for IRLS
+          W[, , g] <<- rand(q + 1, K - 1)
+        }
+      }
 
       # betagk and sigma2_gk
       if (init_kmeans) {
@@ -107,21 +134,9 @@ ParamMixRHLP <- setRefClass(
       }
     },
 
-    initHlp = function(try_algo = 1) {
-      "
-        initialize the Hidden Logistic Process
-      "
-      if (try_algo > 1) {
-        for (g in (1:G)) { # Random initialization of parameter vector for IRLS
-          W[, , g] <<- rand(q + 1, K - 1)
-        }
-      }
-    },
-
     initRegressionParam = function(Xg, g, try_algo  = 1) {
-      "
-        Initialize the Regresssion model with Hidden Logistic Process
-      "
+      "Initialize the matrix of polynomial regression coefficients beta_g for
+      the cluster \\code{g}."
       n <- nrow(Xg)
       m <- ncol(Xg)
       if (try_algo == 1) { # Uniform segmentation into K contiguous segments, and then a regression
@@ -214,9 +229,6 @@ ParamMixRHLP <- setRefClass(
       for (g in 1:G) {
         Xg = fData$vecY[cluster_labels == g,] # Cluster g (found from a hard clustering)
         tauijk <- statMixRHLP$tau_ijgk[cluster_labels == g, , g] #[(ng xm) x K]
-        if (!is.matrix(tauijk)) {
-          tauijk <- matrix(tauijk)
-        }
 
         if (variance_type == "homoskedastic") {
           s <- 0
@@ -264,9 +276,6 @@ ParamMixRHLP <- setRefClass(
 
         # Setting of W[,,g]
         Wg_init <- W[, , g]
-        if (!is.matrix(Wg_init)) {
-          Wg_init <- matrix(Wg_init)
-        }
 
         res_irls <- IRLS(phi$Xw, tauijk, cluster_weights, Wg_init, verbose_IRLS)
 
@@ -284,10 +293,8 @@ ParamMixRHLP <- setRefClass(
         temp <- repmat(statMixRHLP$h_ig[, g], 1, fData$m) # [m x n]
         cluster_weights <-
           matrix(t(temp), fData$m * fData$n, 1) # Cluster_weights(:) [mn x 1]
-        tauijk <- statMixRHLP$tau_ijgk[, , g] # [(nxm) x K]
-        if (!is.matrix(tauijk)) {
-          tauijk <- matrix(tauijk)
-        }
+        tauijk <- as.matrix(statMixRHLP$tau_ijgk[, , g]) # [(nxm) x K]
+
         if (variance_type == "homoskedastic") {
           s <- 0
         } else {
@@ -318,7 +325,6 @@ ParamMixRHLP <- setRefClass(
           }
         }
 
-
         beta[, , g] <<- beta_gk
         if (variance_type == "homoskedastic") {
           sigma2[g] <<- sigma_gk
@@ -329,10 +335,6 @@ ParamMixRHLP <- setRefClass(
         # Maximization w.r.t W
         # Setting of W[,,g]
         Wg_init <- W[, , g]
-
-        if (!is.matrix(Wg_init)) {
-          Wg_init <- matrix(Wg_init)
-        }
 
         res_irls <- IRLS(phi$Xw, tauijk, cluster_weights, Wg_init, verbose_IRLS)
 

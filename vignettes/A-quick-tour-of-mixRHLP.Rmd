@@ -37,7 +37,7 @@ See `help(package="mixRHLP")` for further details and references provided by `ci
 # Load data
 
 ```{r}
-data("simulatedtimeseries")
+data("toydataset")
 ```
 
 # Set up mixRHLP model parameters
@@ -64,7 +64,7 @@ init_kmeans <- TRUE
 # Estimation
 
 ```{r}
-mixrhlp <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:ncol(simulatedtimeseries)])), 
+mixrhlp <- emMixRHLP(toydataset$x, t(as.matrix(toydataset[,2:ncol(toydataset)])), 
                      G, K, p, q, variance_type, n_tries, max_iter, threshold, 
                      init_kmeans, verbose, verbose_IRLS)
 ```
@@ -77,10 +77,10 @@ mixrhlp$summary()
 
 # Plots
 
-## Mean curve
+## Estimated signal
 
 ```{r}
-mixrhlp$plot(what = "meancurve")
+mixrhlp$plot(what = "estimatedsignal")
 ```
 
 ## Regressors

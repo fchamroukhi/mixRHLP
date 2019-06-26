@@ -43,7 +43,7 @@ browseVignettes("mixRHLP")
 ``` r
 library(mixRHLP)
 
-data("simulatedtimeseries")
+data("toydataset")
 
 G <- 3 # Number of clusters
 K <- 3 # Number of regimes (polynomial regression components)
@@ -58,7 +58,7 @@ verbose <- TRUE
 verbose_IRLS <- FALSE
 init_kmeans <- TRUE
 
-mixrhlp <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:ncol(simulatedtimeseries)])), 
+mixrhlp <- emMixRHLP(toydataset$x, t(as.matrix(toydataset[,2:ncol(toydataset)])), 
                      G, K, p, q, variance_type, n_tries, max_iter, 
                      threshold, init_kmeans, verbose, verbose_IRLS)
 #> EM: Iteration : 1 || log-likelihood : -18129.8169520025
@@ -274,7 +274,7 @@ mixrhlp$summary()
 #> MixRHLP model with G = 3 clusters and K = 3 regimes:
 #> 
 #>  log-likelihood nu       AIC       BIC       ICL
-#>       -14810.69 41 -14852.69 -14882.11 -14882.11
+#>       -14810.69 41 -14851.69 -14880.41 -14880.41
 #> 
 #> Clustering table:
 #>  1  2  3 
@@ -291,20 +291,6 @@ mixrhlp$summary()
 #> Regression coefficients:
 #> 
 #>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
-#> 1    4.96556671   6.7326717   4.8807183
-#> X^1  0.08880479   0.4984443   0.1350271
-#> 
-#> Variances:
-#> 
-#>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
-#>      0.9559969       1.03849     0.9506928
-#> 
-#> --------------------
-#> Cluster 2 (G = 2):
-#> 
-#> Regression coefficients:
-#> 
-#>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
 #> 1     6.3513369    4.214736   6.6536553
 #> X^1  -0.2449377    0.839666   0.1024863
 #> 
@@ -314,7 +300,7 @@ mixrhlp$summary()
 #>      0.9498285     0.9270384      1.001413
 #> 
 #> --------------------
-#> Cluster 3 (G = 3):
+#> Cluster 2 (G = 2):
 #> 
 #> Regression coefficients:
 #> 
@@ -326,6 +312,20 @@ mixrhlp$summary()
 #> 
 #>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
 #>       0.981915     0.9787717     0.9702211
+#> 
+#> --------------------
+#> Cluster 3 (G = 3):
+#> 
+#> Regression coefficients:
+#> 
+#>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
+#> 1    4.96556671   6.7326717   4.8807183
+#> X^1  0.08880479   0.4984443   0.1350271
+#> 
+#> Variances:
+#> 
+#>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
+#>      0.9559969       1.03849     0.9506928
 
 mixrhlp$plot()
 ```

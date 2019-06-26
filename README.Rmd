@@ -48,7 +48,7 @@ browseVignettes("mixRHLP")
 ```{r, message = FALSE}
 library(mixRHLP)
 
-data("simulatedtimeseries")
+data("toydataset")
 
 G <- 3 # Number of clusters
 K <- 3 # Number of regimes (polynomial regression components)
@@ -63,7 +63,7 @@ verbose <- TRUE
 verbose_IRLS <- FALSE
 init_kmeans <- TRUE
 
-mixrhlp <- emMixRHLP(simulatedtimeseries$X, t(as.matrix(simulatedtimeseries[,2:ncol(simulatedtimeseries)])), 
+mixrhlp <- emMixRHLP(toydataset$x, t(as.matrix(toydataset[,2:ncol(toydataset)])), 
                      G, K, p, q, variance_type, n_tries, max_iter, 
                      threshold, init_kmeans, verbose, verbose_IRLS)
 
