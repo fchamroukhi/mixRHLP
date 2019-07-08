@@ -62,10 +62,10 @@ List multinomialLogit(arma::mat& W, arma::mat& X, arma::mat& Y, arma::mat& Gamma
   // Faicel Chamroukhi 31 Octobre 2008 (mise ? jour)
   /////////////////////////////////////////////////////////////////////////////////////////
 
-  int n = X.n_rows;
-  int q = X.n_cols;
+  unsigned n = X.n_rows;
+  unsigned q = X.n_cols;
 
-  int K = Y.n_cols;
+  unsigned K = Y.n_cols;
 
   // Handle different q
   if (q != W.n_rows) {

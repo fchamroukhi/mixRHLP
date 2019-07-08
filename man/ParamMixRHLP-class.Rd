@@ -43,7 +43,7 @@ with \eqn{\boldsymbol{\beta}_{g} =
   (\beta_{g,1},\dots,\beta_{g,K})}, \eqn{g = 1,\dots,G}, \code{p} the order of the
 polynomial regression. \code{p} is fixed to 3 by default.}
 
-\item{\code{sigma2}}{The variances for the \code{K} regimes. If MixRHLP model is
+\item{\code{sigma2}}{The variances for the \code{G} clusters. If MixRHLP model is
 heteroskedastic (\code{variance_type = "heteroskedastic"}) then \code{sigma2} is a
 matrix of size \eqn{(K, G)} (otherwise MixRHLP model is homoskedastic
 (\code{variance_type = "homoskedastic"}) and \code{sigma2} is a matrix of size
@@ -59,8 +59,13 @@ and the logistic regressions.}
 \section{Methods}{
 
 \describe{
-\item{\code{initParam(init_kmeans = TRUE, try_algo = 1)}}{Method to initialize parameters \code{alpha}, \code{W}, \code{beta} and
-      \code{sigma2}.
+\item{\code{CMStep(statMixRHLP, verbose_IRLS = FALSE)}}{Method which implements the M-step of the CEM algorithm to learn the
+parameters of the MixRHLP model based on statistics provided by the
+object \code{statMixRHLP} of class \link{StatMixRHLP} (which contains
+the E-step and the C-step).}
+
+\item{\code{initParam(init_kmeans = TRUE, try_algo = 1)}}{Method to initialize parameters \code{alpha}, \code{W}, \code{beta}
+      and \code{sigma2}.
 
       If \code{init_kmeans = TRUE} then the curve partition is initialized by
       the K-means algorithm. Otherwise the curve partition is initialized
@@ -74,5 +79,10 @@ and the logistic regressions.}
 
 \item{\code{initRegressionParam(Xg, g, try_algo = 1)}}{Initialize the matrix of polynomial regression coefficients beta_g for
 the cluster \code{g}.}
+
+\item{\code{MStep(statMixRHLP, verbose_IRLS = FALSE)}}{Method which implements the M-step of the EM algorithm to learn the
+parameters of the MixRHLP model based on statistics provided by the
+object \code{statMixRHLP} of class \link{StatMixRHLP} (which contains
+the E-step).}
 }}
 

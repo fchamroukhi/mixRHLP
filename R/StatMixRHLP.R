@@ -10,8 +10,8 @@
 #'   \eqn{g}-th RHLP model.
 #' @field c_ig Hard segmentation logical matrix of dimension \eqn{(n, G)}
 #'   obtained by the Maximum a posteriori (MAP) rule: \eqn{c\_ig = 1 \
-#'   \textrm{if} \ c\_ig = \textrm{arg} \ \textrm{max}_{g} \ h\_ig;\ 0 \
-#'   \textrm{otherwise}}{c_ig = 1 if c_ig = arg max_g h_ig; 0 otherwise}, \eqn{g
+#'   \textrm{if} \ c\_ig = \textrm{arg} \ \textrm{max}_{s} \ h\_is;\ 0 \
+#'   \textrm{otherwise}}{c_ig = 1 if c_ig = arg max_s h_is; 0 otherwise}, \eqn{g
 #'   = 1,\dots,G}.
 #' @field klas Column matrix of the labels issued from `c_ig`. Its elements are
 #'   \eqn{klas(i) = g}, \eqn{i = 1,\dots,n}.
@@ -106,9 +106,9 @@ StatMixRHLP <- setRefClass(
       by applying the Maximum A Posteriori Bayes allocation rule.
 
       \\eqn{c\\_ig = 1 \\ \\textrm{if} \\ c\\_ig = \\textrm{arg} \\
-      \\textrm{max}_{g} \\ h\\_ig;\\ 0 \\ \\textrm{otherwise}
-      }{c_ig = 1 if c_ig = arg max_g h_ig; 0 otherwise}, \\eqn{g = 1,\\dots,G}.
-      "
+      \\textrm{max}_{s} \\ h\\_is;\\ 0 \\ \\textrm{otherwise}
+      }{c_ig = 1 if c_ig = arg max_s h_is; 0 otherwise}, \\eqn{g = 1,\\dots,G}."
+
       N <- nrow(h_ig)
       K <- ncol(h_ig)
       ikmax <- max.col(h_ig)
@@ -121,13 +121,14 @@ StatMixRHLP <- setRefClass(
     },
 
     computeStats = function(paramMixRHLP, cpu_time_all) {
-      "Method used in the EM algorithm to compute statistics based on parameters
-      provided by \\code{paramMixRHLP}. It also calculates the average computing time
-      of a single run of the EM algorithm."
+      "Method used in the EM algorithm to compute statistics based on
+      parameters provided by the object \\code{paramMixRHLP} of class
+      \\link{ParamMixRHLP}. It also calculates the average computing time of a
+      single run of the EM algorithm."
 
       for (g in 1:paramMixRHLP$G) {
 
-        polynomials[, , g] <<- paramMixRHLP$phi$XBeta[1:paramMixRHLP$fData$m, ] %*% as.matrix(paramMixRHLP$beta[, , g])
+        polynomials[, , g] <<- paramMixRHLP$phi$XBeta[1:paramMixRHLP$fData$m, ] %*% matrix(paramMixRHLP$beta[, , g], nrow = paramMixRHLP$p + 1)
 
         weighted_polynomials[, , g] <<- pi_jgk[1:paramMixRHLP$fData$m, , g] * polynomials[, , g]
         Ex[, g] <<- rowSums(as.matrix(weighted_polynomials[, , g]))
@@ -148,6 +149,7 @@ StatMixRHLP <- setRefClass(
     },
 
     CStep = function(reg_irls) {
+      "Method used in the CEM algorithm to update statistics."
 
       h_ig <<- exp(lognormalize(log_alphag_fg_xij))
 
@@ -160,12 +162,13 @@ StatMixRHLP <- setRefClass(
 
     EStep = function(paramMixRHLP) {
       "Method used in the EM algorithm to update statistics based on parameters
-      provided by \\code{paramMixRHLP} (prior and posterior probabilities)."
+      provided by the object \\code{paramMixRHLP} of class \\link{ParamMixRHLP}
+      (prior and posterior probabilities)."
 
       for (g in 1:paramMixRHLP$G) {
 
         alpha_g <- paramMixRHLP$alpha[g]
-        beta_g <- as.matrix(paramMixRHLP$beta[, , g])
+        beta_g <- matrix(paramMixRHLP$beta[, , g], nrow = paramMixRHLP$p + 1)
         Wg <- paramMixRHLP$W[, , g]
         piik <- multinomialLogit(paramMixRHLP$W[, , g], paramMixRHLP$phi$Xw, ones(nrow(paramMixRHLP$phi$Xw), ncol(paramMixRHLP$W[, , g]) + 1), ones(nrow(paramMixRHLP$phi$Xw), 1))$piik
         pi_jgk[, , g] <<- as.matrix(repmat(piik[1:paramMixRHLP$fData$m,], paramMixRHLP$fData$n, 1))
@@ -173,7 +176,8 @@ StatMixRHLP <- setRefClass(
         log_pijgk_fgk_xij <- zeros(paramMixRHLP$fData$n * paramMixRHLP$fData$m, paramMixRHLP$K)
 
         for (k in 1:paramMixRHLP$K) {
-          beta_gk <- beta_g[, k]
+
+          beta_gk <- as.matrix(beta_g[, k])
           if (paramMixRHLP$variance_type == "homoskedastic") {
             sgk <- paramMixRHLP$sigma2[g]
           } else {

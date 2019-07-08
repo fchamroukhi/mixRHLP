@@ -65,8 +65,8 @@ init_kmeans <- TRUE
 
 ```{r}
 mixrhlp <- emMixRHLP(toydataset$x, t(as.matrix(toydataset[,2:ncol(toydataset)])), 
-                     G, K, p, q, variance_type, n_tries, max_iter, threshold, 
-                     init_kmeans, verbose, verbose_IRLS)
+                     G, K, p, q, variance_type, init_kmeans, n_tries, max_iter, 
+                     threshold, verbose, verbose_IRLS)
 ```
 
 # Summary

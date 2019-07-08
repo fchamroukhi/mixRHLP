@@ -11,10 +11,10 @@ ModelMixRHLP represents an estimated MixRHLP model.
 \section{Fields}{
 
 \describe{
-\item{\code{paramMixRHLP}}{A \link{ParamMixRHLP} object. It contains the
+\item{\code{param}}{A \link{ParamMixRHLP} object. It contains the
 estimated values of the parameters.}
 
-\item{\code{statMixRHLP}}{A \link{StatMixRHLP} object. It contains all the
+\item{\code{stat}}{A \link{StatMixRHLP} object. It contains all the
 statistics associated to the MixRHLP model.}
 }}
 
@@ -25,12 +25,14 @@ statistics associated to the MixRHLP model.}
 \describe{
   \item{\code{what}}{The type of graph requested:
     \itemize{
-      \item \code{"estimatedsignal" = } Estimated signal (Sum of the
-      polynomial regression components weighted by the logistic
-      probabilities).
-      \item \code{"regressors" = } Polynomial regression components.
+      \item \code{"estimatedsignal" = } Estimated signal (field
+        \code{Ex} of class \link{StatMixRHLP}).
+      \item \code{"regressors" = } Polynomial regression components
+        (fields \code{polynomials} and \code{pi_jgk} of class
+        \link{StatMixRHLP}).
       \item \code{"loglikelihood" = } Value of the log-likelihood for
-      each iteration.
+        each iteration (field \code{stored_loglik} of class
+        \link{StatMixRHLP}).
     }
   }
 }

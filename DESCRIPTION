@@ -1,6 +1,6 @@
 Type: Package
 Package: mixRHLP
-Title: Mixture of Regression Models with Hidden Logistic Processes (mixRHLP) for Simultaneous Curve Clustering and Segmentation
+Title: Mixture of Regression Models with Hidden Logistic Processes ('mixRHLP') for Simultaneous Curve Clustering and Segmentation
 Version: 0.1.0
 Authors@R: c(person("Faicel", "Chamroukhi", role = c("aut"),
     email = "faicel.chamroukhi@unicaen.fr",
@@ -35,7 +35,8 @@ Collate:
     ParamMixRHLP.R
     StatMixRHLP.R
     ModelMixRHLP.R
-    ModelLearner.R
+    emMixRHLP.R
+    cemMixRHLP.R
     data-toydataset.R
 VignetteBuilder: knitr
 Encoding: UTF-8

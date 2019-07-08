@@ -21,8 +21,8 @@ proportion for cluster g.}
 
 \item{\code{c_ig}}{Hard segmentation logical matrix of dimension \eqn{(n, G)}
 obtained by the Maximum a posteriori (MAP) rule: \eqn{c\_ig = 1 \
-  \textrm{if} \ c\_ig = \textrm{arg} \ \textrm{max}_{g} \ h\_ig;\ 0 \
-  \textrm{otherwise}}{c_ig = 1 if c_ig = arg max_g h_ig; 0 otherwise}, \eqn{g
+  \textrm{if} \ c\_ig = \textrm{arg} \ \textrm{max}_{s} \ h\_is;\ 0 \
+  \textrm{otherwise}}{c_ig = 1 if c_ig = arg max_s h_is; 0 otherwise}, \eqn{g
   = 1,\dots,G}.}
 
 \item{\code{klas}}{Column matrix of the labels issued from \code{c_ig}. Its elements are
@@ -77,20 +77,23 @@ logarithm of the joint probability density function \eqn{f(y_{i}, \ h_{i} =
 \section{Methods}{
 
 \describe{
-\item{\code{computeStats(paramMixRHLP, cpu_time_all)}}{Method used in the EM algorithm to compute statistics based on parameters
-provided by \code{paramMixRHLP}. It also calculates the average computing time
-of a single run of the EM algorithm.}
+\item{\code{computeStats(paramMixRHLP, cpu_time_all)}}{Method used in the EM algorithm to compute statistics based on
+parameters provided by the object \code{paramMixRHLP} of class
+\link{ParamMixRHLP}. It also calculates the average computing time of a
+single run of the EM algorithm.}
+
+\item{\code{CStep(reg_irls)}}{Method used in the CEM algorithm to update statistics.}
 
 \item{\code{EStep(paramMixRHLP)}}{Method used in the EM algorithm to update statistics based on parameters
-provided by \code{paramMixRHLP} (prior and posterior probabilities).}
+provided by the object \code{paramMixRHLP} of class \link{ParamMixRHLP}
+(prior and posterior probabilities).}
 
 \item{\code{MAP()}}{MAP calculates values of the fields \code{c_ig} and \code{klas}
       by applying the Maximum A Posteriori Bayes allocation rule.
 
       \eqn{c\_ig = 1 \ \textrm{if} \ c\_ig = \textrm{arg} \
-      \textrm{max}_{g} \ h\_ig;\ 0 \ \textrm{otherwise}
-      }{c_ig = 1 if c_ig = arg max_g h_ig; 0 otherwise}, \eqn{g = 1,\dots,G}.
-      }
+      \textrm{max}_{s} \ h\_is;\ 0 \ \textrm{otherwise}
+      }{c_ig = 1 if c_ig = arg max_s h_is; 0 otherwise}, \eqn{g = 1,\dots,G}.}
 }}
 
 \seealso{

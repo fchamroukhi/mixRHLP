@@ -26,7 +26,7 @@
 #'   (\boldsymbol{\beta}_{g,1},\dots,\boldsymbol{\beta}_{g,K})}{\beta_{g} =
 #'   (\beta_{g,1},\dots,\beta_{g,K})}, \eqn{g = 1,\dots,G}, `p` the order of the
 #'   polynomial regression. `p` is fixed to 3 by default.
-#' @field sigma2 The variances for the `K` regimes. If MixRHLP model is
+#' @field sigma2 The variances for the `G` clusters. If MixRHLP model is
 #'   heteroskedastic (`variance_type = "heteroskedastic"`) then `sigma2` is a
 #'   matrix of size \eqn{(K, G)} (otherwise MixRHLP model is homoskedastic
 #'   (`variance_type = "homoskedastic"`) and `sigma2` is a matrix of size
@@ -84,8 +84,8 @@ ParamMixRHLP <- setRefClass(
     },
 
     initParam = function(init_kmeans = TRUE, try_algo = 1) {
-      "Method to initialize parameters \\code{alpha}, \\code{W}, \\code{beta} and
-      \\code{sigma2}.
+      "Method to initialize parameters \\code{alpha}, \\code{W}, \\code{beta}
+      and \\code{sigma2}.
 
       If \\code{init_kmeans = TRUE} then the curve partition is initialized by
       the K-means algorithm. Otherwise the curve partition is initialized
@@ -96,6 +96,7 @@ ParamMixRHLP <- setRefClass(
       \\code{K} contiguous segments. Otherwise, \\code{W}, \\code{beta} and
       \\code{sigma2} are initialized by segmenting randomly the time series
       \\code{Y} into \\code{K} segments."
+
       # 1. Initialization of cluster weights
       alpha <<- 1 / (G * ones(G, 1))
 
@@ -217,7 +218,12 @@ ParamMixRHLP <- setRefClass(
       }
     },
 
-    CMStep = function(statMixRHLP) {
+    CMStep = function(statMixRHLP, verbose_IRLS = FALSE) {
+      "Method which implements the M-step of the CEM algorithm to learn the
+      parameters of the MixRHLP model based on statistics provided by the
+      object \\code{statMixRHLP} of class \\link{StatMixRHLP} (which contains
+      the E-step and the C-step)."
+
       good_segmentation = TRUE
 
       alpha <<- t(colSums(statMixRHLP$c_ig)) / fData$n
@@ -228,7 +234,7 @@ ParamMixRHLP <- setRefClass(
 
       for (g in 1:G) {
         Xg = fData$vecY[cluster_labels == g,] # Cluster g (found from a hard clustering)
-        tauijk <- statMixRHLP$tau_ijgk[cluster_labels == g, , g] #[(ng xm) x K]
+        tauijk <- as.matrix(statMixRHLP$tau_ijgk[cluster_labels == g, , g]) #[(ng xm) x K]
 
         if (variance_type == "homoskedastic") {
           s <- 0
@@ -239,7 +245,8 @@ ParamMixRHLP <- setRefClass(
         beta_gk <- matrix(NA, p + 1, K)
 
         for (k in 1:K) {
-          segments_weights <- tauijk[, k]
+
+          segments_weights <- tauijk[, k, drop = F]
           phigk <- (sqrt(segments_weights) %*% ones(1, p + 1)) * phi$XBeta[cluster_labels == g,] # [(ng*m)*(p+1)]
           Xgk <- sqrt(segments_weights) * Xg
 
@@ -277,7 +284,7 @@ ParamMixRHLP <- setRefClass(
         # Setting of W[,,g]
         Wg_init <- W[, , g]
 
-        res_irls <- IRLS(phi$Xw, tauijk, cluster_weights, Wg_init, verbose_IRLS)
+        res_irls <- IRLS(phi$Xw[cluster_labels == g,], tauijk, ones(nrow(tauijk), 1), Wg_init, verbose_IRLS)
 
         W[, , g] <<- res_irls$W
         piik <- res_irls$piik
@@ -287,6 +294,10 @@ ParamMixRHLP <- setRefClass(
     },
 
     MStep = function(statMixRHLP, verbose_IRLS = FALSE) {
+      "Method which implements the M-step of the EM algorithm to learn the
+      parameters of the MixRHLP model based on statistics provided by the
+      object \\code{statMixRHLP} of class \\link{StatMixRHLP} (which contains
+      the E-step)."
 
       alpha <<- t(colSums(statMixRHLP$h_ig)) / fData$n
       for (g in 1:G) {
@@ -304,8 +315,8 @@ ParamMixRHLP <- setRefClass(
         beta_gk <- matrix(NA, p + 1, K)
 
         for (k in 1:K) {
-          # foreach (k = 1:mixModel$K, .combine = rbind) %dopar%{
-          segments_weights <- tauijk[, k]
+
+          segments_weights <- tauijk[, k, drop = F]
           phigk <- (sqrt(cluster_weights * segments_weights) %*% ones(1, p + 1)) * phi$XBeta #[(n*m)*(p+1)]
           Xgk <- sqrt(cluster_weights * segments_weights) * fData$vecY
 
