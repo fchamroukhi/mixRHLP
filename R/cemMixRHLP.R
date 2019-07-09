@@ -49,21 +49,19 @@
 #' @return EM returns an object of class [ModelMixRHLP][ModelMixRHLP].
 #' @seealso [ModelMixRHLP], [ParamMixRHLP], [StatMixRHLP]
 #' @export
-cemMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedastic", "homoskedastic"), init_kmeans = TRUE, n_tries = 1, max_iter = 100, threshold = 1e-5, verbose = TRUE, verbose_IRLS = FALSE) {
+cemMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedastic", "homoskedastic"), init_kmeans = TRUE, n_tries = 1, max_iter = 100, threshold = 1e-5, verbose = FALSE, verbose_IRLS = FALSE) {
 
   fData <- FData(X, Y)
 
   top <- 0
   try_CEM <- 0
   best_com_loglik <- -Inf
-  cpu_time_all <- c()
 
   while (try_CEM < n_tries) {
     try_CEM <- try_CEM + 1
     if (n_tries > 1 && verbose) {
       cat(paste0("EM try number: ", try_CEM, "\n\n"))
     }
-    time <- Sys.time()
 
     # Initialization
     variance_type <- match.arg(variance_type)
@@ -110,8 +108,6 @@ cemMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedas
       stat$stored_loglik[iter] <- stat$com_loglik
     } # End of the CEM loop
 
-    cpu_time_all[try_CEM] <- Sys.time() - time
-
     if (stat$com_loglik > best_com_loglik) {
       statSolution <- stat$copy()
       paramSolution <- param$copy()
@@ -126,7 +122,7 @@ cemMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedas
     cat(paste0("Best value of the complete log-likelihood: ", statSolution$com_loglik, "\n"))
   }
 
-  statSolution$computeStats(paramSolution, cpu_time_all)
+  statSolution$computeStats(paramSolution)
 
   return(ModelMixRHLP(param = paramSolution, stat = statSolution))
 }

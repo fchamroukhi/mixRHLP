@@ -7,7 +7,7 @@
 cemMixRHLP(X, Y, G, K, p = 3, q = 1,
   variance_type = c("heteroskedastic", "homoskedastic"),
   init_kmeans = TRUE, n_tries = 1, max_iter = 100,
-  threshold = 1e-05, verbose = TRUE, verbose_IRLS = FALSE)
+  threshold = 1e-05, verbose = FALSE, verbose_IRLS = FALSE)
 }
 \arguments{
 \item{X}{Numeric vector of length \emph{m} representing the covariates/inputs

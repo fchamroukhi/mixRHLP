@@ -70,17 +70,14 @@ logarithm of the joint probability density function \eqn{f(y_{i}, \ h_{i} =
 
 \item{\code{log_tau_ijgk}}{Array of size \eqn{(nm, K, G)} giving the logarithm of
 \code{tau_ijgk}.}
-
-\item{\code{cpu_time}}{Numeric. Average computing time of a EM algorithm run.}
 }}
 
 \section{Methods}{
 
 \describe{
-\item{\code{computeStats(paramMixRHLP, cpu_time_all)}}{Method used in the EM algorithm to compute statistics based on
+\item{\code{computeStats(paramMixRHLP)}}{Method used in the EM algorithm to compute statistics based on
 parameters provided by the object \code{paramMixRHLP} of class
-\link{ParamMixRHLP}. It also calculates the average computing time of a
-single run of the EM algorithm.}
+\link{ParamMixRHLP}.}
 
 \item{\code{CStep(reg_irls)}}{Method used in the CEM algorithm to update statistics.}
 

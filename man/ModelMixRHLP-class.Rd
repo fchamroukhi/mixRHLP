@@ -21,7 +21,7 @@ statistics associated to the MixRHLP model.}
 \section{Methods}{
 
 \describe{
-\item{\code{plot(what = c("estimatedsignal", "regressors", "loglikelihood"))}}{Plot method.
+\item{\code{plot(what = c("estimatedsignal", "regressors", "loglikelihood"), ...)}}{Plot method.
 \describe{
   \item{\code{what}}{The type of graph requested:
     \itemize{
@@ -35,10 +35,15 @@ statistics associated to the MixRHLP model.}
         \link{StatMixRHLP}).
     }
   }
+  \item{\code{\dots}}{Other graphics parameters.}
 }
 By default, all the above graphs are produced.}
 
-\item{\code{summary()}}{Summary method.}
+\item{\code{summary(digits = getOption("digits"))}}{Summary method.
+\describe{
+  \item{\code{digits}}{The number of significant digits to use when
+    printing.}
+}}
 }}
 
 \seealso{

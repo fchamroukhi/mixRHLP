@@ -44,7 +44,6 @@
 #'   \eqn{i = 1,\dots,n}.
 #' @field log_tau_ijgk Array of size \eqn{(nm, K, G)} giving the logarithm of
 #'   `tau_ijgk`.
-#' @field cpu_time Numeric. Average computing time of a EM algorithm run.
 #' @seealso [ParamMixRHLP]
 #' @export
 StatMixRHLP <- setRefClass(
@@ -71,7 +70,6 @@ StatMixRHLP <- setRefClass(
     BIC = "numeric", # BIC value = loglik - nu*log(nm)/2.
     ICL = "numeric", # ICL value = comp-loglik_star - nu*log(nm)/2.
     AIC = "numeric", # AIC value = loglik - nu.
-    cpu_time = "numeric",
     log_fg_xij = "matrix",
     log_alphag_fg_xij = "matrix",
     polynomials = "array",
@@ -92,7 +90,6 @@ StatMixRHLP <- setRefClass(
       BIC <<- -Inf
       ICL <<- -Inf
       AIC <<- -Inf
-      cpu_time <<- Inf
       log_fg_xij <<- matrix(0, paramMixRHLP$fData$n, paramMixRHLP$G)
       log_alphag_fg_xij <<- matrix(0, paramMixRHLP$fData$n, paramMixRHLP$G)
       polynomials <<- array(NA, dim = c(paramMixRHLP$fData$m, paramMixRHLP$K, paramMixRHLP$G))
@@ -120,11 +117,10 @@ StatMixRHLP <- setRefClass(
       }
     },
 
-    computeStats = function(paramMixRHLP, cpu_time_all) {
+    computeStats = function(paramMixRHLP) {
       "Method used in the EM algorithm to compute statistics based on
       parameters provided by the object \\code{paramMixRHLP} of class
-      \\link{ParamMixRHLP}. It also calculates the average computing time of a
-      single run of the EM algorithm."
+      \\link{ParamMixRHLP}."
 
       for (g in 1:paramMixRHLP$G) {
 
@@ -136,7 +132,6 @@ StatMixRHLP <- setRefClass(
       }
 
       Ex <<- matrix(Ex, nrow = paramMixRHLP$fData$m)
-      cpu_time <<- mean(cpu_time_all)
 
       BIC <<- loglik - (paramMixRHLP$nu * log(paramMixRHLP$fData$n) / 2)
       AIC <<- loglik - paramMixRHLP$nu

@@ -149,9 +149,9 @@ ParamMixRHLP <- setRefClass(
         for (k in 1:K) {
           i <- (k - 1) * zi + 1
           j <- k * zi
-          Xij <- as.matrix(Xg[, i:j])
+          Xij <- Xg[, i:j, drop = FALSE]
           Xij <- matrix(t(Xij), ncol = 1)
-          phi_ij <- phi$XBeta[i:j,]
+          phi_ij <- phi$XBeta[i:j, , drop = FALSE]
           Phi_ij <- repmat(phi_ij, n, 1)
 
           bk <- solve(t(Phi_ij) %*% Phi_ij) %*% t(Phi_ij) %*% Xij
@@ -190,7 +190,7 @@ ParamMixRHLP <- setRefClass(
           j <- tk_init[k + 1]
           Xij <- Xg[, i:j]
           Xij <- matrix(t(Xij), ncol = 1)
-          phi_ij <- phi$XBeta[i:j,]
+          phi_ij <- phi$XBeta[i:j, , drop = FALSE]
           Phi_ij <- repmat(phi_ij, n, 1)
 
           bk <- solve(t(Phi_ij) %*% Phi_ij) %*% t(Phi_ij) %*% Xij

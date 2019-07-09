@@ -15,7 +15,7 @@ ModelMixRHLP <- setRefClass(
     stat = "StatMixRHLP"
   ),
   methods = list(
-    plot = function(what = c("estimatedsignal", "regressors", "loglikelihood")) {
+    plot = function(what = c("estimatedsignal", "regressors", "loglikelihood"), ...) {
       "Plot method.
       \\describe{
         \\item{\\code{what}}{The type of graph requested:
@@ -30,12 +30,13 @@ ModelMixRHLP <- setRefClass(
               \\link{StatMixRHLP}).
           }
         }
+        \\item{\\code{\\dots}}{Other graphics parameters.}
       }
       By default, all the above graphs are produced."
 
       what <- match.arg(what, several.ok = TRUE)
 
-      oldpar <- par()[c("mfrow", "mai", "mgp")]
+      oldpar <- par(no.readonly = TRUE)
       on.exit(par(oldpar), add = TRUE)
 
       # yaxislim <- c(min(modelMixRHLP$Y) - 2 * mean(sqrt(apply(modelMixRHLP$Y, 1, var))), max(modelMixRHLP$Y) + 2 * mean(sqrt(apply(modelMixRHLP$Y, 1, var))))
@@ -46,16 +47,15 @@ ModelMixRHLP <- setRefClass(
         # Cluster and means
         par(mfrow = c(ceiling(sqrt(param$G + 1)), round(sqrt(param$G + 1))), mai = c(0.6, 0.6, 0.5, 0.25), mgp = c(2, 1, 0))
 
-        matplot(param$fData$X, t(param$fData$Y), type = "l", lty = "solid", col = "black", xlab = "x", ylab = "y")
+        matplot(param$fData$X, t(param$fData$Y), type = "l", lty = "solid", col = "black", xlab = "x", ylab = "y", ...)
         title(main = "Dataset")
 
         for (g in 1:param$G) {
-          cluster_g = as.matrix(param$fData$Y[stat$klas == g, ])
+          cluster_g = param$fData$Y[stat$klas == g, , drop = FALSE]
 
           if (length(cluster_g) != 0) {
-            dim(cluster_g) <- c(sum(mixrhlp$stat$klas == g), param$fData$m)
-            matplot(param$fData$X, t(cluster_g), type = "l", lty = "dotted", col = colorsvector[g], xlab = "x", ylab = "y")
-            lines(param$fData$X, as.matrix(stat$Ex)[, g], col = "black", lty = "solid", lwd = 1.5)
+            matplot(param$fData$X, t(cluster_g), type = "l", lty = "dotted", col = colorsvector[g], xlab = "x", ylab = "y", ...)
+            lines(param$fData$X, stat$Ex[, g, drop = FALSE], col = "black", lty = "solid", lwd = 1.5, ...)
             title(main = sprintf("Cluster %1.1i", g))
           }
         }
@@ -64,43 +64,39 @@ ModelMixRHLP <- setRefClass(
       if (any(what == "regressors")) {
         par(mfrow = c(2, 1), mai = c(0.6, 0.8, 0.5, 0.5))
         for (g in 1:param$G) {
-          cluster_g = as.matrix(param$fData$Y[stat$klas == g, ])
+          cluster_g = param$fData$Y[stat$klas == g, , drop = FALSE]
 
           if (length(cluster_g) != 0) {
-            dim(cluster_g) <- c(sum(mixrhlp$stat$klas == g), param$fData$m)
-
-            matplot(param$fData$X, t(cluster_g), type = "l", lty = "dotted", col = colorsvector[g], xlab = "x", ylab = "y")
+            matplot(param$fData$X, t(cluster_g), type = "l", lty = "dotted", col = colorsvector[g], xlab = "x", ylab = "y", ...)
 
             # Polynomial regressors
-            if (param$K > 0) {
-              for (k in 1:param$K) {
-                lines(param$fData$X, stat$polynomials[, k, g], col = "black", lty = "dotted", lwd = 1.5)
-              }
-            } else {
-              lines(param$fData$X, stat$polynomials[, , g], col = "black", lty = "dotted", lwd = 1.5)
+            for (k in 1:param$K) {
+              lines(param$fData$X, stat$polynomials[, k, g], col = "black", lty = "dotted", lwd = 1.5, ...)
             }
 
-            lines(param$fData$X, as.matrix(stat$Ex)[, g], col = "black", lty = "solid", lwd = 1.5)
+            lines(param$fData$X, stat$Ex[, g, drop = FALSE], col = "black", lty = "solid", lwd = 1.5, ...)
             title(main = sprintf("Cluster %1.1i", g))
 
-            matplot(param$fData$X, stat$pi_jgk[1:param$fData$m, , g], type = "l", lty = "solid", xlab = "x", ylab = "Logistic proportions", ylim = c(0, 1))
+            matplot(param$fData$X, stat$pi_jgk[1:param$fData$m, , g], type = "l", lty = "solid", xlab = "x", ylab = "Logistic proportions", ylim = c(0, 1), ...)
           }
         }
       }
 
       if (any(what == "loglikelihood")) {
         par(mfrow = c(1, 1))
-        plot.default(unlist(stat$stored_loglik), type = "l", col = "blue", xlab = "Iteration", ylab = "Log Likelihood", xaxt = "n")
-        axis(side = 1, at = 1:length(unlist(stat$stored_loglik)))
+        plot.default(unlist(stat$stored_loglik), type = "l", col = "blue", xlab = "Iteration", ylab = "Log Likelihood", xaxt = "n", ...)
+        axis(side = 1, at = 1:length(unlist(stat$stored_loglik)), ...)
         title(main = "Log-Likelihood")
       }
 
     },
 
-    summary = function() {
-      "Summary method."
-
-      digits = getOption("digits")
+    summary = function(digits = getOption("digits")) {
+      "Summary method.
+      \\describe{
+        \\item{\\code{digits}}{The number of significant digits to use when
+          printing.}
+      }"
 
       title <- paste("Fitted mixRHLP model")
       txt <- paste(rep("-", min(nchar(title) + 4, getOption("width"))), collapse = "")
@@ -123,7 +119,7 @@ ModelMixRHLP <- setRefClass(
                         row.names = "", check.names = FALSE)
       print(tab, digits = digits)
 
-      cat("\nClustering table:")
+      cat("\nClustering table (Number of curves in each clusters):\n")
       print(table(stat$klas))
 
       cat("\nMixing probabilities (cluster weights):\n")
