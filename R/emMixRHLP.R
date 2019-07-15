@@ -98,7 +98,7 @@ emMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedast
       }
 
       prev_loglik <- stat$loglik
-      stat$stored_loglik[iter] <- stat$loglik
+      stat$stored_loglik <- c(stat$stored_loglik, stat$loglik)
     } # End of EM loop
 
     if (stat$loglik > best_loglik) {

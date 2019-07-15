@@ -28,10 +28,10 @@
 #'   logistic probabilities `pi_jgk`.
 #' @field loglik Numeric. Observed-data log-likelihood of the MixRHLP model.
 #' @field com_loglik Numeric. Complete-data log-likelihood of the MixRHLP model.
-#' @field stored_loglik List. Stored values of the log-likelihood at each EM
-#'   iteration.
-#' @field stored_com_loglik List. Stored values of the Complete log-likelihood
-#'   at each EM iteration.
+#' @field stored_loglik Numeric vector. Stored values of the log-likelihood at
+#'   each EM iteration.
+#' @field stored_com_loglik Numeric vector. Stored values of the Complete
+#'   log-likelihood at each EM iteration.
 #' @field BIC Numeric. Value of BIC (Bayesian Information Criterion).
 #' @field ICL Numeric. Value of ICL (Integrated Completed Likelihood).
 #' @field AIC Numeric. Value of AIC (Akaike Information Criterion).
@@ -60,8 +60,8 @@ StatMixRHLP <- setRefClass(
     # is a column vector of dimension m for each g.
     loglik = "numeric", # the loglikelihood of the EM or CEM algorithm
     com_loglik = "numeric", # the complete loglikelihood of the EM (computed at the convergence) or CEM algorithm
-    stored_loglik = "list", # vector of stored valued of the comp-log-lik at each EM teration
-    stored_com_loglik = "list",
+    stored_loglik = "numeric", # vector of stored valued of the comp-log-lik at each EM teration
+    stored_com_loglik = "numeric",
     tau_ijgk = "array",
     # tau_ijgk prob(y_{ij}|kth_segment,cluster_g), fuzzy
     # segmentation for the cluster g. matrix of dimension
@@ -85,8 +85,8 @@ StatMixRHLP <- setRefClass(
       Ex <<- matrix(NA, paramMixRHLP$fData$m, paramMixRHLP$G)
       loglik <<- -Inf
       com_loglik <<- -Inf
-      stored_loglik <<- list()
-      stored_com_loglik <<- list()
+      stored_loglik <<- numeric()
+      stored_com_loglik <<- numeric()
       BIC <<- -Inf
       ICL <<- -Inf
       AIC <<- -Inf

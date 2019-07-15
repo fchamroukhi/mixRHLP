@@ -84,9 +84,8 @@ ModelMixRHLP <- setRefClass(
 
       if (any(what == "loglikelihood")) {
         par(mfrow = c(1, 1))
-        plot.default(unlist(stat$stored_loglik), type = "l", col = "blue", xlab = "Iteration", ylab = "Log Likelihood", xaxt = "n", ...)
-        axis(side = 1, at = 1:length(unlist(stat$stored_loglik)), ...)
-        title(main = "Log-Likelihood")
+        plot.default(1:length(stat$stored_loglik), stat$stored_loglik, type = "l", col = "blue", xlab = "EM iteration number", ylab = "Log-likelihood", ...)
+        title(main = "Log-likelihood")
       }
 
     },

@@ -1,11 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-## Overview
-
 <!-- badges: start -->
 
 <!-- badges: end -->
+
+## Overview
 
 R code for the **clustering** and **segmentation** of time series
 (including with regime changes) by mixture of Hidden Logistic Processes
@@ -276,7 +276,8 @@ mixrhlp$summary()
 #>  log-likelihood nu       AIC       BIC       ICL
 #>       -14810.69 41 -14851.69 -14880.41 -14880.41
 #> 
-#> Clustering table:
+#> Clustering table (Number of curves in each clusters):
+#> 
 #>  1  2  3 
 #> 10 10 10 
 #> 
@@ -291,20 +292,6 @@ mixrhlp$summary()
 #> Regression coefficients:
 #> 
 #>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
-#> 1     6.3513369    4.214736   6.6536553
-#> X^1  -0.2449377    0.839666   0.1024863
-#> 
-#> Variances:
-#> 
-#>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
-#>      0.9498285     0.9270384      1.001413
-#> 
-#> --------------------
-#> Cluster 2 (G = 2):
-#> 
-#> Regression coefficients:
-#> 
-#>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
 #> 1    4.96556671   6.7326717   4.8807183
 #> X^1  0.08880479   0.4984443   0.1350271
 #> 
@@ -314,7 +301,7 @@ mixrhlp$summary()
 #>      0.9559969       1.03849     0.9506928
 #> 
 #> --------------------
-#> Cluster 3 (G = 3):
+#> Cluster 2 (G = 2):
 #> 
 #> Regression coefficients:
 #> 
@@ -326,6 +313,20 @@ mixrhlp$summary()
 #> 
 #>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
 #>       0.981915     0.9787717     0.9702211
+#> 
+#> --------------------
+#> Cluster 3 (G = 3):
+#> 
+#> Regression coefficients:
+#> 
+#>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
+#> 1     6.3513369    4.214736   6.6536553
+#> X^1  -0.2449377    0.839666   0.1024863
+#> 
+#> Variances:
+#> 
+#>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
+#>      0.9498285     0.9270384      1.001413
 
 mixrhlp$plot()
 ```
