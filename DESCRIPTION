@@ -9,10 +9,12 @@ Authors@R: c(person("Faicel", "Chamroukhi", role = c("aut"),
     email = "marius.bartcus@gmail.com"),
     person("Florian", "Lecocq", role = c("aut", "cre"),
     email = "florian.lecocq@outlook.com"))
-Description: Simultaneous model-based clustering and segmentation of heterogeneous and 
-    dynamical functional data (curves/times series) with smooth and/or abrupt changes in 
-    regime by a mixture of regression models with hidden logistic processes, fitted by the 
-    EM algorithm and extensions. See also the packages 'mixHMM', 'mixHMMR', and 'RHLP'.
+Description: Simultaneous model-based clustering and segmentation of 
+    heterogeneous and dynamical functional data (curves/times series) with 
+    smooth and/or abrupt changes in regime by a mixture of regression models 
+    with hidden logistic processes, fitted by the EM algorithm and extensions. 
+    See also the packages 'mixHMM', 'mixHMMR', and 'RHLP'.
+URL: https://github.com/fchamroukhi/mixRHLP
 License: GPL (>= 3)
 Depends: 
     R (>= 2.10)
