@@ -45,7 +45,8 @@ ModelMixRHLP <- setRefClass(
 
       if (any(what == "estimatedsignal")) {
         # Cluster and means
-        par(mfrow = c(ceiling(sqrt(param$G + 1)), round(sqrt(param$G + 1))), mai = c(0.6, 0.6, 0.5, 0.25), mgp = c(2, 1, 0))
+        nonemptyclusters = length(unique(stat$klas))
+        par(mfrow = c(ceiling(sqrt(nonemptyclusters + 1)), round(sqrt(nonemptyclusters + 1))), mai = c(0.6, 0.6, 0.5, 0.25), mgp = c(2, 1, 0))
 
         matplot(param$fData$X, t(param$fData$Y), type = "l", lty = "solid", col = "black", xlab = "x", ylab = "y", ...)
         title(main = "Dataset")

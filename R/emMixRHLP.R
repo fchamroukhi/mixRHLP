@@ -108,7 +108,7 @@ emMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedast
     }
 
     if (n_tries > 1 && verbose) {
-      cat(paste0("Max value of the log-likelihood: ", stat$log_lik, "\n\n"))
+      cat(paste0("Max value of the log-likelihood: ", stat$loglik, "\n\n"))
     }
   }
 
