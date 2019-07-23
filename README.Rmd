@@ -16,11 +16,11 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-## Overview
+# Overview
 
 R code for the **clustering** and **segmentation** of time series (including with regime changes) by mixture of Hidden Logistic Processes (MixRHLP) and the EM algorithm; i.e functional data clustering and segmentation.
 
-## Installation
+# Installation
 
 You can install the development version of mixRHLP from [GitHub](https://github.com/) with:
 
@@ -44,11 +44,14 @@ Use the following command to display vignettes:
 browseVignettes("mixRHLP")
 ```
 
-## Usage
+# Usage
 
 ```{r, message = FALSE}
 library(mixRHLP)
+```
 
+```{r, message = FALSE}
+# Application to a toy data set
 data("toydataset")
 
 G <- 3 # Number of clusters

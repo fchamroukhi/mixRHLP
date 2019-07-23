@@ -5,14 +5,14 @@
 
 <!-- badges: end -->
 
-## Overview
+# Overview
 
 R code for the **clustering** and **segmentation** of time series
 (including with regime changes) by mixture of Hidden Logistic Processes
 (MixRHLP) and the EM algorithm; i.e functional data clustering and
 segmentation.
 
-## Installation
+# Installation
 
 You can install the development version of mixRHLP from
 [GitHub](https://github.com/) with:
@@ -38,11 +38,14 @@ Use the following command to display vignettes:
 browseVignettes("mixRHLP")
 ```
 
-## Usage
+# Usage
 
 ``` r
 library(mixRHLP)
+```
 
+``` r
+# Application to a toy data set
 data("toydataset")
 
 G <- 3 # Number of clusters
@@ -292,20 +295,6 @@ mixrhlp$summary()
 #> Regression coefficients:
 #> 
 #>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
-#> 1    4.96556671   6.7326717   4.8807183
-#> X^1  0.08880479   0.4984443   0.1350271
-#> 
-#> Variances:
-#> 
-#>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
-#>      0.9559969       1.03849     0.9506928
-#> 
-#> --------------------
-#> Cluster 2 (G = 2):
-#> 
-#> Regression coefficients:
-#> 
-#>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
 #> 1     6.8902863   5.1134337  3.90153421
 #> X^1   0.9265632  -0.3959402  0.08748466
 #> 
@@ -313,6 +302,20 @@ mixrhlp$summary()
 #> 
 #>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
 #>       0.981915     0.9787717     0.9702211
+#> 
+#> --------------------
+#> Cluster 2 (G = 2):
+#> 
+#> Regression coefficients:
+#> 
+#>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
+#> 1    4.96556671   6.7326717   4.8807183
+#> X^1  0.08880479   0.4984443   0.1350271
+#> 
+#> Variances:
+#> 
+#>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
+#>      0.9559969       1.03849     0.9506928
 #> 
 #> --------------------
 #> Cluster 3 (G = 3):
@@ -331,4 +334,4 @@ mixrhlp$summary()
 mixrhlp$plot()
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-5-2.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-5-3.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-5-4.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-5-5.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-6-2.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-6-3.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-6-4.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-6-5.png" style="display: block; margin: auto;" />
