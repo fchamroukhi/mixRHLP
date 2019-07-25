@@ -61,7 +61,7 @@ verbose <- TRUE
 verbose_IRLS <- FALSE
 init_kmeans <- TRUE
 
-mixrhlp <- emMixRHLP(toydataset$x, t(as.matrix(toydataset[,2:ncol(toydataset)])), 
+mixrhlp <- emMixRHLP(toydataset$x, t(toydataset[,2:ncol(toydataset)]), 
                      G, K, p, q, variance_type, init_kmeans, n_tries, max_iter, 
                      threshold, verbose, verbose_IRLS)
 #> EM: Iteration : 1 || log-likelihood : -18129.8169520025
@@ -295,6 +295,20 @@ mixrhlp$summary()
 #> Regression coefficients:
 #> 
 #>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
+#> 1     6.3513369    4.214736   6.6536553
+#> X^1  -0.2449377    0.839666   0.1024863
+#> 
+#> Variances:
+#> 
+#>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
+#>      0.9498285     0.9270384      1.001413
+#> 
+#> --------------------
+#> Cluster 2 (G = 2):
+#> 
+#> Regression coefficients:
+#> 
+#>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
 #> 1     6.8902863   5.1134337  3.90153421
 #> X^1   0.9265632  -0.3959402  0.08748466
 #> 
@@ -304,7 +318,7 @@ mixrhlp$summary()
 #>       0.981915     0.9787717     0.9702211
 #> 
 #> --------------------
-#> Cluster 2 (G = 2):
+#> Cluster 3 (G = 3):
 #> 
 #> Regression coefficients:
 #> 
@@ -316,20 +330,6 @@ mixrhlp$summary()
 #> 
 #>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
 #>      0.9559969       1.03849     0.9506928
-#> 
-#> --------------------
-#> Cluster 3 (G = 3):
-#> 
-#> Regression coefficients:
-#> 
-#>     Beta(K = 1) Beta(K = 2) Beta(K = 3)
-#> 1     6.3513369    4.214736   6.6536553
-#> X^1  -0.2449377    0.839666   0.1024863
-#> 
-#> Variances:
-#> 
-#>  Sigma2(K = 1) Sigma2(K = 2) Sigma2(K = 3)
-#>      0.9498285     0.9270384      1.001413
 
 mixrhlp$plot()
 ```
