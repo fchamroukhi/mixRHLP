@@ -4,44 +4,44 @@
 \name{StatMixRHLP-class}
 \alias{StatMixRHLP-class}
 \alias{StatMixRHLP}
-\title{A Reference Class which contains statistics of a MixRHLP model.}
+\title{A Reference Class which contains statistics of a mixture of RHLP models.}
 \description{
 StatMixRHLP contains all the statistics associated to a
-\link[=ParamMixRHLP]{MixRHLP} model.
+\link[=ParamMixRHLP]{MixRHLP} model, in particular the E-Step (and C-Step) of the
+(C)EM algorithm.
 }
 \section{Fields}{
 
 \describe{
-\item{\code{pi_jgk}}{Array of size \eqn{(nm, K, G)} representing the logistic
-proportion for cluster g.}
+\item{\code{pi_jkr}}{Array of size \eqn{(nm, R, K)} representing the logistic
+proportion for cluster k.}
 
-\item{\code{h_ig}}{Matrix of size \eqn{(n, G)} giving the posterior probabilities
-(fuzzy segmentation matrix) that the curve \eqn{Y_{i}} originates from the
-\eqn{g}-th RHLP model.}
+\item{\code{tau_ik}}{Matrix of size \eqn{(n, K)} giving the posterior probabilities
+(fuzzy segmentation matrix) that the curve \eqn{\boldsymbol{y}_{i}}{y_{i}}
+originates from the \eqn{k}-th RHLP model.}
 
-\item{\code{c_ig}}{Hard segmentation logical matrix of dimension \eqn{(n, G)}
-obtained by the Maximum a posteriori (MAP) rule: \eqn{c\_ig = 1 \
-  \textrm{if} \ c\_ig = \textrm{arg} \ \textrm{max}_{s} \ h\_is;\ 0 \
-  \textrm{otherwise}}{c_ig = 1 if c_ig = arg max_s h_is; 0 otherwise}, \eqn{g
-  = 1,\dots,G}.}
+\item{\code{z_ik}}{Hard segmentation logical matrix of dimension \eqn{(n, K)}
+obtained by the Maximum a posteriori (MAP) rule: \eqn{z\_ik = 1 \
+  \textrm{if} \ z\_i = \textrm{arg} \ \textrm{max}_{k} \ tau\_ik;\ 0 \
+  \textrm{otherwise}}{z_ik = 1 if z_i = arg max_k tau_ik; 0 otherwise}.}
 
-\item{\code{klas}}{Column matrix of the labels issued from \code{c_ig}. Its elements are
-\eqn{klas(i) = g}, \eqn{i = 1,\dots,n}.}
+\item{\code{klas}}{Column matrix of the labels issued from \code{z_ik}. Its elements are
+\eqn{klas[i] = z\_i}{klas[i] = z_i}, \eqn{i = 1,\dots,n}.}
 
-\item{\code{tau_ijgk}}{Array of size \eqn{(nm, K, G)} giving the posterior
-probabilities that the observation \eqn{Y_{ij}} originates from the
-\eqn{K}-th regime of the \eqn{g}-th RHLP model.}
+\item{\code{gamma_ijkr}}{Array of size \eqn{(nm, R, K)} giving the posterior
+probabilities that the observation \eqn{\boldsymbol{y}_{ij}}{y_{ij}}
+originates from the \eqn{r}-th regime of the \eqn{k}-th RHLP model.}
 
-\item{\code{polynomials}}{Array of size \eqn{(m, K, G)} giving the values of the
+\item{\code{polynomials}}{Array of size \eqn{(m, R, K)} giving the values of the
 estimated polynomial regression components.}
 
-\item{\code{weighted_polynomials}}{Array of size \eqn{(m, K, G)} giving the values
+\item{\code{weighted_polynomials}}{Array of size \eqn{(m, R, K)} giving the values
 of the estimated polynomial regression components weighted by the prior
-probabilities \code{pi_jgk}.}
+probabilities \code{pi_jkr}.}
 
-\item{\code{Ex}}{Matrix of size \emph{(m, G)}. \code{Ex} is the curve expectation
+\item{\code{Ey}}{Matrix of size \emph{(m, K)}. \code{Ey} is the curve expectation
 (estimated signal): sum of the polynomial components weighted by the
-logistic probabilities \code{pi_jgk}.}
+logistic probabilities \code{pi_jkr}.}
 
 \item{\code{loglik}}{Numeric. Observed-data log-likelihood of the MixRHLP model.}
 
@@ -59,17 +59,18 @@ log-likelihood at each EM iteration.}
 
 \item{\code{AIC}}{Numeric. Value of AIC (Akaike Information Criterion).}
 
-\item{\code{log_fg_xij}}{Matrix of size \eqn{(n, G)} giving the values of the
-probability density function \eqn{f(y_{i} | h_ig = 1, \boldsymbol{x},
-  \boldsymbol{\Psi})}{f(y_{i} | h_ig = 1, x, \Psi)}, \eqn{i = 1,\dots,n}.}
+\item{\code{log_fk_yij}}{Matrix of size \eqn{(n, K)} giving the values of the
+probability density function \eqn{f(\boldsymbol{y}_{i} | z_i = k,
+  \boldsymbol{x}, \boldsymbol{\Psi})}{f(y_{i} | z_i = k, x, \Psi)}, \eqn{i =
+  1,\dots,n}.}
 
-\item{\code{log_alphag_fg_xij}}{Matrix of size \eqn{(n, G)} giving the values of the
-logarithm of the joint probability density function \eqn{f(y_{i}, \ h_{i} =
-  g | \boldsymbol{x}, \boldsymbol{\Psi})}{f(y_{i}, h_{i} = g | x, \Psi)},
-\eqn{i = 1,\dots,n}.}
+\item{\code{log_alphak_fk_yij}}{Matrix of size \eqn{(n, K)} giving the values of the
+logarithm of the joint probability density function
+\eqn{f(\boldsymbol{y}_{i}, \ z_{i} = k | \boldsymbol{x},
+  \boldsymbol{\Psi})}{f(y_{i}, z_{i} = k | x, \Psi)}, \eqn{i = 1,\dots,n}.}
 
-\item{\code{log_tau_ijgk}}{Array of size \eqn{(nm, K, G)} giving the logarithm of
-\code{tau_ijgk}.}
+\item{\code{log_gamma_ijkr}}{Array of size \eqn{(nm, R, K)} giving the logarithm of
+\code{gamma_ijkr}.}
 }}
 
 \section{Methods}{
@@ -85,12 +86,12 @@ parameters provided by the object \code{paramMixRHLP} of class
 provided by the object \code{paramMixRHLP} of class \link{ParamMixRHLP}
 (prior and posterior probabilities).}
 
-\item{\code{MAP()}}{MAP calculates values of the fields \code{c_ig} and \code{klas}
+\item{\code{MAP()}}{MAP calculates values of the fields \code{z_ik} and \code{klas}
       by applying the Maximum A Posteriori Bayes allocation rule.
 
-      \eqn{c\_ig = 1 \ \textrm{if} \ c\_ig = \textrm{arg} \
-      \textrm{max}_{s} \ h\_is;\ 0 \ \textrm{otherwise}
-      }{c_ig = 1 if c_ig = arg max_s h_is; 0 otherwise}, \eqn{g = 1,\dots,G}.}
+      \eqn{z\_ik = 1 \ \textrm{if} \ z\_i = \textrm{arg} \
+      \textrm{max}_{k} \ tau\_ik;\ 0 \ \textrm{otherwise}
+      }{z_ik = 1 if z_i = arg max_k tau_ik; 0 otherwise}.}
 }}
 
 \seealso{

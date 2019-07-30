@@ -1,7 +1,8 @@
-#' cemMixRHLP is used to fit a MixRHLP model.
+#' cemMixRHLP implements the CEM algorithm to fit a MixRHLP model.
 #'
-#' cemMixRHLP is used to fit a MixRHLP model. The estimation method is performed
-#' by the Classification Expectation-Maximization algorithm (CEM algorithm).
+#' cemMixRHLP implements the maximum complete likelihood parameter estimation of
+#' mixture of RHLP models by the Classification Expectation-Maximization
+#' algorithm (CEM algorithm).
 #'
 #' @details cemMixRHLP function implements the CEM algorithm. This function
 #'   starts with an initialization of the parameters done by the method
@@ -17,8 +18,8 @@
 #' @param Y Matrix of size \eqn{(n, m)} representing the observed
 #'   responses/outputs. `Y` consists of \emph{n} functions of `X` observed at
 #'   points \eqn{1,\dots,m}.
-#' @param G The number of clusters (Number of RHLP models).
-#' @param K The number of regimes (RHLP components) for each cluster.
+#' @param K The number of clusters (Number of RHLP models).
+#' @param R The number of regimes (RHLP components) for each cluster.
 #' @param p Optional. The order of the polynomial regression. By default, `p` is
 #'   set at 3.
 #' @param q Optional. The dimension of the logistic regression. For the purpose
@@ -33,8 +34,8 @@
 #'   providing the highest log-likelihood will be returned.
 #'
 #'   If `n_tries` > 1, then for the first run, parameters are initialized by
-#'   uniformly segmenting the data into K segments, and for the next runs,
-#'   parameters are initialized by randomly segmenting the data into K
+#'   uniformly segmenting the data into R segments, and for the next runs,
+#'   parameters are initialized by randomly segmenting the data into R
 #'   contiguous segments.
 #' @param max_iter Optional. The maximum number of iterations for the EM
 #'   algorithm.
@@ -57,12 +58,12 @@
 #' data <- toydataset[1:190,1:21]
 #'
 #' mixrhlp <- cemMixRHLP(data$x, t(data[,2:ncol(data)]),
-#'                      G = 2, K = 2, p = 1, verbose = TRUE)
+#'                      K = 2, R = 2, p = 1, verbose = TRUE)
 #'
 #' mixrhlp$summary()
 #'
 #' mixrhlp$plot()
-cemMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedastic", "homoskedastic"), init_kmeans = TRUE, n_tries = 1, max_iter = 100, threshold = 1e-5, verbose = FALSE, verbose_IRLS = FALSE) {
+cemMixRHLP <- function(X, Y, K, R, p = 3, q = 1, variance_type = c("heteroskedastic", "homoskedastic"), init_kmeans = TRUE, n_tries = 1, max_iter = 100, threshold = 1e-5, verbose = FALSE, verbose_IRLS = FALSE) {
 
   fData <- FData(X, Y)
 
@@ -78,7 +79,7 @@ cemMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedas
 
     # Initialization
     variance_type <- match.arg(variance_type)
-    param <- ParamMixRHLP$new(fData = fData, G = G, K = K, p = p, q = q, variance_type = variance_type)
+    param <- ParamMixRHLP$new(fData = fData, K = K, R = R, p = p, q = q, variance_type = variance_type)
     param$initParam(init_kmeans, try_CEM)
 
     iter <- 0
@@ -101,7 +102,7 @@ cemMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedas
 
       iter <- iter + 1
       if (verbose) {
-        cat(paste0("CEM: Iteration : ", iter, " || Complete log-likelihood : "  , stat$com_loglik, "\n"))
+        cat(paste0("CEM - mixRHLP: Iteration: ", iter, " | Complete log-likelihood: "  , stat$com_loglik, "\n"))
       }
 
       if (prev_com_loglik - stat$com_loglik > 1e-5) {

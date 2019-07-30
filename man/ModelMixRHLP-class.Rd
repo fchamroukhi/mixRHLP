@@ -4,15 +4,15 @@
 \name{ModelMixRHLP-class}
 \alias{ModelMixRHLP-class}
 \alias{ModelMixRHLP}
-\title{A Reference Class which represents a fitted MixRHLP model.}
+\title{A Reference Class which represents a fitted mixture of RHLP model.}
 \description{
-ModelMixRHLP represents an estimated MixRHLP model.
+ModelMixRHLP represents an estimated mixture of RHLP model.
 }
 \section{Fields}{
 
 \describe{
-\item{\code{param}}{A \link{ParamMixRHLP} object. It contains the
-estimated values of the parameters.}
+\item{\code{param}}{A \link{ParamMixRHLP} object. It contains the estimated
+values of the parameters.}
 
 \item{\code{stat}}{A \link{StatMixRHLP} object. It contains all the
 statistics associated to the MixRHLP model.}
@@ -26,9 +26,9 @@ statistics associated to the MixRHLP model.}
   \item{\code{what}}{The type of graph requested:
     \itemize{
       \item \code{"estimatedsignal" = } Estimated signal (field
-        \code{Ex} of class \link{StatMixRHLP}).
+        \code{Ey} of class \link{StatMixRHLP}).
       \item \code{"regressors" = } Polynomial regression components
-        (fields \code{polynomials} and \code{pi_jgk} of class
+        (fields \code{polynomials} and \code{pi_jkr} of class
         \link{StatMixRHLP}).
       \item \code{"loglikelihood" = } Value of the log-likelihood for
         each iteration (field \code{stored_loglik} of class
@@ -53,7 +53,7 @@ data(toydataset)
 data <- toydataset[1:190,1:21]
 
 mixrhlp <- cemMixRHLP(data$x, t(data[,2:ncol(data)]),
-                     G = 2, K = 2, p = 1, verbose = TRUE)
+                     K = 2, R = 2, p = 1, verbose = TRUE)
 
 # mixrhlp is a ModelMixRHLP object. It contains some methods such as 'summary' and 'plot'
 mixrhlp$summary()

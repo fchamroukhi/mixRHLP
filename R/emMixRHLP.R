@@ -1,7 +1,7 @@
-#' emMixRHLP is used to fit a MixRHLP model.
+#' emMixRHLP implements the EM algorithm to fit a mixture of RHLP models.
 #'
-#' emMixRHLP is used to fit a MixRHLP model. The estimation method is performed
-#' by the Expectation-Maximization algorithm.
+#' emMixRHLP implements the maximum-likelihood parameter estimation of a mixture
+#' of RHLP models by the Expectation-Maximization (EM) algorithm.
 #'
 #' @details emMixRHLP function implements the EM algorithm. This function starts
 #'   with an initialization of the parameters done by the method `initParam` of
@@ -16,8 +16,8 @@
 #' @param Y Matrix of size \eqn{(n, m)} representing the observed
 #'   responses/outputs. `Y` consists of \emph{n} functions of `X` observed at
 #'   points \eqn{1,\dots,m}.
-#' @param G The number of clusters (Number of RHLP models).
-#' @param K The number of regimes (RHLP components) for each cluster.
+#' @param K The number of clusters (Number of RHLP models).
+#' @param R The number of regimes (RHLP components) for each cluster.
 #' @param p Optional. The order of the polynomial regression. By default, `p` is
 #'   set at 3.
 #' @param q Optional. The dimension of the logistic regression. For the purpose
@@ -32,8 +32,8 @@
 #'   providing the highest log-likelihood will be returned.
 #'
 #'   If `n_tries` > 1, then for the first run, parameters are initialized by
-#'   uniformly segmenting the data into K segments, and for the next runs,
-#'   parameters are initialized by randomly segmenting the data into K
+#'   uniformly segmenting the data into R segments, and for the next runs,
+#'   parameters are initialized by randomly segmenting the data into R
 #'   contiguous segments.
 #' @param max_iter Optional. The maximum number of iterations for the EM
 #'   algorithm.
@@ -56,12 +56,12 @@
 #' data <- toydataset[1:190,1:21]
 #'
 #' mixrhlp <- emMixRHLP(data$x, t(data[,2:ncol(data)]),
-#'                      G = 2, K = 2, p = 1, verbose = TRUE)
+#'                      K = 2, R = 2, p = 1, verbose = TRUE)
 #'
 #' mixrhlp$summary()
 #'
 #' mixrhlp$plot()
-emMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedastic", "homoskedastic"), init_kmeans = TRUE, n_tries = 1, max_iter = 1000, threshold = 1e-5, verbose = FALSE, verbose_IRLS = FALSE) {
+emMixRHLP <- function(X, Y, K, R, p = 3, q = 1, variance_type = c("heteroskedastic", "homoskedastic"), init_kmeans = TRUE, n_tries = 1, max_iter = 1000, threshold = 1e-5, verbose = FALSE, verbose_IRLS = FALSE) {
 
   fData <- FData(X, Y)
 
@@ -77,7 +77,7 @@ emMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedast
 
     # Initialization
     variance_type <- match.arg(variance_type)
-    param <- ParamMixRHLP$new(fData = fData, G = G, K = K, p = p, q = q, variance_type = variance_type)
+    param <- ParamMixRHLP(fData = fData, K = K, R = R, p = p, q = q, variance_type = variance_type)
     param$initParam(init_kmeans, try_EM)
 
     iter <- 0
@@ -93,7 +93,7 @@ emMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedast
 
       iter <- iter + 1
       if (verbose) {
-        cat(paste0("EM: Iteration : ", iter, " || log-likelihood : "  , stat$loglik, "\n"))
+        cat(paste0("EM - mixRHLP: Iteration: ", iter, " | log-likelihood: "  , stat$loglik, "\n"))
       }
 
       if (prev_loglik - stat$loglik > 1e-5) {
@@ -125,7 +125,7 @@ emMixRHLP <- function(X, Y, G, K, p = 3, q = 1, variance_type = c("heteroskedast
     }
   }
 
-  # Computation of c_ig the hard partition of the curves and klas
+  # Computation of c_ig the hard partition of the curves and the cluster labels klas
   statSolution$MAP()
 
   if (n_tries > 1 && verbose) {

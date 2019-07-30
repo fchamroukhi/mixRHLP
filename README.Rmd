@@ -22,7 +22,8 @@ R code for the **clustering** and **segmentation** of time series (including wit
 
 # Installation
 
-You can install the development version of mixRHLP from [GitHub](https://github.com/) with:
+You can install the development version of mixRHLP from [GitHub](https://github.com/) 
+with:
 
 ```{r, eval = FALSE}
 # install.packages("devtools")
