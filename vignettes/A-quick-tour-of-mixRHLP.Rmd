@@ -31,20 +31,26 @@ library(mixRHLP)
 
 # Introduction
 
-**mixRHLP** is a R package for segmentation. It provides functions for parameter estimation via the EM algorithm. This document gives a quick tour of **mixRHLP** (version `r packageVersion("mixRHLP")`) functionalities. It was written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr) package for production. 
+**mixRHLP** is a R package for segmentation. It provides functions for 
+parameter estimation via the EM algorithm. This document gives a quick tour of
+**mixRHLP** (version `r packageVersion("mixRHLP")`) functionalities. It was 
+written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr)
+package for production.
 See `help(package="mixRHLP")` for further details and references provided by `citation("mixRHLP")`.
 
 # Load data
 
 ```{r}
 data("toydataset")
+x <- toydataset$x
+Y <- t(toydataset[,2:ncol(toydataset)])
 ```
 
 # Set up mixRHLP model parameters
 
 ```{r}
-G <- 3 # Number of clusters
-K <- 3 # Number of regimes (polynomial regression components)
+K <- 3 # Number of clusters
+R <- 3 # Number of regimes (polynomial regression components)
 p <- 1 # Degree of the polynomials
 q <- 1 # Order of the logistic regression (by default 1 for contiguous segmentation)
 variance_type <- "heteroskedastic" # "heteroskedastic" or "homoskedastic" model
@@ -64,9 +70,8 @@ init_kmeans <- TRUE
 # Estimation
 
 ```{r}
-mixrhlp <- emMixRHLP(toydataset$x, t(toydataset[,2:ncol(toydataset)]), 
-                     G, K, p, q, variance_type, init_kmeans, n_tries, max_iter, 
-                     threshold, verbose, verbose_IRLS)
+mixrhlp <- emMixRHLP(X = x, Y = Y, K, R, p, q, variance_type, init_kmeans, 
+                     n_tries, max_iter, threshold, verbose, verbose_IRLS)
 ```
 
 # Summary

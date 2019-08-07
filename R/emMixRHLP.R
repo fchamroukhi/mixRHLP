@@ -54,9 +54,10 @@
 #'
 #' # Let's fit a mixRHLP model on a dataset containing 2 clusters:
 #' data <- toydataset[1:190,1:21]
+#' x <- data$x
+#' Y <- t(data[,2:ncol(data)])
 #'
-#' mixrhlp <- emMixRHLP(data$x, t(data[,2:ncol(data)]),
-#'                      K = 2, R = 2, p = 1, verbose = TRUE)
+#' mixrhlp <- emMixRHLP(X = x, Y = Y, K = 2, R = 2, p = 1, verbose = TRUE)
 #'
 #' mixrhlp$summary()
 #'
@@ -72,7 +73,7 @@ emMixRHLP <- function(X, Y, K, R, p = 3, q = 1, variance_type = c("heteroskedast
   while (try_EM < n_tries) {
     try_EM <- try_EM + 1
     if (n_tries > 1 && verbose) {
-      cat(paste0("EM try number: ", try_EM, "\n\n"))
+      message("EM try number: ", try_EM, "\n")
     }
 
     # Initialization
@@ -93,11 +94,11 @@ emMixRHLP <- function(X, Y, K, R, p = 3, q = 1, variance_type = c("heteroskedast
 
       iter <- iter + 1
       if (verbose) {
-        cat(paste0("EM - mixRHLP: Iteration: ", iter, " | log-likelihood: "  , stat$loglik, "\n"))
+        message("EM - mixRHLP: Iteration: ", iter, " | log-likelihood: "  , stat$loglik)
       }
 
       if (prev_loglik - stat$loglik > 1e-5) {
-        warning(paste0("EM log-likelihood is decreasing from ", prev_loglik, "to ", stat$loglik, " !"))
+        warning("EM log-likelihood is decreasing from ", prev_loglik, "to ", stat$loglik, "!")
         top <- top + 1
         if (top > 20) {
           break
@@ -121,7 +122,7 @@ emMixRHLP <- function(X, Y, K, R, p = 3, q = 1, variance_type = c("heteroskedast
     }
 
     if (n_tries > 1 && verbose) {
-      cat(paste0("Max value of the log-likelihood: ", stat$loglik, "\n\n"))
+      message("Max value of the log-likelihood: ", stat$loglik, "\n\n")
     }
   }
 
@@ -129,7 +130,7 @@ emMixRHLP <- function(X, Y, K, R, p = 3, q = 1, variance_type = c("heteroskedast
   statSolution$MAP()
 
   if (n_tries > 1 && verbose) {
-    cat(paste0("Best value of the log-likelihood: ", statSolution$loglik, "\n"))
+    message("Best value of the log-likelihood: ", statSolution$loglik, "\n")
   }
 
   statSolution$computeStats(paramSolution)

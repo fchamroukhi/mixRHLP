@@ -47,9 +47,11 @@ library(mixRHLP)
 ``` r
 # Application to a toy data set
 data("toydataset")
+x <- toydataset$x
+Y <- t(toydataset[,2:ncol(toydataset)])
 
-G <- 3 # Number of clusters
-K <- 3 # Number of regimes (polynomial regression components)
+K <- 3 # Number of clusters
+R <- 3 # Number of regimes (polynomial regression components)
 p <- 1 # Degree of the polynomials
 q <- 1 # Order of the logistic regression (by default 1 for contiguous segmentation)
 variance_type <- "heteroskedastic" # "heteroskedastic" or "homoskedastic" model
@@ -61,9 +63,8 @@ verbose <- TRUE
 verbose_IRLS <- FALSE
 init_kmeans <- TRUE
 
-mixrhlp <- emMixRHLP(toydataset$x, t(toydataset[,2:ncol(toydataset)]), 
-                     G, K, p, q, variance_type, init_kmeans, n_tries, max_iter, 
-                     threshold, verbose, verbose_IRLS)
+mixrhlp <- emMixRHLP(X = x, Y = Y, K, R, p, q, variance_type, init_kmeans, 
+                     n_tries, max_iter, threshold, verbose, verbose_IRLS)
 #> EM - mixRHLP: Iteration: 1 | log-likelihood: -18129.8169520025
 #> EM - mixRHLP: Iteration: 2 | log-likelihood: -16642.732267463
 #> EM - mixRHLP: Iteration: 3 | log-likelihood: -16496.947898833
@@ -295,20 +296,6 @@ mixrhlp$summary()
 #> Regression coefficients for each regime/segment r (r=1...R):
 #> 
 #>     Beta(r = 1) Beta(r = 2) Beta(r = 3)
-#> 1     6.3513369    4.214736   6.6536553
-#> X^1  -0.2449377    0.839666   0.1024863
-#> 
-#> Variances:
-#> 
-#>  Sigma2(r = 1) Sigma2(r = 2) Sigma2(r = 3)
-#>      0.9498285     0.9270384      1.001413
-#> 
-#> --------------------
-#> Cluster 2 (k = 2):
-#> 
-#> Regression coefficients for each regime/segment r (r=1...R):
-#> 
-#>     Beta(r = 1) Beta(r = 2) Beta(r = 3)
 #> 1     6.8902863   5.1134337  3.90153421
 #> X^1   0.9265632  -0.3959402  0.08748466
 #> 
@@ -318,7 +305,7 @@ mixrhlp$summary()
 #>       0.981915     0.9787717     0.9702211
 #> 
 #> --------------------
-#> Cluster 3 (k = 3):
+#> Cluster 2 (k = 2):
 #> 
 #> Regression coefficients for each regime/segment r (r=1...R):
 #> 
@@ -330,6 +317,20 @@ mixrhlp$summary()
 #> 
 #>  Sigma2(r = 1) Sigma2(r = 2) Sigma2(r = 3)
 #>      0.9559969       1.03849     0.9506928
+#> 
+#> --------------------
+#> Cluster 3 (k = 3):
+#> 
+#> Regression coefficients for each regime/segment r (r=1...R):
+#> 
+#>     Beta(r = 1) Beta(r = 2) Beta(r = 3)
+#> 1     6.3513369    4.214736   6.6536553
+#> X^1  -0.2449377    0.839666   0.1024863
+#> 
+#> Variances:
+#> 
+#>  Sigma2(r = 1) Sigma2(r = 2) Sigma2(r = 3)
+#>      0.9498285     0.9270384      1.001413
 
 mixrhlp$plot()
 ```
